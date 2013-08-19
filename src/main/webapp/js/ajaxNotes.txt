@@ -1,0 +1,46 @@
+In .JS file:
+
+function deleteSelected(namespace, href) {
+
+    // Get selected elements from posts table
+    var postsSelected = new Array();
+    $("#" + namespace + "_posts").children("tbody").children().each(function() {
+        $row = $(this);
+        var checkbox = $row.find("input:checkbox");
+        if (checkbox.is(":checked")) {
+            postsSelected.push(checkbox.val())
+        }
+    });
+
+    alert("Rows detected: " + postsSelected);
+
+    $.ajax({
+        type: "POST",
+        url: href + "&selected=" + postsSelected,
+        cache: false,
+        dataType: "text",
+        success: function(data)
+        {
+            alert("Ajax call ok !");
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown)
+        {
+            alert("Ajax call KO !!");
+        }
+    });
+
+}
+
+In Portlet:
+
+    /*
+        It will be used to handle ajax calls implementing events handlers
+     */
+    @Override
+    public void serveResource(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        String event = request.getParameter("event");
+        if (event != null && event.equals("deleteSelected")) {
+            String selected = request.getParameter("selected");
+            log.info("Selected rows to delete: " + selected);
+        }
+    }
