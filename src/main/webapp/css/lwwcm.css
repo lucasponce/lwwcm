@@ -145,6 +145,12 @@
     width: 50px;
     vertical-align: middle;
 }
+.row-type {
+    width: 25px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.4em;
+}
 .row-timestamp                              {
     width: 80px;
     text-align: right;
@@ -152,7 +158,8 @@
     font-size: 1.2em;
     vertical-align: middle;
 }
-.row-status                                 {
+.row-status,
+.row-mimetype {
     width: 100px;
     text-align: right;
     font-size: 1.2em;
@@ -166,6 +173,7 @@
     color: #1c4e7e;
     vertical-align: middle;
 }
+
 
 /* Post actions */
 
@@ -231,26 +239,71 @@
     padding: 0px 0px 10px 0px;
 }
 
+/* New Category
+=============== */
+
 .lwwcm-newcategory {
     margin: 5px 5px;
     padding: 5px 5px;
     font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
+.lwwcm-newcategory-parent {
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    display: none;
+}
+.lwwcm-editcategory-parent {
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    display: block;
+}
 .lwwcm-newcategory-name {
     display: inline-block;
+    vertical-align: middle;
     border: 1px solid #ddd;
     margin-left: 5px;
     margin-right: 15px;
+    width: 210px;
+    overflow: hidden;
 }
 .lwwcm-newcategory-type {
     display: inline-block;
+    vertical-align: middle;
     border: 1px solid #ddd;
     margin-right: 50px;
+    border: 1px solid #ccc;
+    width: 210px;
+    overflow: hidden;
 }
-.lwwcm-newcategory-parent {
+
+/* New upload
+============= */
+
+.lwwcm-newupload {
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+.lwwcm-newupload-file {
+    display: none;
+}
+.lwwcm-newupload-name {
     font: inherit;
-    margin-top: 5px;
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-left: 5px;
+    margin-right: 50px;
+    width: 450px;
+    overflow: hidden;
+    height: 20px;
+    padding: 4px 3px;
+    color: #444;
 }
+
+
 
 /* Buttons
 ========== */
@@ -488,6 +541,9 @@ input[type="button"]:active                 {
 
 .lwwcm-dialog-body {
     background: #ffffff;
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
 
 /* Modal window

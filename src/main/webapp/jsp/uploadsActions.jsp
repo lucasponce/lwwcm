@@ -11,8 +11,6 @@
 
     <div class="margin-center">
         <a href="javascript:showCategories('${n}', '${showCategories}')" class="button" title="Assign Category" id="${n}assign-category"><span class="glyphicon glyphicon-tag"></span></a>
-        <a href="javascript:showMsg('${n}', 'Test')" class="button" title="Publish"><span class="glyphicon glyphicon-thumbs-up"></span></a>
-        <a href="#" class="button" title="Draft"><span class="glyphicon glyphicon-thumbs-down"></span></a>
     </div>
 
     <div class="lwwcm-select margin-left">

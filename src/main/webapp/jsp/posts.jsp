@@ -14,6 +14,7 @@
                     <label for="selectRow1"></label>
                 </div>
             </td>
+            <td class="row-type"><span class="glyphicon glyphicon-file margin-right"></span></td>
             <td>
                 <div>
                     <div class="lwwcm-post-title"><a href="#">Test Post with a long name</a></div>
@@ -33,6 +34,7 @@
                     <label for="selectRow2"></label>
                 </div>
             </td>
+            <td class="row-type"><span class="glyphicon glyphicon-file margin-right"></span></td>
             <td>
                 <div>
                     <div class="lwwcm-post-title"><a href="#">Test Post with a long name</a></div>

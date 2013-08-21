@@ -1,4 +1,4 @@
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/postsActions.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/templatesActions.js") %>"></script>
 <div class="lwwcm-posts-actions">
     <div class="lwwcm-checkbox left">
         <input type="checkbox" value="1" id="selectAll" name="" />
@@ -11,8 +11,6 @@
 
     <div class="margin-center">
         <a href="javascript:showCategories('${n}', '${showCategories}')" class="button" title="Assign Category" id="${n}assign-category"><span class="glyphicon glyphicon-tag"></span></a>
-        <a href="javascript:showMsg('${n}', 'Test')" class="button" title="Publish"><span class="glyphicon glyphicon-thumbs-up"></span></a>
-        <a href="#" class="button" title="Draft"><span class="glyphicon glyphicon-thumbs-down"></span></a>
     </div>
 
     <div class="lwwcm-select margin-left">

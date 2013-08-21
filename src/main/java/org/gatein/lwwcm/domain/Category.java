@@ -4,22 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.PreRemove;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Categories group content. 
@@ -30,18 +15,23 @@ import javax.persistence.Table;
 @Table(name = "lwwcm_categories")
 @Cacheable
 @NamedQueries({
+        @NamedQuery(name = "listAllCategories", query = "from Category c order by c.id"),
 		@NamedQuery(name = "listCategoriesName", query = "from Category c where c.name like :name"),
 		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type"),
 		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type"),
-		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id")})
+		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id"),
+        @NamedQuery(name = "listRootCategories", query = "from Category c where c.parent is null order by c.id")
+})
 public class Category implements Serializable {
 
 	private Long id;
 	private String name;
 	private Character type;
 	private Set<Post> posts = new HashSet<Post>();
+    private Set<Upload> uploads = new HashSet<Upload>();
 	private Category parent;
 	private Set<Acl> acls = new HashSet<Acl>();
+    private int numChildren;
 	
 	public Category() { }
 	
@@ -98,7 +88,27 @@ public class Category implements Serializable {
 		if (post == null) return;
 		this.posts.remove(post);		
 	}
-	
+
+    @ManyToMany
+    @JoinTable(name = "lwwcm_categories_uploads",
+            joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
+            inverseJoinColumns = { @JoinColumn(name = "upload_id", referencedColumnName = "upload_id") })
+    public Set<Upload> getUploads() {
+        return uploads;
+    }
+    public void setUploads(Set<Upload> uploads) {
+        this.uploads = uploads;
+    }
+    public void add(Upload upload) {
+        if (upload == null) return;
+        if (uploads.contains(upload)) return;
+        uploads.add(upload);
+    }
+    public void remove(Upload upload) {
+        if (upload == null) return;
+        this.uploads.remove(upload);
+    }
+
 	@ManyToOne
 	@JoinColumn(name = "category_parent_id")
 	public Category getParent() {
@@ -124,8 +134,16 @@ public class Category implements Serializable {
 		if (acl == null) return;
 		this.acls.remove(acl);
 	}
-	
-	@PreRemove
+
+    @Transient
+    public int getNumChildren() {
+        return numChildren;
+    }
+    public void setNumChildren(int numChildren) {
+        this.numChildren = numChildren;
+    }
+
+    @PreRemove
 	private void preRemove() {
 		
 	}

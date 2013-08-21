@@ -22,9 +22,14 @@ public interface WcmService {
 	void create(Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void update(Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void delete(Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void deleteCategory(Long id, UserWcm user) throws WcmAuthorizationException, WcmException;
+    List<Category> findCategories(UserWcm user) throws WcmException;
 	List<Category> findCategories(String name, UserWcm user) throws WcmException;
 	List<Category> findCategories(Character type, UserWcm user) throws WcmException;
 	List<Category> findChildren(Category cat) throws WcmException;
+    List<Category> findChildren(Long id) throws WcmException;
+    List<Category> findRootCategories(UserWcm user) throws WcmException;
+    Category findCategory(Long id, UserWcm user) throws WcmException;
 	
 	/*
 	 * Post API.
@@ -45,7 +50,9 @@ public interface WcmService {
 	void update(Upload upload, InputStream is, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void update(Upload upload, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void delete(Upload upload, UserWcm user) throws WcmAuthorizationException, WcmException;
-	List<Upload> findUpload(String fileName, UserWcm user) throws WcmException;
+    void add(Upload upload, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void remove(Upload upload, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
+    List<Upload> findUpload(String fileName, UserWcm user) throws WcmException;
 	
 	/*
 	 * Relationship API.

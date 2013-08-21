@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -40,6 +41,7 @@ public class Upload implements Serializable {
 	private Calendar modified;
 	private String user; 
 	private String description;
+    private Set<Category> categories = new HashSet<Category>();
 	private Set<Acl> acls = new HashSet<Acl>();
 
 	public Upload() {
@@ -121,6 +123,23 @@ public class Upload implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+    @ManyToMany(mappedBy = "uploads", fetch = FetchType.EAGER)
+    public Set<Category> getCategories() {
+        return categories;
+    }
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+    public void add(Category cat) {
+        if (cat == null) return;
+        if (categories.contains(cat)) return;
+        categories.add(cat);
+    }
+    public void remove(Category cat) {
+        if (cat == null) return;
+        categories.remove(cat);
+    }
 
 	@OneToMany(mappedBy = "upload", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	public Set<Acl> getAcls() {

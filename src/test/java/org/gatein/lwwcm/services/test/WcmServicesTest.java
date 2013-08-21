@@ -393,9 +393,48 @@ public class WcmServicesTest {
 		
 		List<Upload> out = w.findUpload(fileName, usergroup1);
 		assertEquals(1, out.size());
- 		
+
+        w.delete(upload, usergroup1);
 	}
-	
+
+    @Test
+    public void createUploadWithCategories() throws Exception {
+        final String GROUP1 = "group1";
+
+        UserWcm usergroup1 = new UserWcm("usergroup1");
+        usergroup1.add(GROUP1);
+
+        String fileName = "persistence.xml";
+
+        Upload upload = new Upload();
+        upload.setDescription("XML file");
+        upload.setFileName(fileName);
+        upload.setMimeType("application/xml");
+        upload.setUser(usergroup1.getUsername());
+
+        InputStream is = getClass().getClassLoader().getResourceAsStream("META-INF/persistence.xml");
+        w.create(upload, is, usergroup1);
+
+        List<Upload> out = w.findUpload(fileName, usergroup1);
+        assertEquals(1, out.size());
+
+        Category cat = new Category("Sports", Wcm.CATEGORIES.CATEGORY);
+        w.create(cat, usergroup1);
+
+        w.add(upload, cat, usergroup1);
+
+        assertEquals(1, cat.getUploads().size());
+        assertEquals(1, upload.getCategories().size());
+
+        w.remove(upload, cat, usergroup1);
+
+        out = w.findUpload(fileName, usergroup1);
+        assertEquals(1, out.size());
+        assertEquals(0, out.get(0).getCategories().size());
+
+        w.delete(upload, usergroup1);
+        w.delete(cat, usergroup1);
+    }
 	
 	@After
 	public void finishTest() {

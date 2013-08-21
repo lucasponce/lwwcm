@@ -1,10 +1,14 @@
 /* Imports functions
 ==================== */
 
-function showMsg(namespace) {
+function showMsg(namespace, msg) {
     var id = "#" + namespace + "msg-dialog";
     var maskid = "#" + namespace + "msg-mask";
     var closeid = "#" + namespace + "close-msg-dialog";
+    var msgId = "#" + namespace + "msg-dialog-body";
+
+    // Setting msg
+    $(msgId).html(msg);
     // Setting mask
     var maskHeight = $(document).height();
     var maskWidth = $(window).width();
