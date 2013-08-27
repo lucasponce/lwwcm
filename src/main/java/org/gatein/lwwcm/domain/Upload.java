@@ -29,7 +29,9 @@ import javax.persistence.TemporalType;
 @Table(name = "lwwcm_uploads")
 @Cacheable
 @NamedQueries({
-	@NamedQuery(name = "listUploadsFileName", query = "from Upload u where u.fileName like :fileName")})
+	@NamedQuery(name = "listUploadsFileName", query = "from Upload u where u.fileName like :fileName"),
+    @NamedQuery(name = "listAllUploads", query = "from Upload u order by u.id")
+})
 public class Upload implements Serializable {
 	
 	private Long id;
@@ -124,7 +126,7 @@ public class Upload implements Serializable {
 		this.description = description;
 	}
 
-    @ManyToMany(mappedBy = "uploads", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "uploads", cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
     public Set<Category> getCategories() {
         return categories;
     }

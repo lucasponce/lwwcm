@@ -29,6 +29,7 @@ public class Category implements Serializable {
 	private Character type;
 	private Set<Post> posts = new HashSet<Post>();
     private Set<Upload> uploads = new HashSet<Upload>();
+    private Set<Template> templates = new HashSet<Template>();
 	private Category parent;
 	private Set<Acl> acls = new HashSet<Acl>();
     private int numChildren;
@@ -69,7 +70,7 @@ public class Category implements Serializable {
 		this.type = type;
 	}
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "lwwcm_categories_posts", 
 			joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
 			inverseJoinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "post_id") })
@@ -89,7 +90,7 @@ public class Category implements Serializable {
 		this.posts.remove(post);		
 	}
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "lwwcm_categories_uploads",
             joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
             inverseJoinColumns = { @JoinColumn(name = "upload_id", referencedColumnName = "upload_id") })
@@ -99,14 +100,16 @@ public class Category implements Serializable {
     public void setUploads(Set<Upload> uploads) {
         this.uploads = uploads;
     }
-    public void add(Upload upload) {
-        if (upload == null) return;
-        if (uploads.contains(upload)) return;
-        uploads.add(upload);
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "lwwcm_categories_templates",
+            joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
+            inverseJoinColumns = { @JoinColumn(name = "template_id", referencedColumnName = "template_id") })
+    public Set<Template> getTemplates() {
+        return templates;
     }
-    public void remove(Upload upload) {
-        if (upload == null) return;
-        this.uploads.remove(upload);
+    public void setTemplates(Set<Template> templates) {
+        this.templates = templates;
     }
 
 	@ManyToOne

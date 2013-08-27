@@ -1,12 +1,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
-<%@include file="imports.jsp"%>
-<%@include file="urls.jsp"%>
+<%@include file="../imports.jsp"%>
+<%@include file="../urls.jsp"%>
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/category.js") %>"></script>
 <div class="container">
-    <%@include file="header.jsp"%>
-    <%@include file="actions.jsp"%>
+    <%@include file="../header.jsp"%>
+    <%@include file="../actions.jsp"%>
 
     <form id="${n}newCategoryForm" method="post" action="${newCategoryAction}">
         <div class="lwwcm-newcategory">

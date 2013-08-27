@@ -16,21 +16,31 @@
  */
 package org.gatein.lwwcm.portlet;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.Category;
+import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.portlet.util.ViewMetadata;
+import org.gatein.lwwcm.portlet.views.CategoriesActions;
+import org.gatein.lwwcm.portlet.views.TemplatesActions;
+import org.gatein.lwwcm.portlet.views.UploadsActions;
 import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
 import javax.portlet.*;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * GateIn WCM Editor Portlet.
+ * Implements a specific MVC pattern for portlets.
  *
  * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
@@ -41,24 +51,29 @@ public class EditorPortlet extends GenericPortlet {
     private PortalService portal;
 
     @Inject
-    private WcmService wcm;
+    private UploadsActions uploads;
+
+    @Inject
+    private CategoriesActions categories;
+
+    @Inject
+    private TemplatesActions templates;
 
     @Override
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         final String view = request.getParameter("view");
-        final String prefix = "/jsp/";
         String url = null;
 
         // Check user
         if (request.getUserPrincipal() == null || request.getUserPrincipal().getName() == null) {
-            url = prefix + "notaccess.jsp";
+            url = "/jsp/notaccess.jsp";
             request.setAttribute("userWcm", "anonymous");
         } else {
             try {
                 String user = request.getUserPrincipal().getName();
                 UserWcm userWcm = portal.getPortalUser(user);
                 if (!userWcm.getGroups().contains(Wcm.GROUPS.EDITOR)) {
-                    url = prefix + "notaccess.jsp";
+                    url = "/jsp/notaccess.jsp";
                     request.setAttribute("userWcm", userWcm);
                 }
             } catch (WcmException e) {
@@ -70,34 +85,34 @@ public class EditorPortlet extends GenericPortlet {
         // UserWcm is validated, checking controller variable on MVC pattern
         if (url == null) {
             if (view == null) {
-                url = prefix + "posts.jsp";
-            }
-            if (view != null && view.equals("posts"))  {
-                url = prefix + "posts.jsp";
-            }
-            if (view != null && view.equals("newpost")) {
-                url = prefix + "post.jsp";
-            }
-            if (view != null && view.equals("categories"))  {
-                url = prefix + "categories.jsp";
-            }
-            if (view != null && view.equals("newcategory")) {
-                url = prefix + "category.jsp";
-            }
-            if (view != null && view.equals("uploads"))  {
-                url = prefix + "uploads.jsp";
-            }
-            if (view != null && view.equals("newupload")) {
-                url = prefix + "upload.jsp";
-            }
-            if (view != null && view.equals("templates"))  {
-                url = prefix + "templates.jsp";
-            }
-            if (view != null && view.equals("newtemplate")) {
-                url = prefix + "template.jsp";
-            }
-            if (view != null && view.equals("editcategory")) {
-                url = prefix + "categoryEdit.jsp";
+                url = "/jsp/posts/posts.jsp";
+            } else {
+                if (view.equals(Wcm.VIEWS.POSTS))  {
+                    url = "/jsp/posts/posts.jsp";
+                } else if (view.equals(Wcm.VIEWS.NEW_POST)) {
+                    url = "/jsp/posts/post.jsp";
+                } else if (view.equals(Wcm.VIEWS.CATEGORIES))  {
+                    url = "/jsp/categories/categories.jsp";
+                } else if (view.equals(Wcm.VIEWS.NEW_CATEGORY)) {
+                    url = "/jsp/categories/category.jsp";
+                } else if (view.equals(Wcm.VIEWS.UPLOADS))  {
+                    url = "/jsp/uploads/uploads.jsp";
+                } else if (view.equals(Wcm.VIEWS.NEW_UPLOAD)) {
+                    url = "/jsp/uploads/upload.jsp";
+                } else if (view.equals(Wcm.VIEWS.TEMPLATES))  {
+                    url = "/jsp/templates/templates.jsp";
+                } else if (view.equals(Wcm.VIEWS.NEW_TEMPLATE)) {
+                    url = "/jsp/templates/template.jsp";
+                } else if (view.equals(Wcm.VIEWS.EDIT_CATEGORY)) {
+                    url = "/jsp/categories/categoryEdit.jsp";
+                } else if (view.equals(Wcm.VIEWS.EDIT_UPLOAD)) {
+                    url = "/jsp/uploads/uploadEdit.jsp";
+                } else if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
+                    url = "/jsp/templates/templateEdit.jsp";
+                } else {
+                   // View parameter wrong. Default view.
+                    url = "/jsp/posts/posts.jsp";
+                }
             }
         }
 
@@ -124,165 +139,106 @@ public class EditorPortlet extends GenericPortlet {
 
         // Actions
         if (action != null) {
-
-            // New category action
-            if (action.equals("newCategory")) {
-                // Get parameters
-                String newCategoryName = request.getParameter("newCategoryName");
-                String newCategoryType = request.getParameter("newCategoryType");
-                String newCategoryParent = request.getParameter("newCategoryParent");
-
-                Category newCategory = new Category(newCategoryName);
-                if (newCategoryType.equals("Category")) {
-                    newCategory.setType(Wcm.CATEGORIES.CATEGORY);
-                }
-                if (newCategoryType.equals("Tag")) {
-                    newCategory.setType(Wcm.CATEGORIES.TAG);
-                }
-                if (newCategoryType.equals("Folder")) {
-                    newCategory.setType(Wcm.CATEGORIES.FOLDER);
-                    if (!newCategoryParent.equals("-1")) {
-                        long parentId = -1;
-                        try {
-                            parentId = new Long(newCategoryParent).longValue();
-                        } catch (Exception ignored) { }
-                        if (parentId>-1) {
-                            try {
-                                Category parentCategory = wcm.findCategory(parentId, userWcm);
-                                newCategory.setParent(parentCategory);
-                            } catch (WcmException e) {
-                                log.warning("Error getting parentCategory.");
-                                e.printStackTrace();
-                                response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
-                            }
-                        }
-                    }
-                }
-                try {
-                    wcm.create(newCategory, userWcm);
-                    view = "categories";
-                } catch (Exception e) {
-                    log.warning("Error creating new category");
-                    e.printStackTrace();
-                    response.setRenderParameter("errorWcm", "Error creating new category " + e.toString());
-                }
+            if (action.equals(Wcm.ACTIONS.NEW_CATEGORY)) {
+                // New category action
+                view = categories.actionNewCategory(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_CATEGORY)) {
+                // Delete category action
+                view = categories.actionDeleteCategory(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.EDIT_CATEGORY)) {
+                // Edit category action
+                view = categories.actionEditCategory(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.NEW_UPLOAD)) {
+                // New upload action
+                view = uploads.actionNewUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.RIGHT_UPLOADS)) {
+                // Right page actions uploads
+                view = uploads.actionRightUploads(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.LEFT_UPLOADS)) {
+                // Left page actions uploads
+                view = uploads.actionLeftUploads(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.EDIT_UPLOAD)) {
+                // Edit upload action
+                view = uploads.actionEditUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_CATEGORY_UPLOAD)) {
+                // Add category upload action
+                view = uploads.actionAddCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_UPLOADS)) {
+                // Filter category uploads action
+                view = uploads.actionFilterCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_UPLOAD)) {
+                // Delete upload action
+                view = uploads.actionDeleteUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_SELECTED_UPLOAD)) {
+                // Delete selected upload action
+                view = uploads.actionDeleteSelectedUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_SELECTED_CATEGORY_UPLOAD))  {
+                // Add selected category upload action
+                view = uploads.actionAddSelectedCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.REMOVE_CATEGORY_UPLOAD))  {
+                // Remove category upload action
+                view = uploads.actionRemoveCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.NEW_TEMPLATE)) {
+                // New template action
+                view = templates.actionNewTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.RIGHT_TEMPLATES)) {
+                // Right page actions templates
+                view = templates.actionRightTemplates(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.LEFT_TEMPLATES)) {
+                // Left page actions templates
+                view = templates.actionLeftTemplates(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.EDIT_TEMPLATE)) {
+                // Edit template action
+                view = templates.actionEditTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_CATEGORY_TEMPLATE)) {
+                // Add category template action
+                view = templates.actionAddCategoryTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_TEMPLATES)) {
+                // Filter category templates action
+                view = templates.actionFilterCategoryTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_TEMPLATE)) {
+                // Delete template action
+                view = templates.actionDeleteTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_SELECTED_TEMPLATE)) {
+                // Delete selected
+                view = templates.actionDeleteSelectedTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_SELECTED_CATEGORY_TEMPLATE)) {
+                // Add selected category template action
+                view = templates.actionAddSelectedCategoryTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.REMOVE_CATEGORY_TEMPLATE)) {
+                // Remove category template action
+                view = templates.actionRemoveCategoryTemplate(request, response, userWcm);
+            } else {
+                // View parameter doesn't modified by actions
             }
-
-            // Delete category action
-            if (action.equals("deleteCategory")) {
-                String catId = request.getParameter("deletedCategoryId");
-                try {
-                    wcm.deleteCategory(new Long(catId), userWcm);
-                    view = "categories";
-                } catch (Exception e) {
-                    log.warning("Error deleting category");
-                    e.printStackTrace();
-                    response.setRenderParameter("errorWcm", "Error deleting category " + e.toString());
-                }
-            }
-
-            // Edit category action
-            if (action.equals("editCategory")) {
-                String catId = request.getParameter("editCategoryId");
-                String newCategoryName = request.getParameter("newCategoryName");
-                String newCategoryType = request.getParameter("newCategoryType");
-                String newCategoryParent = request.getParameter("newCategoryParent");
-
-                Category updateCategory = null;
-                try {
-                    updateCategory = wcm.findCategory(new Long(catId), userWcm);
-                    updateCategory.setName(newCategoryName);
-                    if (newCategoryType.equals("Category")) {
-                        updateCategory.setType(Wcm.CATEGORIES.CATEGORY);
-                        updateCategory.setParent(null);
-                    }
-                    if (newCategoryType.equals("Tag")) {
-                        updateCategory.setType(Wcm.CATEGORIES.TAG);
-                        updateCategory.setParent(null);
-                    }
-                    if (newCategoryType.equals("Folder")) {
-                        updateCategory.setType(Wcm.CATEGORIES.FOLDER);
-                        if (!newCategoryParent.equals("-1")) {
-                            long parentId = -1;
-                            try {
-                                parentId = new Long(newCategoryParent).longValue();
-                            } catch (Exception ignored) { }
-                            if (parentId>-1 && parentId != new Long(catId)) {
-                                try {
-                                    Category parentCategory = wcm.findCategory(parentId, userWcm);
-                                    updateCategory.setParent(parentCategory);
-                                } catch (WcmException e) {
-                                    log.warning("Error getting parentCategory.");
-                                    e.printStackTrace();
-                                    response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
-                                }
-                            }
-                        } else {
-                            updateCategory.setParent(null);
-                        }
-                    }
-                    wcm.update(updateCategory, userWcm);
-                    view = "categories";
-                } catch (Exception e) {
-                    log.warning("Error updating category");
-                    e.printStackTrace();
-                    response.setRenderParameter("errorWcm", "Error updating category " + e.toString());
-                }
-            }
-
-            if (action.equals("posts")) {
-                String event = request.getParameter("event");
-                String selected = request.getParameter("selected");
-                String page = request.getParameter("page");
-                log.info("Action postsActions with event: " + event + " selected: " + selected + " page: " + page);
-            }
-
         }
 
         // Views
         if (view != null) {
-            // Query list of categories
-            if (view.equals("categories")) {
-                List<Category> categories = null;
-                try {
-                    categories = wcm.findRootCategories(userWcm);
-                    // "list" variable will be global and it will be used to store all list from action phase to render phase
-                    // this way it can survive several invocation of third party portlets
-                    request.getPortletSession().setAttribute("list", categories);
-                } catch (WcmException cE) {
-                    log.warning("Error accessing categories.");
-                    cE.printStackTrace();
-                    response.setRenderParameter("errorWcm", "Error accessing categories: " + cE.toString());
-                }
+            if (view.equals(Wcm.VIEWS.CATEGORIES)) {
+                // Query list of categories
+                categories.viewCategories(request, response, userWcm);
+            } else if (view.equals(Wcm.VIEWS.NEW_CATEGORY)) {
+                // New category
+                categories.viewNewCategory(request, response, userWcm);
+            } else if (view.equals(Wcm.VIEWS.EDIT_CATEGORY)) {
+                // Query edit category
+                categories.viewEditCategory(request, response, userWcm);
+            } else if (view.equals(Wcm.VIEWS.UPLOADS)) {
+                // Query list of uploads
+                uploads.viewUploads(request, response, userWcm);
+            } else if (view.equals(Wcm.VIEWS.EDIT_UPLOAD)) {
+                // Query edit upload
+                uploads.viewEditUpload(request, response, userWcm);
+            } if (view.equals(Wcm.VIEWS.TEMPLATES)) {
+               // Query list of templates
+                templates.viewTemplates(request, response, userWcm);
+            } if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
+               // Query edit template
+                templates.viewEditTemplate(request, response, userWcm);
+            } else {
+                // No new action attached to view
             }
-
-            // New category
-            if (view.equals("newcategory")) {
-                List<Category> categories = null;
-                try {
-                    categories = wcm.findCategories(Wcm.CATEGORIES.FOLDER, userWcm);
-                } catch (WcmException e) {
-                    log.warning("Error accessing categories.");
-                    e.printStackTrace();
-                }
-                request.getPortletSession().setAttribute("categories", categories);
-            }
-
-            // Query edit category
-            if (view.equals("editcategory")) {
-                String editId = request.getParameter("editid");
-                try {
-                    Category category = wcm.findCategory(new Long(editId), userWcm);
-                    List<Category> categories = wcm.findCategories(Wcm.CATEGORIES.FOLDER, userWcm);
-                    request.getPortletSession().setAttribute("edit", category);
-                    request.getPortletSession().setAttribute("categories", categories);
-                } catch (WcmException cE) {
-                    log.warning("Error accessing categories.");
-                    cE.printStackTrace();
-                    response.setRenderParameter("errorWcm", "Error accessing categories: " + cE.toString());
-                }
-            }
-
             response.setRenderParameter("view", view);
         }
     }
@@ -304,24 +260,21 @@ public class EditorPortlet extends GenericPortlet {
         }
 
         String event = request.getParameter("event");
-
-        // Show children categories
-        if (event != null && event.equals("showCategoriesChildren")) {
-            String parentid = request.getParameter("parentid");
-            String namespace = request.getParameter("namespace");
-            List<Category> categories = null;
-            try {
-                categories = wcm.findChildren(new Long(parentid));
-            } catch (WcmException e) {
-                log.warning("Error accessing categories.");
-                e.printStackTrace();
+        if (event != null) {
+            String url = null;
+            if (event.equals(Wcm.EVENTS.SHOW_CATEGORIES_CHILDREN)) {
+                // Show children categories
+                url = categories.eventShowCategoriesChildren(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.DOWNLOAD_UPLOAD)) {
+                // Show download attached of Upload object
+                uploads.eventDownloadUpload(request, response, userWcm);
+            } else {
+                // No default view.
             }
-            request.setAttribute("categories", categories);
-            request.setAttribute("namespace", namespace);
-            request.setAttribute("parentid", parentid);
-            String url = "/jsp/categoriesChildren.jsp";
-            PortletRequestDispatcher prd = getPortletContext().getRequestDispatcher(url);
-            prd.include(request, response);
+            if (url != null) {
+                PortletRequestDispatcher prd = getPortletContext().getRequestDispatcher(url);
+                prd.include(request, response);
+            }
         }
     }
 }

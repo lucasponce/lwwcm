@@ -1,45 +1,112 @@
 <% // View URLs %>
-<portlet:actionURL var="posts">
-    <portlet:param name="view" value="posts" />
+<portlet:actionURL var="postsView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.POSTS %>" />
 </portlet:actionURL>
-<portlet:actionURL var="categories">
-    <portlet:param name="view" value="categories" />
+<portlet:actionURL var="categoriesView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.CATEGORIES %>" />
 </portlet:actionURL>
-<portlet:actionURL var="uploads">
-    <portlet:param name="view" value="uploads" />
+<portlet:actionURL var="uploadsView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.UPLOADS %>" />
 </portlet:actionURL>
-<portlet:actionURL var="templates">
-    <portlet:param name="view" value="templates" />
+<portlet:actionURL var="templatesView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.TEMPLATES %>" />
 </portlet:actionURL>
-<portlet:actionURL var="newpost">
-    <portlet:param name="view" value="newpost" />
+<portlet:actionURL var="newPostView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.NEW_POST %>" />
 </portlet:actionURL>
-<portlet:actionURL var="newcategory">
-    <portlet:param name="view" value="newcategory" />
+<portlet:actionURL var="newCategoryView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.NEW_CATEGORY %>" />
 </portlet:actionURL>
-<portlet:actionURL var="editcategory">
-    <portlet:param name="view" value="editcategory" />
+<portlet:actionURL var="newUploadView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.NEW_UPLOAD %>" />
 </portlet:actionURL>
-<portlet:actionURL var="newupload">
-    <portlet:param name="view" value="newupload" />
+<portlet:actionURL var="newTemplateView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.NEW_TEMPLATE %>" />
 </portlet:actionURL>
-<portlet:actionURL var="newtemplate">
-    <portlet:param name="view" value="newtemplate" />
+<portlet:actionURL var="editCategoryView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_CATEGORY %>" />
+</portlet:actionURL>
+<portlet:actionURL var="editUploadView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="editTemplateView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_TEMPLATE %>" />
 </portlet:actionURL>
 <% // Actions URLs %>
 <portlet:actionURL var="postsAction">
-    <portlet:param name="action" value="posts" />
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.POSTS %>" />
 </portlet:actionURL>
 <portlet:actionURL var="newCategoryAction">
-    <portlet:param name="action" value="newCategory" />
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_CATEGORY %>" />
 </portlet:actionURL>
 <portlet:actionURL var="deleteCategoryAction">
-    <portlet:param name="action" value="deleteCategory" />
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_CATEGORY %>" />
 </portlet:actionURL>
 <portlet:actionURL var="editCategoryAction">
-    <portlet:param name="action" value="editCategory" />
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.EDIT_CATEGORY %>" />
 </portlet:actionURL>
+<portlet:actionURL var="newUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="rightUploadsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.RIGHT_UPLOADS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="leftUploadsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.LEFT_UPLOADS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="editUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.EDIT_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addCategoryUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_CATEGORY_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="filterCategoryUploadsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_UPLOADS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deleteUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deleteSelectedUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_SELECTED_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addSelectedCategoryUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_SELECTED_CATEGORY_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="removeCategoryUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.REMOVE_CATEGORY_UPLOAD %>" />
+</portlet:actionURL>
+<portlet:actionURL var="newTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deleteSelectedTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_SELECTED_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addSelectedCategoryTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_SELECTED_CATEGORY_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="filterCategoryTemplatesAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_TEMPLATES %>" />
+</portlet:actionURL>
+<portlet:actionURL var="rightTemplatesAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.RIGHT_TEMPLATES %>" />
+</portlet:actionURL>
+<portlet:actionURL var="leftTemplatesAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.LEFT_TEMPLATES %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addCategoryTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_CATEGORY_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="removeCategoryTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.REMOVE_CATEGORY_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="editTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.EDIT_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deleteTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_TEMPLATE %>" />
+</portlet:actionURL>
+
 <% // Event URL %>
 <portlet:resourceURL var="showCategoriesChildrenEvent">
-    <portlet:param name="event" value="showCategoriesChildren" />
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_CATEGORIES_CHILDREN %>" />
 </portlet:resourceURL>

@@ -1,13 +1,11 @@
 package org.gatein.lwwcm.domain;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Template is a representation of the html fragment that wcm will use to render content.
@@ -15,6 +13,10 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "lwwcm_templates")
+@Cacheable
+@NamedQueries({
+        @NamedQuery(name = "listAllTemplates", query = "from Template t order by t.id")
+})
 public class Template implements Serializable {
 
 	private Long id;
@@ -22,8 +24,16 @@ public class Template implements Serializable {
 	private String name;
 	private String content;
 	private String locale;
-	
-	@Id @GeneratedValue
+    private Calendar created;
+    private Calendar modified;
+    private String user;
+    private Set<Category> categories = new HashSet<Category>();
+
+    public Template() {
+        this.created = Calendar.getInstance();
+    }
+
+    @Id @GeneratedValue
 	@Column(name = "template_id")	
 	public Long getId() {
 		return id;
@@ -64,8 +74,42 @@ public class Template implements Serializable {
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	
-	@Override
+
+    @Column(name = "template_created")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar getCreated() {
+        return created;
+    }
+    public void setCreated(Calendar created) {
+        this.created = created;
+    }
+
+    @Column(name = "template_modified")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar getModified() {
+        return modified;
+    }
+    public void setModified(Calendar modified) {
+        this.modified = modified;
+    }
+
+    @Column(name = "template_user")
+    public String getUser() {
+        return user;
+    }
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    @ManyToMany(mappedBy = "templates", cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
+    public Set<Category> getCategories() {
+        return categories;
+    }
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
+    @Override
 	public String toString() {
 		return "Template [id=" + id + ", type=" + type + ", name=" + name
 				+ ", content=" + content + ", locale=" + locale + "]";

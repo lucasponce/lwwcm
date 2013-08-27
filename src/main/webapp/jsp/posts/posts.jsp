@@ -1,9 +1,9 @@
-<%@include file="imports.jsp"%>
-<%@include file="urls.jsp"%>
+<%@include file="../imports.jsp"%>
+<%@include file="../urls.jsp"%>
 
 <div class="container">
-    <%@include file="header.jsp"%>
-    <%@include file="actions.jsp"%>
+    <%@include file="../header.jsp"%>
+    <%@include file="../actions.jsp"%>
     <%@include file="postsActions.jsp"%>
 
     <table class="lwwcm-posts" id="${n}_posts">

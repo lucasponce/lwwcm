@@ -1,12 +1,12 @@
-<c:set var="view" value="${renderRequest.getParameter('view')}" />
-<c:if test="${view == null}">
-    <c:set var="view" value="posts" />
-</c:if>
+<%
+        String view = renderRequest.getParameter("view");
+        if (view == null) view = Wcm.VIEWS.POSTS;
+%>
 <div class="lwwcm-header">
     <ul>
-        <li <c:if test="${view == 'posts' || view == 'newpost'}">class="selected"</c:if>><a href="${posts}">Posts</a></li>
-        <li <c:if test="${view == 'categories' || view == 'newcategory' || view == 'editcategory'}">class="selected"</c:if>><a href="${categories}">Categories</a></li>
-        <li <c:if test="${view == 'uploads' || view == 'newupload'}">class="selected"</c:if>><a href="${uploads}">Uploads</a></li>
-        <li <c:if test="${view == 'templates' || view == 'newtemplate'}">class="selected"</c:if>><a href="${templates}">Templates</a></li>
+        <li <% if (view.equals(Wcm.VIEWS.POSTS) || view.equals(Wcm.VIEWS.NEW_POST)) { %>class="selected" <% } %>><a href="${postsView}">Posts</a></li>
+        <li <% if (view.equals(Wcm.VIEWS.CATEGORIES) || view.equals(Wcm.VIEWS.NEW_CATEGORY) || view.equals(Wcm.VIEWS.EDIT_CATEGORY)) { %>class="selected" <% } %>><a href="${categoriesView}">Categories</a></li>
+        <li <% if (view.equals(Wcm.VIEWS.UPLOADS) || view.equals(Wcm.VIEWS.NEW_UPLOAD) || view.equals(Wcm.VIEWS.EDIT_UPLOAD)) { %>class="selected" <% } %>><a href="${uploadsView}">Uploads</a></li>
+        <li <% if (view.equals(Wcm.VIEWS.TEMPLATES) || view.equals(Wcm.VIEWS.NEW_TEMPLATE) || view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) { %>class="selected" <% } %>><a href="${templatesView}">Templates</a></li>
     </ul>
 </div>

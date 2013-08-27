@@ -85,6 +85,24 @@
       <version>2.5.4-GA</version>
       <scope>provided</scope>
     </dependency>
+    <!-- Note:
+            commons-fileupload is provided by GateIn.
+            In module.xml description we need to add dependency to commons-io module.
+
+            Example:
+
+              <dependencies>
+                [...]
+                <module name="org.apache.commons.io" />
+                [...]
+              </dependencies>
+    -->
+    <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.2.1</version>
+        <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <profiles>

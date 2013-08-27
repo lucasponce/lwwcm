@@ -12,3 +12,21 @@ function showUploadFile(namespace) {
     $(uploadId).click();
 }
 
+function saveNewUpload(namespace) {
+    var formId = "#" + namespace + "newUploadForm";
+    var uploadId = "#" + namespace + "uploadFile";
+
+    if ($(uploadId).val() == '') {
+        showMsg(namespace, 'Upload file cannot be empty');
+    } else {
+        $(formId).submit();
+    }
+}
+
+function saveUpdateUpload(namespace) {
+    var formId = "#" + namespace + "editUploadForm";
+    var uploadId = "#" + namespace + "uploadFile";
+
+    $(formId).submit();
+}
+

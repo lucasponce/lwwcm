@@ -2,7 +2,7 @@
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
 <%@ page import="static org.gatein.lwwcm.Wcm.*" %>
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
-<%@include file="urls.jsp"%>
+<%@include file="../urls.jsp"%>
 
 <%
     String namespace = (String)request.getAttribute("namespace");

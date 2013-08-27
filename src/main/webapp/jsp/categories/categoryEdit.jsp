@@ -1,13 +1,13 @@
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
 <%@ page import="org.gatein.lwwcm.Wcm" %>
 <%@ page import="java.util.List" %>
-<%@include file="imports.jsp"%>
-<%@include file="urls.jsp"%>
+<%@include file="../imports.jsp"%>
+<%@include file="../urls.jsp"%>
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/category.js") %>"></script>
 <div class="container">
-    <%@include file="header.jsp"%>
-    <%@include file="actions.jsp"%>
+    <%@include file="../header.jsp"%>
+    <%@include file="../actions.jsp"%>
 
     <%
         Category c = (Category) portletSession.getAttribute("edit");

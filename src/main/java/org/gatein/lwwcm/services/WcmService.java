@@ -7,11 +7,7 @@ import javax.ejb.Local;
 
 import org.gatein.lwwcm.WcmAuthorizationException;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Comment;
-import org.gatein.lwwcm.domain.Post;
-import org.gatein.lwwcm.domain.Upload;
-import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.domain.*;
 
 @Local
 public interface WcmService {
@@ -50,12 +46,25 @@ public interface WcmService {
 	void update(Upload upload, InputStream is, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void update(Upload upload, UserWcm user) throws WcmAuthorizationException, WcmException;
 	void delete(Upload upload, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void deleteUpload(Long id, UserWcm user) throws WcmAuthorizationException, WcmException;
     void add(Upload upload, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
     void remove(Upload upload, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
-    List<Upload> findUpload(String fileName, UserWcm user) throws WcmException;
+    void removeUploadCategory(Long uploadId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException;
+    List<Upload> findUploads(String fileName, UserWcm user) throws WcmException;
+    List<Upload> findUploads(UserWcm user) throws WcmException;
+    List<Upload> findUploads(Long categoryId, UserWcm user) throws WcmException;
+    Upload findUpload(Long id, UserWcm user) throws WcmException;
 	
-	/*
-	 * Relationship API.
-	 */
-	
+    /*
+     * Template API
+     */
+    void create(Template temp, UserWcm user) throws WcmAuthorizationException, WcmException;
+    List<Template> findTemplates(Long categoryId, UserWcm user) throws WcmException;
+    List<Template> findTemplates(UserWcm user) throws WcmException;
+    Template findTemplate(Long id, UserWcm user) throws WcmException;
+    void add(Template template, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void deleteTemplate(Long id, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void removeTemplateCategory(Long templateId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException;
+    void update(Template template, UserWcm user) throws WcmAuthorizationException, WcmException;
+
 }

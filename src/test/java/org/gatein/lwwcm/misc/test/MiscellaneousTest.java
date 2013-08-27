@@ -20,4 +20,5 @@ public class MiscellaneousTest {
 	public void getResourceAsStream() {
 		System.out.println( getClass().getClassLoader().getResource("test-persistence.xml") );
 	}
+
 }

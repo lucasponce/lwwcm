@@ -1,13 +1,13 @@
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
 <%@ page import="java.util.List" %>
 <%@ page import="static org.gatein.lwwcm.Wcm.*" %>
-<%@include file="imports.jsp"%>
-<%@include file="urls.jsp"%>
+<%@include file="../imports.jsp"%>
+<%@include file="../urls.jsp"%>
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories.js") %>"></script>
 <div class="container">
-    <%@include file="header.jsp"%>
-    <%@include file="actions.jsp"%>
+    <%@include file="../header.jsp"%>
+    <%@include file="../actions.jsp"%>
 
     <form id="${n}deleteCategoryForm" method="post" action="${deleteCategoryAction}">
         <input type="hidden" id="${n}deleteCategoryId" name="deletedCategoryId" />
@@ -35,7 +35,7 @@
         <li>
             <div id="${n}categoryId<%= c.getId()%>">
                 <div class="lwwcm-category-title"><span class="glyphicon glyphicon-<%= typeIcon %> margin-right lwwcm-<%= color%>"></span> <%= c.getName() %> [id: <%= c.getId() %>] <span class="lwwcm-category-type">(<%= type %>)</span></div>
-                <div class="lwwcm-category-actions"><a href="<%= editcategory %>&editid=<%= c.getId() %>">Edit</a> | <a href="javascript:deleteCategory('${n}', <%= c.getId() %>)">Delete</a>
+                <div class="lwwcm-category-actions"><a href="<%= editCategoryView %>&editid=<%= c.getId() %>">Edit</a> | <a href="javascript:deleteCategory('${n}', <%= c.getId() %>)">Delete</a>
                     <%
                         if (c.getNumChildren() > 0) {
                     %>
