@@ -31,7 +31,9 @@ import org.gatein.lwwcm.Wcm;
 @Table(name = "lwwcm_posts")
 @Cacheable
 @NamedQueries({
-		@NamedQuery(name = "listPostsName", query = "from Post p where p.name like :name")})
+		@NamedQuery(name = "listPostsName", query = "from Post p where p.title like :title"),
+        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.id"),
+})
 public class Post implements Serializable {	
 
 	private Long id;
@@ -42,9 +44,7 @@ public class Post implements Serializable {
 	private String title;
 	private String excerpt;
 	private Character postStatus;
-	private String name;
 	private Calendar modified;
-	private String group;
 	private String locale;
 	private Character commentsStatus;
 	private Set<Comment> comments = new HashSet<Comment>();
@@ -59,9 +59,9 @@ public class Post implements Serializable {
 		this.commentsStatus = Wcm.COMMENTS.ANONYMOUS;
 	}
 	
-	public Post(String name) {
+	public Post(String title) {
 		this();			
-		this.name = name;
+		this.title = title;
 	}
 	
 	public Post(String name, String locale) {
@@ -136,14 +136,6 @@ public class Post implements Serializable {
 		this.postStatus = postStatus;
 	}
 	
-	@Column(name = "post_name")
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	@Column(name = "post_modified")
 	@Temporal(TemporalType.TIMESTAMP)	
 	public Calendar getModified() {
@@ -151,14 +143,6 @@ public class Post implements Serializable {
 	}
 	public void setModified(Calendar modified) {
 		this.modified = modified;
-	}
-	
-	@Column(name = "post_group")
-	public String getGroup() {
-		return group;
-	}
-	public void setGroup(String group) {
-		this.group = group;
 	}
 
 	@Column(name = "post_locale")
@@ -228,7 +212,7 @@ public class Post implements Serializable {
 	@Override
 	public String toString() {
 		return "Post [id=" + id + ", author=" + author + ", created=" + created
-				+ ", postStatus=" + postStatus + ", name=" + name
+				+ ", postStatus=" + postStatus + ", title=" + title
 				+ ", modified=" + modified + "]";
 	}
 
@@ -240,12 +224,10 @@ public class Post implements Serializable {
 		result = prime * result + ((content == null) ? 0 : content.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result + ((excerpt == null) ? 0 : excerpt.hashCode());
-		result = prime * result + ((group == null) ? 0 : group.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
 		result = prime * result
 				+ ((modified == null) ? 0 : modified.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((postStatus == null) ? 0 : postStatus.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
@@ -281,11 +263,6 @@ public class Post implements Serializable {
 				return false;
 		} else if (!excerpt.equals(other.excerpt))
 			return false;
-		if (group == null) {
-			if (other.group != null)
-				return false;
-		} else if (!group.equals(other.group))
-			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -300,11 +277,6 @@ public class Post implements Serializable {
 			if (other.modified != null)
 				return false;
 		} else if (!modified.equals(other.modified))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
 			return false;
 		if (postStatus == null) {
 			if (other.postStatus != null)

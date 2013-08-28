@@ -104,21 +104,6 @@ public class WcmServiceImpl implements WcmService {
 			throw new WcmException(e);
 		}			
 	}
-
-	@Override
-	public void delete(Category cat, UserWcm user)
-			throws WcmAuthorizationException, WcmException {
-		if (cat == null || user == null) return;
-		if (!canWrite(cat.getAcls(), user)) {
-			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Category " + cat);
-		}		
-		try {
-			Category attached = em.find(Category.class, cat.getId());
-			deleteOnCascade(attached);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}			
-	}	
 	
 	private void deleteOnCascade(Category cat) throws Exception {
 		List<Category> children = findChildren(cat);
@@ -132,23 +117,17 @@ public class WcmServiceImpl implements WcmService {
 
     @Override
     public void deleteCategory(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
-        Category cat = findCategory(id, user);
-        delete(cat, user);
+        if (id == null || user == null) return;
+        Category cat = em.find(Category.class, id);
+        if (!canWrite(cat.getAcls(), user)) {
+            throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Category " + cat);
+        }
+        try {
+            deleteOnCascade(cat);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
     }
-
-    @Override
-	public List<Category> findCategories(String name, UserWcm user)
-			throws WcmException {
-		if (user == null) return null;
-		try {
-			List<Category> result = em.createNamedQuery("listCategoriesName", Category.class)
-					.setParameter("name", name)
-					.getResultList();
-			return aclFilter(result, user);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}
-	}
 
     @Override
     public List<Category> findCategories(UserWcm user) throws WcmException {
@@ -294,9 +273,12 @@ public class WcmServiceImpl implements WcmService {
 		}
 		// cat.add(post); // Category -> Posts is lazy, findPosts(Category) is used for that instead to browse into the relationship
 		post.add(cat);
-		try {			
-			em.merge(post);
-			em.merge(cat);
+		try {
+			post = em.merge(post);
+			cat = em.merge(cat);
+            if (!cat.getPosts().contains(post))
+                cat.getPosts().add(post);
+            em.flush();
 		} catch (Exception e) {
 			throw new WcmException(e);
 		}			
@@ -321,43 +303,69 @@ public class WcmServiceImpl implements WcmService {
 		}			
 	}
 
-	@Override
-	public void delete(Post post, UserWcm user)
-			throws WcmAuthorizationException, WcmException {
-		if (post == null || user == null || post.getId() == null) return;
-		if (!canWrite(post.getAcls(), user)) {
-			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + post);
-		}		
-		try {
-			post = em.getReference(Post.class, post.getId());
-			for (Category cat : post.getCategories()) {
-				cat.remove(post);
-				post.remove(cat);
-				em.merge(cat);
-			}
-			
-			PostHistory postVersion = createVersion(post);
-			postVersion.setDeleted(Calendar.getInstance());
-			em.persist(postVersion);
-			
-			em.remove(post);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}	
-	}
+    @Override
+    public void deletePost(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
+        if (id == null || user == null) return;
+        Post post = em.getReference(Post.class, id);
+        if (!canWrite(post.getAcls(), user)) {
+            throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + post);
+        }
+        try {
+            for (Category cat : post.getCategories()) {
+                cat.remove(post);
+                post.remove(cat);
+                em.merge(cat);
+            }
+            PostHistory postVersion = createVersion(post);
+            postVersion.setDeleted(Calendar.getInstance());
+            em.persist(postVersion);
+            em.remove(post);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
 
-	@Override
-	public List<Post> findPosts(String name, UserWcm user) throws WcmException {
-		if (name == null || user == null) return null;
-		try {
-			List<Post> result = em.createNamedQuery("listPostsName", Post.class)
-					.setParameter("name", name)
-					.getResultList();			
-			return aclFilter(result, user);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}
-	}	
+    @Override
+    public Post findPost(Long id, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (id == null) return null;
+        try {
+            Post p = em.find(Post.class, id);
+            if (p.getAcls() != null) {
+                if (canRead(p.getAcls(), user)) return p;
+                else return null;
+            }
+            return p;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public List<Post> findPosts(UserWcm user) throws WcmException {
+        if (user == null) return null;
+        try {
+            List<Post> result = em.createNamedQuery("listAllPosts", Post.class)
+                    .getResultList();
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public List<Post> findPosts(Long categoryId, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (user == null) return null;
+        try {
+            Category cat = em.find(Category.class, categoryId);
+            if (cat == null) return null;
+            List<Post> result = new ArrayList<Post>(cat.getPosts());
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
 
 	private PostHistory createVersion(Post post) {
 		if (post == null || post.getId() == null || post.getVersion() == null) return null;		
@@ -366,11 +374,9 @@ public class WcmServiceImpl implements WcmService {
 		copy.setContent(post.getContent());
 		copy.setCreated(post.getCreated());
 		copy.setExcerpt(post.getExcerpt());
-		copy.setGroup(post.getGroup());
 		copy.setId(post.getId());
 		copy.setLocale(post.getLocale());
 		copy.setModified(post.getModified());
-		copy.setName(post.getName());
 		copy.setPostStatus(post.getPostStatus());
 		copy.setTitle(post.getTitle());
 		copy.setVersion(post.getVersion());
@@ -412,23 +418,23 @@ public class WcmServiceImpl implements WcmService {
 		}		
 	}
 
-	@Override
-	public void remove(Post post, Category cat, UserWcm user)
-			throws WcmAuthorizationException, WcmException {
-		if (post == null || cat == null || post.getId() == null || cat.getId() == null) return;
-		if (!post.getCategories().contains(cat)) return;
-		if (!canWrite(post.getAcls(), user)) {
-			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + post);
-		}
-		post.remove(cat);
-		cat.remove(post);
-		try {
-			em.merge(cat);
-			em.merge(post);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}		
-	}
+    @Override
+    public void removePostCategory(Long postId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException {
+        if (postId == null || catId == null || user == null) return;
+        Post post = em.find(Post.class, postId);
+        if (!canWrite(post.getAcls(), user)) {
+            throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + post);
+        }
+        try {
+            Category cat = em.find(Category.class, catId);
+            cat.getPosts().remove(post);
+            post.getCategories().remove(cat);
+            em.merge(cat);
+            em.merge(post);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
 
 	@Override
 	public void create(Upload upload, InputStream is, UserWcm user)
@@ -578,20 +584,6 @@ public class WcmServiceImpl implements WcmService {
     }
 
     @Override
-	public List<Upload> findUploads(String fileName, UserWcm user)
-			throws WcmException {
-		if (fileName == null || user == null) return null;
-		try {
-			List<Upload> result = em.createNamedQuery("listUploadsFileName", Upload.class)
-					.setParameter("fileName", fileName)
-					.getResultList();			
-			return aclFilter(result, user);
-		} catch (Exception e) {
-			throw new WcmException(e);
-		}
-	}
-
-    @Override
     public List<Upload> findUploads(UserWcm user) throws WcmException {
         if (user == null) return null;
         try {
@@ -617,24 +609,6 @@ public class WcmServiceImpl implements WcmService {
             if (!cat.getUploads().contains(upload))
                 cat.getUploads().add(upload);
             em.flush();
-        } catch (Exception e) {
-            throw new WcmException(e);
-        }
-    }
-
-    @Override
-    public void remove(Upload upload, Category cat, UserWcm user) throws WcmAuthorizationException, WcmException {
-        if (upload == null || cat == null || upload.getId() == null || cat.getId() == null) return;
-        if (!upload.getCategories().contains(cat)) return;
-        if (!canWrite(upload.getAcls(), user)) {
-            throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Upload " + upload);
-        }
-        try {
-
-            cat.getUploads().remove(upload);
-            upload.getCategories().remove(cat);
-            em.merge(cat);
-            em.merge(upload);
         } catch (Exception e) {
             throw new WcmException(e);
         }

@@ -3,13 +3,7 @@ package org.gatein.lwwcm.domain;
 import java.io.Serializable;
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  * PostHistory will store older posts.
@@ -68,7 +62,8 @@ public class PostHistory implements Serializable {
 	public void setCreated(Calendar created) {
 		this.created = created;
 	}
-	
+
+    @Lob
 	@Column(name = "post_content")
 	public String getContent() {
 		return content;

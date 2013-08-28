@@ -127,10 +127,10 @@ public class TemplatesActions {
     }
 
     public String actionDeleteTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
-        String deleteUploadId = request.getParameter("deleteTemplateId");
-        Long uploadId = new Long(deleteUploadId);
+        String deleteTemplateId = request.getParameter("deleteTemplateId");
+        Long templateId = new Long(deleteTemplateId);
         try {
-            wcm.deleteTemplate(uploadId, userWcm);
+            wcm.deleteTemplate(templateId, userWcm);
             return Wcm.VIEWS.TEMPLATES;
         } catch(Exception e) {
             log.warning("Error deleting template.");

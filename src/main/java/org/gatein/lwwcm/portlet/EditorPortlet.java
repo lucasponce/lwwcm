@@ -27,6 +27,7 @@ import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.portlet.views.CategoriesActions;
+import org.gatein.lwwcm.portlet.views.PostsActions;
 import org.gatein.lwwcm.portlet.views.TemplatesActions;
 import org.gatein.lwwcm.portlet.views.UploadsActions;
 import org.gatein.lwwcm.services.PortalService;
@@ -59,11 +60,15 @@ public class EditorPortlet extends GenericPortlet {
     @Inject
     private TemplatesActions templates;
 
+    @Inject
+    private PostsActions posts;
+
     @Override
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         final String view = request.getParameter("view");
         String url = null;
 
+        UserWcm userWcm = null;
         // Check user
         if (request.getUserPrincipal() == null || request.getUserPrincipal().getName() == null) {
             url = "/jsp/notaccess.jsp";
@@ -71,7 +76,7 @@ public class EditorPortlet extends GenericPortlet {
         } else {
             try {
                 String user = request.getUserPrincipal().getName();
-                UserWcm userWcm = portal.getPortalUser(user);
+                userWcm = portal.getPortalUser(user);
                 if (!userWcm.getGroups().contains(Wcm.GROUPS.EDITOR)) {
                     url = "/jsp/notaccess.jsp";
                     request.setAttribute("userWcm", userWcm);
@@ -85,6 +90,10 @@ public class EditorPortlet extends GenericPortlet {
         // UserWcm is validated, checking controller variable on MVC pattern
         if (url == null) {
             if (view == null) {
+                // First access shows default post list
+                if (request.getPortletSession().getAttribute("list") == null) {
+                    posts.viewInitPosts(request, response, userWcm);
+                }
                 url = "/jsp/posts/posts.jsp";
             } else {
                 if (view.equals(Wcm.VIEWS.POSTS))  {
@@ -109,6 +118,8 @@ public class EditorPortlet extends GenericPortlet {
                     url = "/jsp/uploads/uploadEdit.jsp";
                 } else if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
                     url = "/jsp/templates/templateEdit.jsp";
+                } else if (view.equals(Wcm.VIEWS.EDIT_POST)) {
+                    url = "/jsp/posts/postEdit.jsp";
                 } else {
                    // View parameter wrong. Default view.
                     url = "/jsp/posts/posts.jsp";
@@ -208,6 +219,42 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.REMOVE_CATEGORY_TEMPLATE)) {
                 // Remove category template action
                 view = templates.actionRemoveCategoryTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.NEW_POST)) {
+                // New post action
+                view = posts.actionNewPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.RIGHT_POSTS)) {
+                // Right page actions posts
+                view = posts.actionRightPosts(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.LEFT_POSTS)) {
+                // Left page actions posts
+                view = posts.actionLeftPosts(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.EDIT_POST)) {
+                // Edit post action
+                view = posts.actionEditPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_CATEGORY_POST)) {
+                // Add category post action
+                view = posts.actionAddCategoryPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_POSTS)) {
+                // Filter category posts action
+                view = posts.actionFilterCategoryPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_POST)) {
+                // Delete post action
+                view = posts.actionDeletePost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.DELETE_SELECTED_POST)) {
+                // Delete selected post action
+                view = posts.actionDeleteSelectedPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.ADD_SELECTED_CATEGORY_POST))  {
+                // Add selected category post action
+                view = posts.actionAddSelectedCategoryPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.REMOVE_CATEGORY_POST))  {
+                // Remove category post action
+                view = posts.actionRemoveCategoryPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.PUBLISH_POST))  {
+                // Publish post action
+                view = posts.actionPublishPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.PUBLISH_POSTS))  {
+                // Publish post action
+                view = posts.actionPublishPosts(request, response, userWcm);
             } else {
                 // View parameter doesn't modified by actions
             }
@@ -236,6 +283,12 @@ public class EditorPortlet extends GenericPortlet {
             } if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
                // Query edit template
                 templates.viewEditTemplate(request, response, userWcm);
+            } if (view.equals(Wcm.VIEWS.POSTS)) {
+                // Query list of posts
+                posts.viewPosts(request, response, userWcm);
+            } if (view.equals(Wcm.VIEWS.EDIT_POST)) {
+                // Query edit post
+                posts.viewEditPost(request, response, userWcm);
             } else {
                 // No new action attached to view
             }

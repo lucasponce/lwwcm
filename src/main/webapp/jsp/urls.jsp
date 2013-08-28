@@ -32,9 +32,48 @@
 <portlet:actionURL var="editTemplateView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_TEMPLATE %>" />
 </portlet:actionURL>
+<portlet:actionURL var="editPostView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_POST %>" />
+</portlet:actionURL>
 <% // Actions URLs %>
 <portlet:actionURL var="postsAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.POSTS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="newPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="editPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.EDIT_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deletePostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="publishPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.PUBLISH_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="publishPostsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.PUBLISH_POSTS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="removeCategoryPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.REMOVE_CATEGORY_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="deleteSelectedPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_SELECTED_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addSelectedCategoryPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_SELECTED_CATEGORY_POST %>" />
+</portlet:actionURL>
+<portlet:actionURL var="filterCategoryPostsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_POSTS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="rightPostsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.RIGHT_POSTS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="leftPostsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.LEFT_POSTS %>" />
+</portlet:actionURL>
+<portlet:actionURL var="addCategoryPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_CATEGORY_POST %>" />
 </portlet:actionURL>
 <portlet:actionURL var="newCategoryAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_CATEGORY %>" />
@@ -105,7 +144,6 @@
 <portlet:actionURL var="deleteTemplateAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_TEMPLATE %>" />
 </portlet:actionURL>
-
 <% // Event URL %>
 <portlet:resourceURL var="showCategoriesChildrenEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_CATEGORIES_CHILDREN %>" />

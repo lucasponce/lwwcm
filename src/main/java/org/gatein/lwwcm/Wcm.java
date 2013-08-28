@@ -26,8 +26,7 @@ public interface Wcm {
 	}
 	
 	interface POSTS {
-		static final Character PUBLIC = 'P';
-		static final Character PRIVATE = 'V';
+		static final Character PUBLISHED = 'P';
 		static final Character DRAFT = 'D';
 	}
 	
@@ -69,6 +68,7 @@ public interface Wcm {
         static final String EDIT_CATEGORY = "editcategory";
         static final String EDIT_UPLOAD = "editupload";
         static final String EDIT_TEMPLATE = "edittemplate";
+        static final String EDIT_POST = "editpost";
     }
 
     interface ACTIONS {
@@ -96,12 +96,23 @@ public interface Wcm {
         static final String REMOVE_CATEGORY_TEMPLATE = "removecategorytemplate";
         static final String EDIT_TEMPLATE = "edittemplate";
         static final String DELETE_TEMPLATE = "deletetemplate";
+        static final String NEW_POST = "newpost";
+        static final String RIGHT_POSTS = "rightposts";
+        static final String LEFT_POSTS = "leftposts";
+        static final String EDIT_POST = "editpost";
+        static final String ADD_CATEGORY_POST = "addcategorypost";
+        static final String FILTER_CATEGORY_POSTS = "filtercategoryposts";
+        static final String DELETE_POST = "deletepost";
+        static final String DELETE_SELECTED_POST = "deleteselectedpost";
+        static final String ADD_SELECTED_CATEGORY_POST = "addselectedcategorypost";
+        static final String REMOVE_CATEGORY_POST = "removecategorypost";
+        static final String PUBLISH_POST = "publishpost";
+        static final String PUBLISH_POSTS = "draftpost";
     }
 
     interface EVENTS {
         static final String SHOW_CATEGORIES_CHILDREN = "showcategorieschildren";
         static final String DOWNLOAD_UPLOAD = "downloadupload";
-        static final String DOWNLOAD_TEMPLATE = "downloadtemplate";
     }
 
 
