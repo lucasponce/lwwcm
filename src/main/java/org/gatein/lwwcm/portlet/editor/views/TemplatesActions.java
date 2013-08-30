@@ -1,14 +1,9 @@
-package org.gatein.lwwcm.portlet.views;
+package org.gatein.lwwcm.portlet.editor.views;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.Category;
 import org.gatein.lwwcm.domain.Template;
-import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.services.WcmService;
@@ -16,7 +11,6 @@ import org.gatein.lwwcm.services.WcmService;
 import javax.inject.Inject;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 

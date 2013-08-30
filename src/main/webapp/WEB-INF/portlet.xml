@@ -19,10 +19,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/org.gatein.lwwcm.portlet/org.gatein.lwwcm.portlet-app_2_0.xsd">
     <portlet>
-        <description>LW WCM Editor</description>
+        <description>LightWeight WCM Editor</description>
         <portlet-name>WcmEditor</portlet-name>
-        <display-name>LW WCM Editor</display-name>
-        <portlet-class>org.gatein.lwwcm.portlet.EditorPortlet</portlet-class>
+        <display-name>LightWeight WCM Editor</display-name>
+        <portlet-class>org.gatein.lwwcm.portlet.editor.EditorPortlet</portlet-class>
 
         <supports>
             <mime-type>text/html</mime-type>
@@ -31,9 +31,31 @@
         <supported-locale>en</supported-locale>
         <resource-bundle>locale.portlet.wcm.editor</resource-bundle>
         <portlet-info>
-            <title>LW WCM Editor</title>
+            <title>LightWeight WCM Editor</title>
             <short-title>LW WCM Editor</short-title>
             <keywords>GateIn WCM</keywords>
         </portlet-info>
     </portlet>
+
+    <portlet>
+        <description>LightWeight WCM Content</description>
+        <portlet-name>WcmContent</portlet-name>
+        <display-name>LightWeight WCM Content</display-name>
+        <portlet-class>org.gatein.lwwcm.portlet.content.ContentPortlet</portlet-class>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>locale.portlet.wcm.editor</resource-bundle>
+        <portlet-info>
+            <title>LightWeight WCM Content</title>
+            <short-title>LW WCM Content</short-title>
+            <keywords>GateIn WCM</keywords>
+        </portlet-info>
+    </portlet>
+
+
 </portlet-app>

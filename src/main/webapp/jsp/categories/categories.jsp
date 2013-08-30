@@ -4,7 +4,7 @@
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories/categories.js") %>"></script>
 <div class="container">
     <%@include file="../header.jsp"%>
     <%@include file="../actions.jsp"%>

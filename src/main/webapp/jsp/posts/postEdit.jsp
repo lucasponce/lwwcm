@@ -2,7 +2,7 @@
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/post.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/posts/post.js") %>"></script>
 <div class="container">
     <%@include file="../header.jsp"%>
     <%@include file="../actions.jsp"%>

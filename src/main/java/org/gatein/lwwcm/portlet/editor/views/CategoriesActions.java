@@ -1,4 +1,4 @@
-package org.gatein.lwwcm.portlet.views;
+package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;

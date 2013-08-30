@@ -1,7 +1,7 @@
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/upload.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/uploads/upload.js") %>"></script>
 <div class="container">
     <%@include file="../header.jsp"%>
     <%@include file="../actions.jsp"%>

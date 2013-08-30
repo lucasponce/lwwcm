@@ -1,5 +1,5 @@
 <%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/postsActions.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/posts/postsActions.js") %>"></script>
 <div class="lwwcm-posts-actions">
     <div class="lwwcm-checkbox left">
         <input type="checkbox" value="0" id="${n}selectAll" name="selectAll" onchange="selectAllPosts('${n}')" />

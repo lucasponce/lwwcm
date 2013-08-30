@@ -115,5 +115,21 @@ public interface Wcm {
         static final String DOWNLOAD_UPLOAD = "downloadupload";
     }
 
+    interface CONFIG {
+        interface ACTIONS {
+            static final String SAVE_CONFIGURATION = "changetemplate";
+
+        }
+
+        interface VIEWS {
+        }
+
+        interface EVENTS {
+            static final String CHANGE_CHOOSE_CONTENT = "changechoosecontent";
+            static final String NEW_CONTENT_ATTACHED = "newcontentattached";
+            static final String DELETE_CONTENT_ATTACHED = "deletecontentattached";
+        }
+    }
+
 
 }

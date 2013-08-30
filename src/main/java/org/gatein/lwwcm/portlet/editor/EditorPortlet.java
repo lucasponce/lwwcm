@@ -14,29 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gatein.lwwcm.portlet;
+package org.gatein.lwwcm.portlet.editor;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
-import org.gatein.lwwcm.portlet.util.ViewMetadata;
-import org.gatein.lwwcm.portlet.views.CategoriesActions;
-import org.gatein.lwwcm.portlet.views.PostsActions;
-import org.gatein.lwwcm.portlet.views.TemplatesActions;
-import org.gatein.lwwcm.portlet.views.UploadsActions;
+import org.gatein.lwwcm.portlet.editor.views.CategoriesActions;
+import org.gatein.lwwcm.portlet.editor.views.PostsActions;
+import org.gatein.lwwcm.portlet.editor.views.TemplatesActions;
+import org.gatein.lwwcm.portlet.editor.views.UploadsActions;
 import org.gatein.lwwcm.services.PortalService;
-import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
 import javax.portlet.*;
 import java.io.*;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**

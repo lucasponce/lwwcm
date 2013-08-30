@@ -366,6 +366,89 @@ a.lwwcm-delete-category:hover {
     overflow: hidden;
 }
 
+/* Content configuration
+======================== */
+.lwwcm-config-form {
+    display: inline-block;
+}
+.lwwcm-config {
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    border-bottom: 1px solid #ddd;
+}
+.lwwcm-config-new {
+    margin: 5px 5px;
+    padding: 5px 5px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+.lwwcm-config-template {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-right: 50px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    width: 410px;
+    overflow: hidden;
+}
+
+.lwwcm-config-template-input {
+    width:448px !important;
+}
+
+.lwwcm-config-type {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-right: 10px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    width: 110px;
+    overflow: hidden;
+}
+
+.lwwcm-config-type-input {
+    width:148px !important;
+}
+
+.lwwcm-config-margin {
+    margin-right: 70px !important;
+}
+
+.lwwcm-config-ids {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-right: 60px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    width: 410px;
+    overflow: hidden;
+}
+
+.lwwcm-config-ids-input {
+    width:448px !important;
+}
+
+.lwwcm-attached {
+    margin: 5px 5px;
+    padding: 0px 0px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+.lwwcm-attached ul {
+    margin: 0 10px;
+    list-style: none;
+    padding: 5px 0px;
+}
+.lwwcm-attached li {
+    margin-right: 20px;
+    padding: 3px 5px;
+    list-style-type: none;
+}
+.lwwcm-attached a {
+    font-size: 0.8em;
+}
 
 /* Buttons
 ========== */

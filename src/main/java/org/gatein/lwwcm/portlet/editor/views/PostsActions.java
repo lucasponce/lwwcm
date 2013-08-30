@@ -1,10 +1,9 @@
-package org.gatein.lwwcm.portlet.views;
+package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.Category;
 import org.gatein.lwwcm.domain.Post;
-import org.gatein.lwwcm.domain.Template;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.services.WcmService;
