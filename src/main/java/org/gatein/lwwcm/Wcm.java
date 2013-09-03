@@ -5,10 +5,12 @@ package org.gatein.lwwcm;
  * Global interface with wcm constants.
  */
 public interface Wcm {
+
+    static final String CONFIGURATION_FILE = "lwwcm.properties";
 	
 	interface GROUPS {
 		static final String ADMINISTRATORS = "/platform/administrators";
-        static final String EDITOR = "/wcm/editor";
+        static final String EDITOR = (System.getProperty("lwwcm.groups.editor") == null ? "/wcm/editor" : System.getProperty("lwwcm.groups.editor"));
 		static final String ALL = "*";
 	}
 	
@@ -43,11 +45,11 @@ public interface Wcm {
 	}
 	
 	interface UPLOADS {
-		static final String FOLDER = "gatein.lwwcm.uploads.folder";
-		static final String DEFAULT = "/tmp/lwwcm";
-        static final String TEMP_DIR = "/tmp";
-		static final int LENGTH_BUFFER = 16384;
-        static final int MAX_FILE_SIZE = 5242880;   // 5 Mb as default max size for file upload
+		static final String FOLDER = "lwwcm.uploads.folder";
+		static final String DEFAULT = "jboss.server.data.dir";
+        static final String TMP_DIR = "java.io.tmpdir";
+		static final int LENGTH_BUFFER = (System.getProperty("lwwcm.uploads.length_buffer") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.length_buffer")));
+        static final int MAX_FILE_SIZE = (System.getProperty("lwwcm.uploads.max_file_size") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.max_file_size"))); // 5 Mb as default max size for file upload
 	}
 
     interface TEMPLATES {
@@ -56,7 +58,7 @@ public interface Wcm {
     }
 
     interface VIEWS {
-        static int MAX_PER_PAGE = 3;
+        static final int MAX_PER_PAGE = (System.getProperty("lwwcm.views.max_per_page") == null ? 3 : new Integer(System.getProperty("lwwcm.views.max_per_page")));
         static final String POSTS = "posts";
         static final String CATEGORIES = "categories";
         static final String UPLOADS = "uploads";
@@ -118,7 +120,6 @@ public interface Wcm {
     interface CONFIG {
         interface ACTIONS {
             static final String SAVE_CONFIGURATION = "changetemplate";
-
         }
 
         interface VIEWS {

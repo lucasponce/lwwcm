@@ -34,7 +34,8 @@ public class UploadsActions {
     private WcmService wcm;
 
     public String actionNewUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
-        FileItemFactory factory = new DiskFileItemFactory(Wcm.UPLOADS.MAX_FILE_SIZE, new File(Wcm.UPLOADS.TEMP_DIR));
+        String tmpDir = System.getProperty(Wcm.UPLOADS.TMP_DIR);
+        FileItemFactory factory = new DiskFileItemFactory(Wcm.UPLOADS.MAX_FILE_SIZE, new File(tmpDir));
         PortletFileUpload upload = new PortletFileUpload(factory);
         try {
             List<FileItem> items = upload.parseRequest(request);
@@ -76,7 +77,8 @@ public class UploadsActions {
     }
 
     public String actionEditUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
-        FileItemFactory factory = new DiskFileItemFactory(Wcm.UPLOADS.MAX_FILE_SIZE, new File(Wcm.UPLOADS.TEMP_DIR));
+        String tmpDir = System.getProperty(Wcm.UPLOADS.TMP_DIR);
+        FileItemFactory factory = new DiskFileItemFactory(Wcm.UPLOADS.MAX_FILE_SIZE, new File(tmpDir));
         PortletFileUpload upload = new PortletFileUpload(factory);
         try {
             List<FileItem> items = upload.parseRequest(request);
@@ -316,7 +318,7 @@ public class UploadsActions {
         String fullPath;
 
         if (System.getProperty(Wcm.UPLOADS.FOLDER) == null) {
-            dirPath = Wcm.UPLOADS.DEFAULT;
+            dirPath = System.getProperty(Wcm.UPLOADS.DEFAULT) + "/lwwcm/uploads";
         } else {
             dirPath = System.getProperty(Wcm.UPLOADS.FOLDER);
         }
