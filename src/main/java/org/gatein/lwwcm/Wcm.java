@@ -84,6 +84,7 @@ public interface Wcm {
         static final String EDIT_UPLOAD = "editupload";
         static final String ADD_CATEGORY_UPLOAD = "addcategoryupload";
         static final String FILTER_CATEGORY_UPLOADS = "filtercategoryuploads";
+        static final String FILTER_NAME_UPLOADS = "filternameuploads";
         static final String DELETE_UPLOAD = "deleteupload";
         static final String DELETE_SELECTED_UPLOAD = "deleteselectedupload";
         static final String ADD_SELECTED_CATEGORY_UPLOAD = "addselectedcategoryupload";
@@ -92,6 +93,7 @@ public interface Wcm {
         static final String DELETE_SELECTED_TEMPLATE = "deleteselectedtemplate";
         static final String ADD_SELECTED_CATEGORY_TEMPLATE = "addselectedcategorytemplate";
         static final String FILTER_CATEGORY_TEMPLATES = "filtercategorytemplates";
+        static final String FILTER_NAME_TEMPLATES = "filternametemplates";
         static final String RIGHT_TEMPLATES = "righttemplates";
         static final String LEFT_TEMPLATES = "lefttemplates";
         static final String ADD_CATEGORY_TEMPLATE = "addcategorytemplate";
@@ -104,6 +106,7 @@ public interface Wcm {
         static final String EDIT_POST = "editpost";
         static final String ADD_CATEGORY_POST = "addcategorypost";
         static final String FILTER_CATEGORY_POSTS = "filtercategoryposts";
+        static final String FILTER_NAME_POSTS = "filternameposts";
         static final String DELETE_POST = "deletepost";
         static final String DELETE_SELECTED_POST = "deleteselectedpost";
         static final String ADD_SELECTED_CATEGORY_POST = "addselectedcategorypost";
@@ -115,6 +118,7 @@ public interface Wcm {
     interface EVENTS {
         static final String SHOW_CATEGORIES_CHILDREN = "showcategorieschildren";
         static final String DOWNLOAD_UPLOAD = "downloadupload";
+        static final String SHOW_POST_UPLOADS = "showpostuploads";
     }
 
     interface CONFIG {

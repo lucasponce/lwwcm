@@ -4,6 +4,7 @@ import org.gatein.lwwcm.Wcm;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
         System.getProperties(
  */
+@WebListener
 public class WcmInitContextListener implements ServletContextListener {
     private static final Logger log = Logger.getLogger(WcmInitContextListener.class.getName());
 

@@ -168,6 +168,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_UPLOADS)) {
                 // Filter category uploads action
                 view = uploads.actionFilterCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_NAME_UPLOADS)) {
+                // Filter name uploads action
+                view = uploads.actionFilterNameUpload(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.DELETE_UPLOAD)) {
                 // Delete upload action
                 view = uploads.actionDeleteUpload(request, response, userWcm);
@@ -198,6 +201,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_TEMPLATES)) {
                 // Filter category templates action
                 view = templates.actionFilterCategoryTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_NAME_TEMPLATES)) {
+                // Filter name templates action
+                view = templates.actionFilterNameTemplate(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.DELETE_TEMPLATE)) {
                 // Delete template action
                 view = templates.actionDeleteTemplate(request, response, userWcm);
@@ -228,6 +234,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.FILTER_CATEGORY_POSTS)) {
                 // Filter category posts action
                 view = posts.actionFilterCategoryPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.FILTER_NAME_POSTS)) {
+                // Filter name posts action
+                view = posts.actionFilterNamePost(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.DELETE_POST)) {
                 // Delete post action
                 view = posts.actionDeletePost(request, response, userWcm);
@@ -312,6 +321,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (event.equals(Wcm.EVENTS.DOWNLOAD_UPLOAD)) {
                 // Show download attached of Upload object
                 uploads.eventDownloadUpload(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_POST_UPLOADS)) {
+                // Show list uploads
+                url = posts.eventShowPostUploads(request, response, userWcm);
             } else {
                 // No default view.
             }

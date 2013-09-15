@@ -6,8 +6,8 @@
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories/categories.js") %>"></script>
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
 
     <form id="${n}deleteCategoryForm" method="post" action="${deleteCategoryAction}">
         <input type="hidden" id="${n}deleteCategoryId" name="deletedCategoryId" />
@@ -34,7 +34,7 @@
          %>
         <li>
             <div id="${n}categoryId<%= c.getId()%>">
-                <div class="lwwcm-category-title"><span class="glyphicon glyphicon-<%= typeIcon %> margin-right lwwcm-<%= color%>"></span> <%= c.getName() %> [id: <%= c.getId() %>] <span class="lwwcm-category-type">(<%= type %>)</span></div>
+                <div class="lwwcm-category-title"><span class="glyphicon glyphicon-<%= typeIcon %> margin-right lwwcm-<%= color%> lwwcm-category-icon"></span> <%= c.getName() %>&nbsp;<span class="lwwcm-category-type">(<%= type %>)</span></div>
                 <div class="lwwcm-category-actions"><a href="<%= editCategoryView %>&editid=<%= c.getId() %>">Edit</a> | <a href="javascript:deleteCategory('${n}', <%= c.getId() %>)">Delete</a>
                     <%
                         if (c.getNumChildren() > 0) {
@@ -43,6 +43,9 @@
                     <%
                         }
                     %>
+                    | <a href="${filterCategoryPostsAction}&filterCategoryId=<%= c.getId()%>" title="Show Posts"><span class="glyphicon glyphicon-file margin-right"></span></a>
+                    | <a href="${filterCategoryUploadsAction}&filterCategoryId=<%= c.getId()%>" title="Show Uploads"><span class="glyphicon glyphicon-picture margin-right"></span></a>
+                    | <a href="${filterCategoryTemplatesAction}&filterCategoryId=<%= c.getId()%>" title="Show Templates"><span class="glyphicon glyphicon-th margin-right"></span></a>
                     </div>
             </div>
         </li>

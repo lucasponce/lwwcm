@@ -47,14 +47,14 @@ public class TemplatesActions {
 
     public String actionRightTemplates(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        viewMetadata.rightPage();
+        if (viewMetadata != null) viewMetadata.rightPage();
         request.getPortletSession().setAttribute("metadata", viewMetadata);
         return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionLeftTemplates(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        viewMetadata.leftPage();
+        if (viewMetadata != null) viewMetadata.leftPage();
         request.getPortletSession().setAttribute("metadata", viewMetadata);
         return Wcm.VIEWS.TEMPLATES;
     }
@@ -100,20 +100,59 @@ public class TemplatesActions {
         String filterCategoryId = request.getParameter("filterCategoryId");
         Long filterId = new Long(filterCategoryId);
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        if (!viewMetadata.isFilterCategory()) {
-            viewMetadata.setCategoryId(filterId);
-            viewMetadata.setFromIndex(0); // First search, reset pagination
-            viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
-            viewMetadata.setFilterCategory(true);
-        } else {
-            if (!viewMetadata.getCategoryId().equals(filterId)) {
-                if (filterId == -1) {
-                    viewMetadata.setFilterCategory(false);
-                } else {
-                    viewMetadata.setCategoryId(filterId);
-                }
+        if (viewMetadata != null) {
+            // Reset viewMetadata if it comes from a different view
+            if (viewMetadata.getViewType() != ViewMetadata.ViewType.TEMPLATES) {
+                viewMetadata.setViewType(ViewMetadata.ViewType.TEMPLATES);
+                viewMetadata.setFilterCategory(false);
+            }
+            if (!viewMetadata.isFilterCategory()) {
+                viewMetadata.setCategoryId(filterId);
                 viewMetadata.setFromIndex(0); // First search, reset pagination
                 viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                viewMetadata.setFilterCategory(true);
+                viewMetadata.setFilterName(false);
+            } else {
+                if (!viewMetadata.getCategoryId().equals(filterId)) {
+                    if (filterId == -1) {
+                        viewMetadata.setFilterCategory(false);
+                    } else {
+                        viewMetadata.setCategoryId(filterId);
+                    }
+                    viewMetadata.setFromIndex(0); // First search, reset pagination
+                    viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                }
+            }
+        }
+        request.getPortletSession().setAttribute("metadata", viewMetadata);
+        return Wcm.VIEWS.TEMPLATES;
+    }
+
+    public String actionFilterNameTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String filterName = request.getParameter("filterName");
+        ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
+        if (viewMetadata != null) {
+            // Reset viewMetadata if it comes from a different view
+            if (viewMetadata.getViewType() != ViewMetadata.ViewType.TEMPLATES) {
+                viewMetadata.setViewType(ViewMetadata.ViewType.TEMPLATES);
+                viewMetadata.setFilterName(false);
+            }
+            if (!viewMetadata.isFilterName()) {
+                viewMetadata.setName(filterName);
+                viewMetadata.setFromIndex(0); // First search, reset pagination
+                viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                viewMetadata.setFilterName(true);
+                viewMetadata.setFilterCategory(false);
+            } else {
+                if (!viewMetadata.getName().equals(filterName)) {
+                    if (filterName.equals("")) {
+                        viewMetadata.setFilterName(false);
+                    } else {
+                        viewMetadata.setName(filterName);
+                    }
+                    viewMetadata.setFromIndex(0); // First search, reset pagination
+                    viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                }
             }
         }
         request.getPortletSession().setAttribute("metadata", viewMetadata);
@@ -212,6 +251,21 @@ public class TemplatesActions {
                 // Filter per category
                 if (viewMetadata.isFilterCategory()) {
                     List<Template> filterTemplates = wcm.findTemplates(viewMetadata.getCategoryId(), userWcm);
+                    if (filterTemplates != null) {
+                        viewMetadata.setViewType(ViewMetadata.ViewType.TEMPLATES);
+                        viewMetadata.setTotalIndex(filterTemplates.size());
+                        viewMetadata.checkPagination();
+                        if (viewMetadata.getTotalIndex() > 0) {
+                            List<Template> viewList = filterTemplates.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
+                            request.getPortletSession().setAttribute("list", viewList);
+                            request.getPortletSession().setAttribute("metadata", viewMetadata);
+                        } else {
+                            request.getPortletSession().setAttribute("list", null);
+                            request.getPortletSession().setAttribute("metadata", viewMetadata);
+                        }
+                    }
+                } else if (viewMetadata.isFilterName()) {
+                    List<Template> filterTemplates = wcm.findTemplates(viewMetadata.getName(), userWcm);
                     if (filterTemplates != null) {
                         viewMetadata.setViewType(ViewMetadata.ViewType.TEMPLATES);
                         viewMetadata.setTotalIndex(filterTemplates.size());

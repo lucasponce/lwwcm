@@ -31,8 +31,8 @@ import org.gatein.lwwcm.Wcm;
 @Table(name = "lwwcm_posts")
 @Cacheable
 @NamedQueries({
-		@NamedQuery(name = "listPostsName", query = "from Post p where p.title like :title"),
-        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.id"),
+		@NamedQuery(name = "listPostsName", query = "from Post p where upper(p.title) like :title order by p.modified desc"),
+        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.modified desc"),
 })
 public class Post implements Serializable {	
 
@@ -54,6 +54,7 @@ public class Post implements Serializable {
 	public Post() {
 		this.version = 1l;
 		this.created = Calendar.getInstance();
+        this.modified = (Calendar)this.created.clone();
 		this.postStatus = Wcm.POSTS.DRAFT;
 		this.locale = Locale.getDefault().getLanguage();
 		this.commentsStatus = Wcm.COMMENTS.ANONYMOUS;
@@ -119,7 +120,8 @@ public class Post implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
+    @Lob
 	@Column(name = "post_excerpt")
 	public String getExcerpt() {
 		return excerpt;

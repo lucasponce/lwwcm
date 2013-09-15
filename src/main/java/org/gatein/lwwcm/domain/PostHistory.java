@@ -79,7 +79,8 @@ public class PostHistory implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
+    @Lob
 	@Column(name = "post_excerpt")
 	public String getExcerpt() {
 		return excerpt;

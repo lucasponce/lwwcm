@@ -29,8 +29,8 @@ import javax.persistence.TemporalType;
 @Table(name = "lwwcm_uploads")
 @Cacheable
 @NamedQueries({
-	@NamedQuery(name = "listUploadsFileName", query = "from Upload u where u.fileName like :fileName"),
-    @NamedQuery(name = "listAllUploads", query = "from Upload u order by u.id")
+	@NamedQuery(name = "listUploadsFileName", query = "from Upload u where upper(u.fileName) like :fileName or upper(u.description) like :description order by u.modified desc"),
+    @NamedQuery(name = "listAllUploads", query = "from Upload u order by u.modified desc")
 })
 public class Upload implements Serializable {
 	
@@ -48,6 +48,7 @@ public class Upload implements Serializable {
 
 	public Upload() {
 		this.created = Calendar.getInstance();
+        this.modified = (Calendar)this.created.clone();
 		this.version = 1l;
 	}
 	

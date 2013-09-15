@@ -39,6 +39,8 @@ public interface WcmService {
     Post findPost(Long id, UserWcm user) throws WcmException;
     List<Post> findPosts(Long categoryId, UserWcm user) throws WcmException;
     List<Post> findPosts(UserWcm user) throws WcmException;
+    List<Post> findPosts(Long categoryId, Character status, UserWcm user) throws WcmException;
+    List<Post> findPosts(String filterName, UserWcm user) throws WcmException;
 
 	
 	/*
@@ -54,6 +56,7 @@ public interface WcmService {
     Upload findUpload(Long id, UserWcm user) throws WcmException;
     List<Upload> findUploads(Long categoryId, UserWcm user) throws WcmException;
     List<Upload> findUploads(UserWcm user) throws WcmException;
+    List<Upload> findUploads(String filterName, UserWcm user) throws WcmException;
 
 
     /*
@@ -67,6 +70,7 @@ public interface WcmService {
     Template findTemplate(Long id, UserWcm user) throws WcmException;
     List<Template> findTemplates(Long categoryId, UserWcm user) throws WcmException;
     List<Template> findTemplates(UserWcm user) throws WcmException;
+    List<Template> findTemplates(String filterName, UserWcm user) throws WcmException;
 
 
 }

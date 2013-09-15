@@ -31,6 +31,9 @@ CKEDITOR.stylesSet.add( 'default', [
 	{ name: 'Address',			element: 'address' },
 	*/
 
+    { name: 'Wcm List', element: 'wcm-list' },
+    { name: 'Wcm Single', element: 'wcm-single' },
+
 	{ name: 'Italic Title',		element: 'h2', styles: { 'font-style': 'italic' } },
 	{ name: 'Subtitle',			element: 'h3', styles: { 'color': '#aaa', 'font-style': 'italic' } },
 	{

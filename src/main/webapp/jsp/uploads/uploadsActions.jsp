@@ -31,6 +31,9 @@
     <form id="${n}filterCategoryUploadsForm" method="post" action="${filterCategoryUploadsAction}">
         <input type="hidden" id="${n}filterCategoryId" name="filterCategoryId" />
     </form>
+    <form id="${n}filterNameUploadsForm" method="post" action="${filterNameUploadsAction}">
+        <input type="hidden" id="${n}filterName" name="filterName"  />
+    </form>
     <div class="lwwcm-select margin-left">
         <select id="${n}selectFilterCategory" class="lwwcm-input" onchange="showFilterCategories('${n}')">
             <option value="-1">All categories</option>
@@ -38,12 +41,19 @@
                 if (listCategories != null) {
                     for (Category c : listCategories) {
             %>
-            <option value="<%= c.getId()%>" <% if (metadata != null && metadata.isFilterCategory() && metadata.getCategoryId().equals(c.getId())) { %> selected <% } %> > <%= c.getName() %> [<%= c.getId() %>]</option>
+            <option value="<%= c.getId()%>" <% if (metadata != null && metadata.isFilterCategory() && metadata.getCategoryId().equals(c.getId())) { %> selected <% } %> > <%= ViewMetadata.categoryTitle(c) %></option>
             <%
                     }
                 }
             %>
         </select>
+    </div>
+    <div class="lwwcm-post-filtername margin-left">
+        <%
+            String filterName = "Filter By Name";
+            if (metadata != null && metadata.isFilterName()) filterName = metadata.getName();
+        %>
+        <input id="${n}inputFilterName" class="lwwcm-input" value="<%= filterName %>" onfocus="if (this.value == 'Filter By Name') this.value=''" onblur="if (this.value == '') this.value='Filter By Name'" onkeypress="showFilterNameUploads(event, '${n}')" />
     </div>
     <%
         if (metadata != null && ((metadata.getToIndex() + 1) < metadata.getTotalIndex())) {
@@ -78,7 +88,7 @@
                     if (listCategories != null) {
                         for (Category c : listCategories) {
                 %>
-                <option value="<%= c.getId()%>"><%= c.getName() %> [<%= c.getId() %>]</option>
+                <option value="<%= c.getId()%>"><%= ViewMetadata.categoryTitle(c) %></option>
                 <%
                         }
                     }
@@ -88,4 +98,8 @@
         <a href="#" class="button right" title="Assign Category" id="${n}assign-single-category"><span class="glyphicon glyphicon-tag"></span></a>
         <div class="clear"></div>
     </div>
+</div>
+
+<div id="${n}uploads-preview" class="lwwcm-upload-preview">
+    <img id="${n}uploads-preview-content" class="lwwcm-upload-image" src="" />
 </div>

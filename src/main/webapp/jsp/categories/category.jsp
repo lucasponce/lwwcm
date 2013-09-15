@@ -5,15 +5,15 @@
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories/category.js") %>"></script>
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
 
     <form id="${n}newCategoryForm" method="post" action="${newCategoryAction}">
         <div class="lwwcm-newcategory">
                 <label for="${n}newCategoryName">Category name: </label>
                 <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input" /></div>
                 <label for="${n}newCategoryType">Category type: </label>
-                <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input" onchange="showParentCategory('${n}');">
+                <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input">
                     <option value="Category">Category</option>
                     <option value="Folder">Folder</option>
                     <option value="Tag">Tag</option>

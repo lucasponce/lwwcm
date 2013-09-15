@@ -3,8 +3,8 @@
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/uploads/upload.js") %>"></script>
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
 
     <form id="${n}newUploadForm" method="post" enctype="multipart/form-data" action="${newUploadAction}">
         <div class="lwwcm-newupload">

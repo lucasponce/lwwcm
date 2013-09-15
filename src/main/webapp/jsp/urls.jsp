@@ -1,3 +1,4 @@
+<%@ page import="org.gatein.lwwcm.Wcm" %>
 <% // View URLs %>
 <portlet:actionURL var="postsView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.POSTS %>" />
@@ -66,6 +67,9 @@
 <portlet:actionURL var="filterCategoryPostsAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_POSTS %>" />
 </portlet:actionURL>
+<portlet:actionURL var="filterNamePostsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_NAME_POSTS %>" />
+</portlet:actionURL>
 <portlet:actionURL var="rightPostsAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.RIGHT_POSTS %>" />
 </portlet:actionURL>
@@ -102,6 +106,9 @@
 <portlet:actionURL var="filterCategoryUploadsAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_UPLOADS %>" />
 </portlet:actionURL>
+<portlet:actionURL var="filterNameUploadsAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_NAME_UPLOADS %>" />
+</portlet:actionURL>
 <portlet:actionURL var="deleteUploadAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_UPLOAD %>" />
 </portlet:actionURL>
@@ -126,6 +133,9 @@
 <portlet:actionURL var="filterCategoryTemplatesAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_CATEGORY_TEMPLATES %>" />
 </portlet:actionURL>
+<portlet:actionURL var="filterNameTemplatesAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.FILTER_NAME_TEMPLATES %>" />
+</portlet:actionURL>
 <portlet:actionURL var="rightTemplatesAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.RIGHT_TEMPLATES %>" />
 </portlet:actionURL>
@@ -148,3 +158,7 @@
 <portlet:resourceURL var="showCategoriesChildrenEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_CATEGORIES_CHILDREN %>" />
 </portlet:resourceURL>
+<portlet:resourceURL var="showPostUploadsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_UPLOADS %>" />
+</portlet:resourceURL>
+

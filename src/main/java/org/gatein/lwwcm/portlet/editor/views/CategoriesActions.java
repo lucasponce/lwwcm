@@ -38,20 +38,20 @@ public class CategoriesActions {
         }
         if (newCategoryType.equals("Folder")) {
             newCategory.setType(Wcm.CATEGORIES.FOLDER);
-            if (!newCategoryParent.equals("-1")) {
-                long parentId = -1;
+        }
+        if (!newCategoryParent.equals("-1")) {
+            long parentId = -1;
+            try {
+                parentId = new Long(newCategoryParent).longValue();
+            } catch (Exception ignored) { }
+            if (parentId>-1) {
                 try {
-                    parentId = new Long(newCategoryParent).longValue();
-                } catch (Exception ignored) { }
-                if (parentId>-1) {
-                    try {
-                        Category parentCategory = wcm.findCategory(parentId, userWcm);
-                        newCategory.setParent(parentCategory);
-                    } catch (WcmException e) {
-                        log.warning("Error getting parentCategory.");
-                        e.printStackTrace();
-                        response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
-                    }
+                    Category parentCategory = wcm.findCategory(parentId, userWcm);
+                    newCategory.setParent(parentCategory);
+                } catch (WcmException e) {
+                    log.warning("Error getting parentCategory.");
+                    e.printStackTrace();
+                    response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
                 }
             }
         }
@@ -91,32 +91,30 @@ public class CategoriesActions {
             updateCategory.setName(newCategoryName);
             if (newCategoryType.equals("Category")) {
                 updateCategory.setType(Wcm.CATEGORIES.CATEGORY);
-                updateCategory.setParent(null);
             }
             if (newCategoryType.equals("Tag")) {
                 updateCategory.setType(Wcm.CATEGORIES.TAG);
-                updateCategory.setParent(null);
             }
             if (newCategoryType.equals("Folder")) {
                 updateCategory.setType(Wcm.CATEGORIES.FOLDER);
-                if (!newCategoryParent.equals("-1")) {
-                    long parentId = -1;
+            }
+            if (!newCategoryParent.equals("-1")) {
+                long parentId = -1;
+                try {
+                    parentId = new Long(newCategoryParent).longValue();
+                } catch (Exception ignored) { }
+                if (parentId>-1 && parentId != new Long(catId)) {
                     try {
-                        parentId = new Long(newCategoryParent).longValue();
-                    } catch (Exception ignored) { }
-                    if (parentId>-1 && parentId != new Long(catId)) {
-                        try {
-                            Category parentCategory = wcm.findCategory(parentId, userWcm);
-                            updateCategory.setParent(parentCategory);
-                        } catch (WcmException e) {
-                            log.warning("Error getting parentCategory.");
-                            e.printStackTrace();
-                            response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
-                        }
+                        Category parentCategory = wcm.findCategory(parentId, userWcm);
+                        updateCategory.setParent(parentCategory);
+                    } catch (WcmException e) {
+                        log.warning("Error getting parentCategory.");
+                        e.printStackTrace();
+                        response.setRenderParameter("errorWcm", "Error getting parentCategory " + e.toString());
                     }
-                } else {
-                    updateCategory.setParent(null);
                 }
+            } else {
+                updateCategory.setParent(null);
             }
             wcm.update(updateCategory, userWcm);
             return Wcm.VIEWS.CATEGORIES;

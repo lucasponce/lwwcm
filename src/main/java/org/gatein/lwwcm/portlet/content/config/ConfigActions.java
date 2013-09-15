@@ -126,18 +126,11 @@ public class ConfigActions {
         String listContentAttached = (String)request.getPortletSession().getAttribute("listContentAttached");
         listContentAttached = (listContentAttached == null ? "" : listContentAttached);
         String[] listIds = listContentAttached.split(",");
-        boolean found = false;
-        for (String contentId : listIds) {
-            if (contentId.split("_")[0].equals(newContentId)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            if (listContentAttached.length() == 0) {
-                listContentAttached = newContentId + "_" + newTypeContent;
-            } else {
-                listContentAttached += "," + newContentId + "_" + newTypeContent;
-            }
+
+        if (listContentAttached.length() == 0) {
+            listContentAttached = newContentId + "_" + newTypeContent;
+        } else {
+            listContentAttached += "," + newContentId + "_" + newTypeContent;
         }
         request.getPortletSession().setAttribute("listContentAttached", listContentAttached);
 

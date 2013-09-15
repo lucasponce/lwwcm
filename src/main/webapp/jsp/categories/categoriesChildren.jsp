@@ -9,10 +9,10 @@
     String parentid = (String)request.getAttribute("parentid");
     String showchildrenhref = (String)request.getAttribute("showchildrenhref");
 %>
-<ul id="<%= namespace %>listChildrenId<%= parentid %>">
+<ul id="<%= namespace %>listChildrenId<%= parentid %>" class="lwwcm-categories">
 <%
     List<Category> list = (List<Category>)request.getAttribute("categories");
-    if (categories != null) {
+    if (list != null) {
         for (Category c : list) {
             String typeIcon = "bookmark";
             String type = "Category";
@@ -30,8 +30,8 @@
 %>
     <li>
         <div id="<%= namespace %>categoryId<%= c.getId()%>">
-            <div class="lwwcm-category-title"><span class="glyphicon glyphicon-<%= typeIcon %> margin-right lwwcm-<%= color%>"></span> <%= c.getName() %> [id: <%= c.getId() %>] <span class="lwwcm-category-type">(<%= type %>)</span></div>
-            <div class="lwwcm-category-actions"><a href="<%= editcategory %>&editid=<%= c.getId() %>">Edit</a> | <a href="javascript:deleteCategory('<%= namespace %>', <%= c.getId() %>)">Delete</a>
+            <div class="lwwcm-category-title"><span class="glyphicon glyphicon-<%= typeIcon %> margin-right lwwcm-<%= color%>"></span> <%= c.getName() %> <span class="lwwcm-category-type">(<%= type %>)</span></div>
+            <div class="lwwcm-category-actions"><a href="<%= editCategoryView %>&editid=<%= c.getId() %>">Edit</a> | <a href="javascript:deleteCategory('<%= namespace %>', <%= c.getId() %>)">Delete</a>
                 <%
                     if (c.getNumChildren() > 0) {
                 %>
@@ -39,6 +39,9 @@
                 <%
                     }
                 %>
+                | <a href="${filterCategoryPostsAction}&filterCategoryId=<%= c.getId()%>" title="Show Posts"><span class="glyphicon glyphicon-file margin-right"></span></a>
+                | <a href="${filterCategoryUploadsAction}&filterCategoryId=<%= c.getId()%>" title="Show Uploads"><span class="glyphicon glyphicon-picture margin-right"></span></a>
+                | <a href="${filterCategoryTemplatesAction}&filterCategoryId=<%= c.getId()%>" title="Show Templates"><span class="glyphicon glyphicon-th margin-right"></span></a>
             </div>
         </div>
     </li>

@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Table(name = "lwwcm_categories")
 @Cacheable
 @NamedQueries({
-        @NamedQuery(name = "listAllCategories", query = "from Category c order by c.id"),
+        @NamedQuery(name = "listAllCategories", query = "from Category c order by c.parent.id asc, c.name asc"),
 		@NamedQuery(name = "listCategoriesName", query = "from Category c where c.name like :name"),
 		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type"),
 		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type"),
@@ -74,6 +74,7 @@ public class Category implements Serializable {
 	@JoinTable(name = "lwwcm_categories_posts", 
 			joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
 			inverseJoinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "post_id") })
+    @OrderBy("modified desc, created desc")
 	public Set<Post> getPosts() {
 		return posts;
 	}

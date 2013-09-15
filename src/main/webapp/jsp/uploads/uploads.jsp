@@ -4,8 +4,8 @@
 <%@include file="../urls.jsp"%>
 
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
     <%@include file="uploadsActions.jsp"%>
 
     <form id="${n}deleteUploadForm" method="post" action="${deleteUploadAction}">
@@ -32,18 +32,18 @@
             <td class="row-type"><span class="glyphicon glyphicon-picture margin-right"></span></td>
             <td>
                 <div>
-                    <div class="lwwcm-post-title"><a href="${downloadUploadEvent}" target="_blank"><%= u.getFileName() %> [<%= u.getId() %>] (<%= u.getDescription() %>) [<%= u.getMimeType() %>]</a></div>
+                    <div class="lwwcm-post-title"><a href="${downloadUploadEvent}" target="_blank"><%= u.getFileName() %>&nbsp;<span class="lwwcm-blue"><%= (u.getDescription().equals("")?"":"(" + u.getDescription() + ")") %></span></a> <a href="${downloadUploadEvent}" target="_blank" id="${n}preview<%= u.getId() %>" <% if (u.getMimeType() != null && u.getMimeType().startsWith("image")) { %>onmouseover="showPreview('${n}', this.id, '${downloadUploadEvent}');" onmouseout="hidePreview('${n}', this.id, '${downloadUploadEvent}');" <% } %>><span class="lwwcm-upload-mimetype"><%= u.getMimeType() %></span></a> <% if (u.getMimeType() != null && u.getMimeType().startsWith("image")) { %><span class="lwwcm-upload-mimetype glyphicon glyphicon-eye-open margin-top"></span><% } %></div>
                     <div class="lwwcm-post-categories"><%
                             for (Category cU : u.getCategories()) {
                         %>[<a href="javascript:showFilterCategoriesById('${n}', '<%= cU.getId() %>');"><%= cU.getName() %></a> <a href="${removeCategoryUploadAction}&catid=<%= cU.getId() %>&uploadid=<%= u.getId() %>" class="lwwcm-delete-category"><span class="glyphicon glyphicon-remove middle"></span></a>] <%
                             }
                         %>
                     </div>
-                    <div class="lwwcm-post-actions"><a href="${editUploadView}&editid=<%= u.getId() %>">Edit</a> | <a href="javascript:deleteUpload('${n}', <%= u.getId() %>)">Delete</a> | <a href="#" onclick="javascript:showSingleCategories('${n}', this.id, '<%= u.getId() %>');" id="${n}addCategory<%= u.getId() %>" >Category</a></div>
+                    <div class="lwwcm-post-actions"><a href="${editUploadView}&editid=<%= u.getId() %>">Edit</a> | <a href="javascript:deleteUpload('${n}', <%= u.getId() %>)">Delete</a> | <a href="javascript:;" onclick="javascript:showSingleCategories('${n}', this.id, '<%= u.getId() %>');" id="${n}addCategory<%= u.getId() %>" >Category</a></div>
                 </div>
             </td>
             <td class="row-author"><%= u.getUser() %></td>
-            <td class="row-timestamp"><%= ParseDates.parse(u.getCreated()) %></td>
+            <td class="row-timestamp"><%= ParseDates.parse(u.getModified()) %></td>
         </tr>
         <%
                 }

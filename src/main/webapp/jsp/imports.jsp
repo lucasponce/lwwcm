@@ -10,7 +10,7 @@
 %>
 <link rel="stylesheet" href="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/css/lwwcm.css") %>" />
 <link rel="stylesheet" href="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/css/bootstrap-glyphicons.css") %>" />
-<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/jquery/jquery.min.js") %>"></script>
+
 <%
     /*
         JS events for imports.jsp page

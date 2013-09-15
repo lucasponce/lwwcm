@@ -6,8 +6,8 @@
 <%@include file="../urls.jsp"%>
 
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
     <%@include file="postsActions.jsp"%>
 
     <form id="${n}deletePostForm" method="post" action="${deletePostAction}">
@@ -34,14 +34,14 @@
             <td class="row-type"><span class="glyphicon glyphicon-file margin-right"></span></td>
             <td>
                 <div>
-                    <div class="lwwcm-post-title"><a href="${editPostView}&editid=<%= p.getId() %>"><%= p.getTitle() %> [<%= p.getId() %>]</a></div>
+                    <div class="lwwcm-post-title"><a href="${editPostView}&editid=<%= p.getId() %>"><%= p.getTitle() %></a></div>
                     <div class="lwwcm-post-categories"><%
                         for (Category cU : p.getCategories()) {
                     %>[<a href="javascript:showFilterCategoriesById('${n}', '<%= cU.getId() %>');"><%= cU.getName() %></a> <a href="${removeCategoryPostAction}&catid=<%= cU.getId() %>&postid=<%= p.getId() %>" class="lwwcm-delete-category"><span class="glyphicon glyphicon-remove middle"></span></a>] <%
                         }
                     %>
                     </div>
-                    <div class="lwwcm-post-actions"><a href="${editPostView}&editid=<%= p.getId() %>">Edit</a> | <a href="javascript:deletePost('${n}', <%= p.getId() %>)">Delete</a> | <a href="#" onclick="javascript:showSingleCategoriesPost('${n}', this.id, '<%= p.getId() %>');" id="${n}addCategory<%= p.getId() %>">Category</a> | <a href="#">Comments(0)</a></div>
+                    <div class="lwwcm-post-actions"><a href="${editPostView}&editid=<%= p.getId() %>">Edit</a> | <a href="javascript:deletePost('${n}', <%= p.getId() %>)">Delete</a> | <a href="javascript:;" onclick="javascript:showSingleCategoriesPost('${n}', this.id, '<%= p.getId() %>');" id="${n}addCategory<%= p.getId() %>">Category</a> | <a href="javascript:;">Comments(0)</a></div>
                 </div>
             </td>
             <td class="row-author"><%= p.getAuthor() %></td>
@@ -58,7 +58,7 @@
                 }
             %>
             <td class="row-status"><a href="javascript:publishPost('${n}', '<%= p.getId() %>', '<%= nextStatus %>');"><span class="glyphicon glyphicon-thumbs-<%= statusThumb %> lwwcm-<%=statusColor %> middle"> <%= status %></span></a> </td>
-            <td class="row-timestamp"><%= ParseDates.parse(p.getCreated()) %></td>
+            <td class="row-timestamp"><%= ParseDates.parse(p.getModified()) %></td>
         </tr>
         <%
                 }

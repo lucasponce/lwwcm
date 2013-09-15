@@ -15,7 +15,8 @@ import javax.persistence.*;
 @Table(name = "lwwcm_templates")
 @Cacheable
 @NamedQueries({
-        @NamedQuery(name = "listAllTemplates", query = "from Template t order by t.id")
+        @NamedQuery(name = "listTemplatesName", query = "from Template t where upper(t.name) like :name order by t.modified desc"),
+        @NamedQuery(name = "listAllTemplates", query = "from Template t order by t.modified desc")
 })
 public class Template implements Serializable {
 
@@ -31,6 +32,7 @@ public class Template implements Serializable {
 
     public Template() {
         this.created = Calendar.getInstance();
+        this.modified = (Calendar)this.created.clone();
     }
 
     @Id @GeneratedValue

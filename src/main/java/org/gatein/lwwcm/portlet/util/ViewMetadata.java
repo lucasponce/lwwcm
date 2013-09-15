@@ -1,6 +1,7 @@
 package org.gatein.lwwcm.portlet.util;
 
 import org.gatein.lwwcm.Wcm;
+import org.gatein.lwwcm.domain.Category;
 
 public class ViewMetadata {
     public enum ViewType {
@@ -9,6 +10,8 @@ public class ViewMetadata {
     private ViewType viewType;
     private boolean filterCategory = false;
     private Long categoryId;
+    private boolean filterName = false;
+    private String name;
     private int fromIndex;
     private int toIndex;
     private int totalIndex;
@@ -35,6 +38,22 @@ public class ViewMetadata {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public boolean isFilterName() {
+        return filterName;
+    }
+
+    public void setFilterName(boolean filterName) {
+        this.filterName = filterName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getFromIndex() {
@@ -91,5 +110,13 @@ public class ViewMetadata {
         }
         if (fromIndex >= totalIndex) fromIndex = totalIndex - 1;
         if (toIndex >= totalIndex) toIndex = totalIndex - 1;
+    }
+
+    public static String categoryTitle(Category cat) {
+        if (cat == null) return "";
+        if (cat.getParent() == null)
+            return cat.getName();
+        else
+            return categoryTitle(cat.getParent()) + "/" + cat.getName();
     }
 }

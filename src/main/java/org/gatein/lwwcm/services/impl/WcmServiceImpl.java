@@ -5,11 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -158,6 +154,19 @@ public class WcmServiceImpl implements WcmService {
 		return filtered;
 	}
 
+    private List statusFilter(List col, Character status) {
+        if (col == null) return null;
+        List filtered = new ArrayList();
+        for (Object o : col) {
+            if (o instanceof Post) {
+                if (((Post)o).getPostStatus().equals(status)) {
+                    filtered.add(o);
+                }
+            }
+        }
+        return filtered;
+    }
+
 	@Override
 	public List<Category> findChildren(Category cat) throws WcmException {
 		if (cat == null || cat.getId() == null) return null;
@@ -278,6 +287,15 @@ public class WcmServiceImpl implements WcmService {
 			cat = em.merge(cat);
             if (!cat.getPosts().contains(post))
                 cat.getPosts().add(post);
+            // We add category parents to post relationship
+            Category parent = cat.getParent();
+            while (parent != null) {
+                if (!parent.getPosts().contains(post)) {
+                    parent.getPosts().add(post);
+                    post.add(parent);
+                }
+                parent = parent.getParent();
+            }
             em.flush();
 		} catch (Exception e) {
 			throw new WcmException(e);
@@ -356,11 +374,41 @@ public class WcmServiceImpl implements WcmService {
     @Override
     public List<Post> findPosts(Long categoryId, UserWcm user) throws WcmException {
         if (user == null) return null;
-        if (user == null) return null;
+        if (categoryId == null) return null;
         try {
             Category cat = em.find(Category.class, categoryId);
             if (cat == null) return null;
             List<Post> result = new ArrayList<Post>(cat.getPosts());
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public List<Post> findPosts(Long categoryId, Character status, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (categoryId == null) return null;
+        if (status == null) return null;
+        try {
+            Category cat = em.find(Category.class, categoryId);
+            if (cat == null) return null;
+            List<Post> result = new ArrayList<Post>(cat.getPosts());
+            result = statusFilter(result, status);
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public List<Post> findPosts(String filterName, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (filterName == null) return null;
+        try {
+            List<Post> result = em.createNamedQuery("listPostsName", Post.class)
+                    .setParameter("title", "%" + filterName.toUpperCase() + "%")
+                    .getResultList();
             return aclFilter(result, user);
         } catch (Exception e) {
             throw new WcmException(e);
@@ -431,6 +479,23 @@ public class WcmServiceImpl implements WcmService {
             post.getCategories().remove(cat);
             em.merge(cat);
             em.merge(post);
+            // Remove Category's children
+            List<Category> children = findChildren(cat);
+            while (post.getCategories().size() > 0 && children.size() > 0) {
+                for (Iterator<Category> iterator = children.iterator(); iterator.hasNext();) {
+                    Category child = iterator.next();
+                    if (post.getCategories().contains(child)) {
+                        post.getCategories().remove(child);
+                        child.getPosts().remove(post);
+                        iterator.remove();
+                        List<Category> childrenChild = findChildren(child);
+                        for (Category cChild : childrenChild) {
+                            children.add(cChild);
+                        }
+                    }
+                }
+            }
+            em.flush();
         } catch (Exception e) {
             throw new WcmException(e);
         }
@@ -596,6 +661,21 @@ public class WcmServiceImpl implements WcmService {
     }
 
     @Override
+    public List<Upload> findUploads(String filterName, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (filterName == null) return null;
+        try {
+            List<Upload> result = em.createNamedQuery("listUploadsFileName", Upload.class)
+                    .setParameter("fileName", "%" + filterName.toUpperCase() + "%")
+                    .setParameter("description", "%" + filterName.toUpperCase() + "%")
+                    .getResultList();
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
     public void add(Upload upload, Category cat, UserWcm user)
             throws WcmAuthorizationException, WcmException {
         if (upload == null || cat == null || user == null) return;
@@ -608,6 +688,15 @@ public class WcmServiceImpl implements WcmService {
             cat = em.merge(cat);
             if (!cat.getUploads().contains(upload))
                 cat.getUploads().add(upload);
+            // We add category parents to post relationship
+            Category parent = cat.getParent();
+            while (parent != null) {
+                if (!parent.getUploads().contains(upload)) {
+                    parent.getUploads().add(upload);
+                    upload.getCategories().add(parent);
+                }
+                parent = parent.getParent();
+            }
             em.flush();
         } catch (Exception e) {
             throw new WcmException(e);
@@ -627,6 +716,23 @@ public class WcmServiceImpl implements WcmService {
             upload.getCategories().remove(cat);
             em.merge(cat);
             em.merge(upload);
+            // Remove Category's children
+            List<Category> children = findChildren(cat);
+            while (upload.getCategories().size() > 0 && children.size() > 0) {
+                for (Iterator<Category> iterator = children.iterator(); iterator.hasNext();) {
+                    Category child = iterator.next();
+                    if (upload.getCategories().contains(child)) {
+                        upload.getCategories().remove(child);
+                        child.getUploads().remove(upload);
+                        iterator.remove();
+                        List<Category> childrenChild = findChildren(child);
+                        for (Category cChild : childrenChild) {
+                            children.add(cChild);
+                        }
+                    }
+                }
+            }
+            em.flush();
         } catch (Exception e) {
             throw new WcmException(e);
         }
@@ -638,6 +744,7 @@ public class WcmServiceImpl implements WcmService {
         if (id == null) return null;
         try {
             Upload u = em.find(Upload.class, id);
+            if (u == null) return null;
             if (u.getAcls() != null) {
                 if (canRead(u.getAcls(), user)) return u;
                 else return null;
@@ -701,6 +808,20 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    @Override
+    public List<Template> findTemplates(String filterName, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        try {
+            List<Template> result = em.createNamedQuery("listTemplatesName", Template.class)
+                    .setParameter("name", "%" + filterName.toUpperCase() + "%")
+                    .getResultList();
+            // return aclFilter(result, user);
+            return result; // In this version we don't have ACL on Template entities
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
     public Template findTemplate(Long id, UserWcm user) throws WcmException {
         if (user == null) return null;
         if (id == null) return null;
@@ -726,6 +847,15 @@ public class WcmServiceImpl implements WcmService {
             cat = em.merge(cat);
             if (!cat.getTemplates().contains(template))
                 cat.getTemplates().add(template);
+            // We add category parents to post relationship
+            Category parent = cat.getParent();
+            while (parent != null) {
+                if (!parent.getTemplates().contains(template)) {
+                    parent.getTemplates().add(template);
+                    template.getCategories().add(parent);
+                }
+                parent = parent.getParent();
+            }
             em.flush();
         } catch (Exception e) {
             throw new WcmException(e);
@@ -761,6 +891,23 @@ public class WcmServiceImpl implements WcmService {
             template.getCategories().remove(cat);
             em.merge(cat);
             em.merge(template);
+            // Remove Category's children
+            List<Category> children = findChildren(cat);
+            while (template.getCategories().size() > 0 && children.size() > 0) {
+                for (Iterator<Category> iterator = children.iterator(); iterator.hasNext();) {
+                    Category child = iterator.next();
+                    if (template.getCategories().contains(child)) {
+                        template.getCategories().remove(child);
+                        child.getTemplates().remove(template);
+                        iterator.remove();
+                        List<Category> childrenChild = findChildren(child);
+                        for (Category cChild : childrenChild) {
+                            children.add(cChild);
+                        }
+                    }
+                }
+            }
+            em.flush();
         } catch (Exception e) {
             throw new WcmException(e);
         }
@@ -771,6 +918,7 @@ public class WcmServiceImpl implements WcmService {
             throws WcmAuthorizationException, WcmException {
         if (template == null || user == null || template.getId() == null) return;
         try {
+            template.setModified(Calendar.getInstance());
             em.merge(template);
         } catch (Exception e) {
             throw new WcmException(e);

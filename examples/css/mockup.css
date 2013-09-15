@@ -1,0 +1,315 @@
+.mockup-container {
+    overflow: auto;
+    width: 964px;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+.mockup-column {
+    float: left;
+}
+.mockup-colB {
+    overflow: auto;
+    width: 624px;
+    padding-top: 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.mockup-colC {
+    padding-top: 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 308px;
+}
+
+/* carousel */
+.mockup-carousel_viewport {
+    position: relative;
+    overflow: hidden;
+    width: 624px;
+    height: 259px;
+    display: block;
+}
+.mockup-carousel_items {
+    height: 259px;
+    overflow: hidden;
+    position: absolute;
+    left: 0px;
+}
+.mockup-carousel_navigation {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin-right: 10px;
+}
+
+/* wcm list top news */
+.lwwcm-list-topnews {
+    margin: 0;
+    padding: 0;
+}
+.lwwcm-list-topnews li {
+    display: inline-block;
+    list-style-type: none;
+    width: 624px;
+    height: 259px;
+    position: relative;
+}
+
+/* item content */
+.mockup-item-image-topnews {
+    width: 624px;
+    height: 259px;
+    overflow: hidden;
+}
+.mockup-item-label {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.70);
+    padding: 10px 15px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    float: left;
+}
+.mockup-item-label-title {
+    font-family: Arial,sans-serif;
+    font-size: 1.538em;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+}
+.mockup-item-label-title:hover {
+    text-decoration: underline;
+}
+.mockup-item-label p {
+    color: #fff;
+    font-family: Arial,sans-serif;
+}
+
+/* navigation list */
+.mockup-nav-list {
+}
+.mockup-nav-list li {
+    display: inline-block;
+    list-style-type: none;
+    width: 9px;
+    height: 9px;
+    position: relative;
+    background-color: #505050;
+    margin: 0 2px;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+}
+.mockup-nav-list li.mockup-active {
+    background-color: #fff;
+}
+
+/* wcm list spotlight */
+.lwwcm-list-spotlight {
+    margin: 0;
+    padding: 0;
+}
+.lwwcm-list-spotlight li {
+    list-style-type: none;
+    width: 308px;
+    height: 300px;
+    margin-bottom: 16px;
+    position: relative;
+    background-color: #000;
+}
+.mockup-item-image-spotlight {
+    height:auto;
+    width:auto;
+    max-width:308px;
+    max-height:300px;
+}
+.mockup-item-title-spotlight {
+    padding: 10px 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    float: left;
+    font-family: Arial,sans-serif;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #fff;
+}
+.mockup-item-title-spotlight a {
+    text-decoration: none;
+    color: inherit;
+}
+.mockup-item-title-spotlight a:hover {
+    text-decoration: underline;
+}
+.mockup-red-background {
+    background: none repeat scroll 0 0 rgba(206, 66, 64, 0.70);
+}
+.mockup-green-background {
+    background: none repeat scroll 0 0 rgba(64, 206, 65, 0.70);
+}
+.mockup-blue-background {
+    background: none repeat scroll 0 0 rgba(65, 64, 206, 0.70);
+}
+.mockup-item-description-spotlight {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.70);
+    padding: 10px 15px;
+    height: 50px;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font-family: Arial,sans-serif;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+/* module */
+.mockup-module {
+    float: left;
+    width: 304px;
+    position: relative;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+.mockup-margin-right {
+    margin-right: 16px;
+}
+.mockup-module h2 {
+    font-size: 1.6em;
+    font-weight: bold;
+    line-height: 1.4285em;
+    letter-spacing: -0.2px;
+    font-family: Arial,sans-serif;
+    border-top: 1px solid #d3d3d3;
+    margin-bottom: 4px;
+    border-bottom: solid 1px #d3d3d3;
+}
+.mockup-module p {
+    color: #505050;
+    font-family: Arial,sans-serif;
+    font-size: 0.9em;
+    margin: 0;
+    padding: 0;
+}
+.mockup-module h2 a {
+    text-decoration: none;
+    color: inherit;
+}
+.module h2 a:hover {
+    text-decoration: underline;
+}
+.mockup-red {
+    color: #a30000;
+}
+.mockup-blue {
+    color: #0075ad;
+}
+
+/* Single concert */
+.mockup-item-image-concert {
+    width: 304px;
+    height: 176px;
+    overflow: hidden;
+}
+.mockup-item-image-concert img {
+    height:auto;
+    width:auto;
+    max-width:304px;
+    max-height:300px;
+}
+.mockup-item-concert-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    font-family: Arial,sans-serif;
+    text-decoration: none;
+}
+.mockup-item-concert-title:hover {
+    text-decoration: underline;
+}
+
+/* wcm list concert */
+.lwwcm-list-concert {
+    margin: 0;
+    padding: 0;
+    border-top: solid 1px #d3d3d3;
+    margin-top: 10px;
+}
+.lwwcm-list-concert li {
+    list-style-type: none;
+    width: 304px;
+    font-size: 1.0em;
+    font-weight: bold;
+    font-family: Arial,sans-serif;
+    margin-bottom: 4px;
+    border-bottom: solid 1px #d3d3d3;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.lwwcm-list-concert a {
+    text-decoration: none;
+    color: inherit;
+}
+.lwwcm-list-concert a:hover {
+    text-decoration: underline;
+}
+
+/* Single sporting */
+.mockup-item-sporting-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    font-family: Arial,sans-serif;
+    display: block;
+    text-decoration: none;
+}
+.mockup-item-sporting-title:hover {
+    text-decoration: underline;
+}
+.mockup-item-image-sporting {
+    width: 144px;
+    height: 93px;
+    overflow: hidden;
+    position: relative;
+    float: left;
+}
+.mockup-item-image-sporting img {
+    height:auto;
+    width:auto;
+    max-width:144px;
+    max-height:93px;
+}
+
+/* wcm list sporting */
+.lwwcm-list-sporting {
+    margin: 0;
+    padding: 0;
+    border-top: solid 1px #d3d3d3;
+    margin-top: 10px;
+}
+.lwwcm-list-sporting li {
+    list-style-type: none;
+    width: 304px;
+    font-size: 1.0em;
+    font-weight: bold;
+    font-family: Arial,sans-serif;
+    margin-bottom: 4px;
+    border-bottom: solid 1px #d3d3d3;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.lwwcm-list-sporting a {
+    text-decoration: none;
+    color: inherit;
+}
+.lwwcm-list-sporting a:hover {
+    text-decoration: underline;
+}
+.mockup-clear {
+    clear: both;
+}
+
+
+
+

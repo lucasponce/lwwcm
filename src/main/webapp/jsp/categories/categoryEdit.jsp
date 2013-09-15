@@ -1,13 +1,14 @@
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
 <%@ page import="org.gatein.lwwcm.Wcm" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/categories/category.js") %>"></script>
 <div class="container">
-    <%@include file="../header.jsp"%>
-    <%@include file="../actions.jsp"%>
+    <%@include file="../menu.jsp"%>
+    <%@include file="../submenu.jsp"%>
 
     <%
         Category c = (Category) portletSession.getAttribute("edit");
@@ -19,7 +20,7 @@
                 <label for="${n}newCategoryName">Category name: </label>
                 <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input" value="<%= c.getName() %>"/></div>
                 <label for="${n}newCategoryType">Category type: </label>
-                <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input" onchange="showParentCategory('${n}');">
+                <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input">
                     <option value="Category" <% if (c.getType() == Wcm.CATEGORIES.CATEGORY) { %> selected <% } %>>Category</option>
                     <option value="Folder" <% if (c.getType() == Wcm.CATEGORIES.FOLDER) { %> selected <% } %>>Folder</option>
                     <option value="Tag" <% if (c.getType() == Wcm.CATEGORIES.TAG) { %> selected <% } %>>Tag</option>
@@ -42,7 +43,7 @@
                             for (Category cat : list) {
                                 if (!cat.getId().equals(c.getId())) {
                     %>
-                    <option value="<%= cat.getId() %>" <% if (c.getParent() !=null && c.getParent().getId().equals(cat.getId())) { %> selected <% } %>><%= cat.getName() %> [<%= cat.getId() %>]</option>
+                    <option value="<%= cat.getId() %>" <% if (c.getParent() !=null && c.getParent().getId().equals(cat.getId())) { %> selected <% } %>><%= ViewMetadata.categoryTitle(c) %></option>
                     <%          }
                             }
                         }

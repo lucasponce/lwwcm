@@ -4,15 +4,13 @@ import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.Category;
 import org.gatein.lwwcm.domain.Post;
+import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -53,14 +51,14 @@ public class PostsActions {
 
     public String actionRightPosts(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        viewMetadata.rightPage();
+        if (viewMetadata != null) viewMetadata.rightPage();
         request.getPortletSession().setAttribute("metadata", viewMetadata);
         return Wcm.VIEWS.POSTS;
     }
 
     public String actionLeftPosts(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        viewMetadata.leftPage();
+        if (viewMetadata != null) viewMetadata.leftPage();
         request.getPortletSession().setAttribute("metadata", viewMetadata);
         return Wcm.VIEWS.POSTS;
     }
@@ -111,20 +109,59 @@ public class PostsActions {
         String filterCategoryId = request.getParameter("filterCategoryId");
         Long filterId = new Long(filterCategoryId);
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        if (!viewMetadata.isFilterCategory()) {
-            viewMetadata.setCategoryId(filterId);
-            viewMetadata.setFromIndex(0); // First search, reset pagination
-            viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
-            viewMetadata.setFilterCategory(true);
-        } else {
-            if (!viewMetadata.getCategoryId().equals(filterId)) {
-                if (filterId == -1) {
-                    viewMetadata.setFilterCategory(false);
-                } else {
-                    viewMetadata.setCategoryId(filterId);
-                }
+        if (viewMetadata != null) {
+            // Reset viewMetadata if it comes from a different view
+            if (viewMetadata.getViewType() != ViewMetadata.ViewType.POSTS) {
+                viewMetadata.setViewType(ViewMetadata.ViewType.POSTS);
+                viewMetadata.setFilterCategory(false);
+            }
+            if (!viewMetadata.isFilterCategory()) {
+                viewMetadata.setCategoryId(filterId);
                 viewMetadata.setFromIndex(0); // First search, reset pagination
                 viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                viewMetadata.setFilterCategory(true);
+                viewMetadata.setFilterName(false);
+            } else {
+                if (!viewMetadata.getCategoryId().equals(filterId)) {
+                    if (filterId == -1) {
+                        viewMetadata.setFilterCategory(false);
+                    } else {
+                        viewMetadata.setCategoryId(filterId);
+                    }
+                    viewMetadata.setFromIndex(0); // First search, reset pagination
+                    viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                }
+            }
+        }
+        request.getPortletSession().setAttribute("metadata", viewMetadata);
+        return Wcm.VIEWS.POSTS;
+    }
+
+    public String actionFilterNamePost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String filterName = request.getParameter("filterName");
+        ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
+        if (viewMetadata != null) {
+            // Reset viewMetadata if it comes from a different view
+            if (viewMetadata.getViewType() != ViewMetadata.ViewType.POSTS) {
+                viewMetadata.setViewType(ViewMetadata.ViewType.POSTS);
+                viewMetadata.setFilterName(false);
+            }
+            if (!viewMetadata.isFilterName()) {
+                viewMetadata.setName(filterName);
+                viewMetadata.setFromIndex(0); // First search, reset pagination
+                viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                viewMetadata.setFilterName(true);
+                viewMetadata.setFilterCategory(false);
+            } else {
+                if (!viewMetadata.getName().equals(filterName)) {
+                    if (filterName.equals("")) {
+                        viewMetadata.setFilterName(false);
+                    } else {
+                        viewMetadata.setName(filterName);
+                    }
+                    viewMetadata.setFromIndex(0); // First search, reset pagination
+                    viewMetadata.setToIndex(Wcm.VIEWS.MAX_PER_PAGE - 1);
+                }
             }
         }
         request.getPortletSession().setAttribute("metadata", viewMetadata);
@@ -302,6 +339,21 @@ public class PostsActions {
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
+                } else if (viewMetadata.isFilterName()) {
+                    List<Post> filterPosts = wcm.findPosts(viewMetadata.getName(), userWcm);
+                    if (filterPosts != null) {
+                        viewMetadata.setViewType(ViewMetadata.ViewType.POSTS);
+                        viewMetadata.setTotalIndex(filterPosts.size());
+                        viewMetadata.checkPagination();
+                        if (viewMetadata.getTotalIndex() > 0) {
+                            List<Post> viewList = filterPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
+                            request.getPortletSession().setAttribute("list", viewList);
+                            request.getPortletSession().setAttribute("metadata", viewMetadata);
+                        } else {
+                            request.getPortletSession().setAttribute("list", null);
+                            request.getPortletSession().setAttribute("metadata", viewMetadata);
+                        }
+                    }
                 } else {
                     List<Post> allPosts = wcm.findPosts(userWcm);
                     if (allPosts != null) {
@@ -336,5 +388,27 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error accessing posts: " + e.toString());
         }
+    }
+
+    public String eventShowPostUploads(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        try {
+            List<Upload> uploads = null;
+            if (filterCategoryId != null && !filterCategoryId.equals("") && !filterCategoryId.equals("-1")) {
+                uploads = wcm.findUploads(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !filterName.equals("")) {
+                uploads = wcm.findUploads(filterName, userWcm);
+            } else {
+                uploads = wcm.findUploads(userWcm);
+            }
+            request.setAttribute("uploads", uploads);
+            request.setAttribute("namespace", namespace);
+        } catch(WcmException e) {
+            log.warning("Error accesing uploads.");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postUploads.jsp";
     }
 }
