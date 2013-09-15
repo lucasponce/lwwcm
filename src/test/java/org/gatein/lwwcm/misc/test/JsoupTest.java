@@ -1,6 +1,7 @@
 package org.gatein.lwwcm.misc.test;
 
 import org.gatein.lwwcm.portlet.content.render.RenderActions;
+import org.gatein.lwwcm.portlet.content.render.WcmTags;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -40,7 +41,7 @@ public class JsoupTest {
                 "</wcm-list>" +
                 "<wcm-single>This is a template for wcm-content single</wcm-single>" +
                 "</p></div>";
-        RenderActions r = new RenderActions();
+        WcmTags r = new WcmTags();
         String output = r.extractTag("wcm-list", html);
         String inside = r.insideTag("wcm-list", output);
         String processed = html.replace(output, "PROCESSED");

@@ -443,13 +443,32 @@ a.lwwcm-delete-category:hover {
 /* Content configuration
 ======================== */
 .lwwcm-config-form {
-    display: inline-block;
+    display: hidden;
 }
 .lwwcm-config {
     margin: 5px 5px;
     padding: 5px 5px;
     font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     border-bottom: 1px solid #ddd;
+}
+.lwwcm-config-inner {
+    font: inherit;
+    margin-top: 3px;
+    position: relative;
+    display: block;
+    height:30px;
+}
+.lwwwcm-column-left {
+    font: inherit;
+    position: absolute;
+    width: 200px;
+    top: 0;
+    left: 0;
+}
+.lwwwcm-column-right {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 .lwwcm-config-new {
     margin: 5px 5px;
@@ -459,8 +478,7 @@ a.lwwcm-delete-category:hover {
 .lwwcm-config-template {
     display: inline-block;
     vertical-align: middle;
-    border: 1px solid #ddd;
-    margin-right: 50px;
+    border: 1px solid #ddd;;
     padding-left: 5px;
     border: 1px solid #ccc;
     width: 410px;

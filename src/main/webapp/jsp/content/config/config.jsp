@@ -47,6 +47,7 @@
                 success: function(data)
                 {
                     $(attachedId).html(data);
+                    saveConfig${n}();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown)
                 {
@@ -66,6 +67,7 @@
                 success: function(data)
                 {
                     $(attachedId).remove();
+                    saveConfig${n}();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown)
                 {
@@ -77,15 +79,16 @@
     function saveConfig${n}() {
         require(["SHARED/jquery"], function($) {
             var formId = "#${n}saveConfiguration";
-            var saveTemplateId = "#${n}saveTemplateId";
-            var saveListenId = "#${n}saveListenId";
-            var saveExportId = "#${n}saveExportId";
-            var contentTemplateId = "#${n}contentTemplateId";
-            var listenId = "#${n}listenId";
-            var exportId = "#${n}exportId";
-            $(saveTemplateId).val( $(contentTemplateId).val() );
-            $(saveListenId).val( $(listenId).val() );
-            $(saveExportId).val( $(exportId).val() );
+            var mainTemplateId = "#${n}mainTemplateId";
+            var mainTemplateIdSave = "#${n}mainTemplateIdSave";
+            var postTemplateId = "#${n}postTemplateId";
+            var postTemplateIdSave = "#${n}postTemplateIdSave";
+            var categoryTemplateId = "#${n}categoryTemplateId";
+            var categoryTemplateIdSave = "#${n}categoryTemplateIdSave";
+
+            $(mainTemplateIdSave).val( $(mainTemplateId).val() );
+            $(postTemplateIdSave).val( $(postTemplateId).val() );
+            $(categoryTemplateIdSave).val( $(categoryTemplateId).val() );
             $(formId).submit();
         });
     }
@@ -95,36 +98,118 @@
 <form id="${n}changeChooseContent" name="changeChooseContent" method="post" action="${changeContentAction}" class="lwwcm-config-form">
     <input type="hidden" id="${n}contentType" name="contentType" />
 </form>
-<form id="${n}newContentAttached" name="newContentAttached" method="post" action="${newContentAttachedAction}">
+<form id="${n}newContentAttached" name="newContentAttached" method="post" action="${newContentAttachedAction}" class="lwwcm-config-form">
     <input type="hidden" id="${n}newTypeContent" name="newTypeContent" />
     <input type="hidden" id="${n}newContentId" name="newContentId" />
 </form>
 <form id="${n}saveConfiguration" method="post" action="${saveConfigurationAction}" class="lwwcm-config-form">
-    <input type="hidden" id="${n}saveTemplateId" name="saveTemplateId" />
-    <input type="hidden" id="${n}saveListenId" name="saveListenId" />
-    <input type="hidden" id="${n}saveExportId" name="saveExportId" />
+    <input type="hidden" id="${n}mainTemplateIdSave" name="mainTemplateId" />
+    <input type="hidden" id="${n}postTemplateIdSave" name="postTemplateId" />
+    <input type="hidden" id="${n}categoryTemplateIdSave" name="categoryTemplateId" />
 </form>
 <div class="lwwcm-config">
-    <span class="glyphicon glyphicon-th margin-right"></span> Template:
+    <div class="lwwcm-config-inner">
+        <div class="lwwwcm-column-left">
+            <span class="glyphicon glyphicon-th margin-right"></span> Main Template:
+        </div>
         <%
             List<Template> templates = (List<Template>)renderRequest.getAttribute("templates");
-            String contentTemplateId = (String)renderRequest.getAttribute("contentTemplateId");
+            String mainTemplateId = (String)renderRequest.getAttribute("mainTemplateId");
         %>
-        <div class="lwwcm-config-template"><select id="${n}contentTemplateId" name="contentTemplateId" class="lwwcm-input lwwcm-config-template-input">
-            <option value="-1" <% if (contentTemplateId != null && contentTemplateId.equals("-1")) { %>selected <% } %>>No Template</option>
+        <div class="lwwcm-config-template lwwwcm-column-right"><select id="${n}mainTemplateId" class="lwwcm-input lwwcm-config-template-input" onchange="saveConfig${n}()">
+            <option value="-1" <% if (mainTemplateId != null && mainTemplateId.equals("-1")) { %>selected <% } %>>No Template</option>
             <%
                 if (templates != null) {
                     for (Template t : templates) {
             %>
-            <option value="<%= t.getId()%>" <% if (contentTemplateId != null && contentTemplateId.equals(t.getId().toString())) { %>selected <% } %>><%= t.getName() %> (<%= t.getLocale() %>) [<%= t.getId()%>]</option>
+            <option value="<%= t.getId()%>" <% if (mainTemplateId != null && mainTemplateId.equals(t.getId().toString())) { %>selected <% } %>><%= t.getName() %> (<%= t.getLocale() %>) [<%= t.getId()%>]</option>
             <%
                     }
                 }
             %>
         </select></div>
+    </div>
+    <div class="lwwcm-config-inner">
+        <div class="lwwwcm-column-left">
+            <span class="glyphicon glyphicon-th margin-right"></span> Post Template:
+        </div>
+        <%
+            templates = (List<Template>)renderRequest.getAttribute("templates");
+            String postTemplateId = (String)renderRequest.getAttribute("postTemplateId");
+        %>
+        <div class="lwwcm-config-template lwwwcm-column-right"><select id="${n}postTemplateId" name="postTemplateId" class="lwwcm-input lwwcm-config-template-input" onchange="saveConfig${n}()">
+            <option value="-1" <% if (postTemplateId != null && postTemplateId.equals("-1")) { %>selected <% } %>>No Template</option>
+            <%
+                if (templates != null) {
+                    for (Template t : templates) {
+            %>
+            <option value="<%= t.getId()%>" <% if (postTemplateId != null && postTemplateId.equals(t.getId().toString())) { %>selected <% } %>><%= t.getName() %> (<%= t.getLocale() %>) [<%= t.getId()%>]</option>
+            <%
+                    }
+                }
+            %>
+        </select></div>
+    </div>
+    <div class="lwwcm-config-inner">
+        <div class="lwwwcm-column-left">
+            <span class="glyphicon glyphicon-th margin-right"></span> Category Template:
+        </div>
+        <%
+            templates = (List<Template>)renderRequest.getAttribute("templates");
+            String categoryTemplateId = (String)renderRequest.getAttribute("categoryTemplateId");
+        %>
+        <div class="lwwcm-config-template lwwwcm-column-right"><select id="${n}categoryTemplateId" name="categoryTemplateId" class="lwwcm-input lwwcm-config-template-input" onchange="saveConfig${n}()">
+            <option value="-1" <% if (categoryTemplateId != null && categoryTemplateId.equals("-1")) { %>selected <% } %>>No Template</option>
+            <%
+                if (templates != null) {
+                    for (Template t : templates) {
+            %>
+            <option value="<%= t.getId()%>" <% if (categoryTemplateId != null && categoryTemplateId.equals(t.getId().toString())) { %>selected <% } %>><%= t.getName() %> (<%= t.getLocale() %>) [<%= t.getId()%>]</option>
+            <%
+                    }
+                }
+            %>
+        </select></div>
+    </div>
 </div>
 <div class="lwwcm-config">
     <span class="glyphicon glyphicon-file margin-right"></span> Content attached:
+
+    <div class="lwwcm-config-new">
+        New:
+        <%
+            String contentType = (String)request.getAttribute("contentType");
+        %>
+        <div class="lwwcm-config-type"><select id="${n}typeContent" name="typeContent" class="lwwcm-input lwwcm-config-type-input" onchange="changeType${n}();">
+            <option value="C" <% if (contentType != null && contentType.equals("C")) { %> selected <% } %>>Category</option>
+            <option value="P" <% if (contentType != null && contentType.equals("P")) { %> selected <% } %>>Post</option>
+        </select></div>
+        <div class="lwwcm-config-ids"><select id="${n}contentId" name="contentId" class="lwwcm-input lwwcm-config-ids-input">
+            <%
+                if (contentType.equals("C")) {
+                    List<Category> categories = (List<Category>)request.getAttribute("chooseContent");
+                    if (categories != null) {
+                        for (Category c : categories) {
+            %>
+            <option value="<%= c.getId() %>"><%= c.getName() %></option>
+            <%
+                    }
+                }
+            } else {
+                List<Post> posts = (List<Post>)request.getAttribute("chooseContent");
+                if (posts != null) {
+                    for (Post p : posts) {
+            %>
+            <option value="<%= p.getId() %>"><%= p.getTitle() %></option>
+            <%
+                        }
+                    }
+                }
+            %>
+        </select></div>
+        <a href="#" onclick="addNewAttachment${n}();" class="button" title="Attach Content"><span class="glyphicon glyphicon-plus"></span></a>
+    </div>
+
     <div class="lwwcm-attached" id="${n}contentAttached">
         <ul>
             <%
@@ -147,55 +232,5 @@
             %>
         </ul>
     </div>
-
-    <div class="lwwcm-config-new">
-        New:
-        <%
-            String contentType = (String)request.getAttribute("contentType");
-        %>
-        <div class="lwwcm-config-type"><select id="${n}typeContent" name="typeContent" class="lwwcm-input lwwcm-config-type-input" onchange="changeType${n}();">
-            <option value="C" <% if (contentType != null && contentType.equals("C")) { %> selected <% } %>>Category</option>
-            <option value="P" <% if (contentType != null && contentType.equals("P")) { %> selected <% } %>>Post</option>
-        </select></div>
-        <div class="lwwcm-config-ids"><select id="${n}contentId" name="contentId" class="lwwcm-input lwwcm-config-ids-input">
-            <%
-                if (contentType.equals("C")) {
-                    List<Category> categories = (List<Category>)request.getAttribute("chooseContent");
-                    if (categories != null) {
-                        for (Category c : categories) {
-            %>
-            <option value="<%= c.getId() %>"><%= c.getName() %></option>
-            <%
-                        }
-                    }
-                } else {
-                    List<Post> posts = (List<Post>)request.getAttribute("chooseContent");
-                    if (posts != null) {
-                        for (Post p : posts) {
-            %>
-            <option value="<%= p.getId() %>"><%= p.getTitle() %></option>
-            <%
-                        }
-                    }
-                }
-            %>
-        </select></div>
-        <a href="#" onclick="addNewAttachment${n}();" class="button" title="Attach Content"><span class="glyphicon glyphicon-plus"></span></a>
-    </div>
-
-</div>
-<div class="lwwcm-config-new">
-    <span class="glyphicon glyphicon-eye-open margin-right"></span> Listen id:
-    <%
-        String listenId = (String)renderRequest.getAttribute("listenId");
-        listenId = (listenId == null ? "" : listenId);
-
-        String exportId = (String)renderRequest.getAttribute("exportId");
-        exportId = (exportId == null ? "" : exportId);
-    %>
-    <div class="lwwcm-config-type lwwcm-config-margin"><input id="${n}listenId" value="<%= listenId %>" name="listenId" type="text" class="lwwcm-input lwwcm-config-type-input" /></div>
-    <span class="glyphicon glyphicon-share-alt margin-right"></span> Export id:
-    <div class="lwwcm-config-type lwwcm-config-margin"><input id="${n}exportId" value="<%= exportId %>" name="exportId" type="text" class="lwwcm-input lwwcm-config-type-input" /></div>
-    <a href="#" onclick="saveConfig${n}();" class="button" title="Save Configuration">Save Configuration</a>
 </div>
 

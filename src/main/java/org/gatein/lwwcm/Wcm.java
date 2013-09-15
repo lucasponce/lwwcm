@@ -136,5 +136,10 @@ public interface Wcm {
         }
     }
 
-
+    interface SUFFIX {
+        static final String POST = "post";
+        static final String CATEGORY = "cat";
+        static final String ID = "id";
+        static final String NAME = "name";
+    }
 }

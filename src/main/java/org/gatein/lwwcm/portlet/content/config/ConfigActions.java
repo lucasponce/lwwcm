@@ -24,27 +24,26 @@ public class ConfigActions {
     private WcmService wcm;
 
     public String viewConfig(RenderRequest request, RenderResponse response, UserWcm userWcm) throws PortletException, IOException {
-        String contentTemplateId = request.getParameter("contentTemplateId");
-        if (contentTemplateId == null) {
-            contentTemplateId = request.getPreferences().getValue("contentTemplateId", null);
-            contentTemplateId = (contentTemplateId == null ? "-1" : contentTemplateId);
+        String mainTemplateId = request.getParameter("mainTemplateId");
+        if (mainTemplateId == null) {
+            mainTemplateId = request.getPreferences().getValue("mainTemplateId", null);
+            mainTemplateId = (mainTemplateId == null ? "-1" : mainTemplateId);
         }
-        request.setAttribute("contentTemplateId", contentTemplateId);
+        request.setAttribute("mainTemplateId", mainTemplateId);
 
-        String listenId = request.getParameter("listenId");
-        if (listenId == null) {
-            listenId = request.getPreferences().getValue("listenId", null);
-            listenId = (listenId == null ? "" : listenId);
+        String postTemplateId = request.getParameter("postTemplateId");
+        if (postTemplateId == null) {
+            postTemplateId = request.getPreferences().getValue("postTemplateId", null);
+            postTemplateId = (postTemplateId == null ? "-1" : postTemplateId);
         }
-        request.setAttribute("listenId", listenId);
+        request.setAttribute("postTemplateId", postTemplateId);
 
-        String exportId = request.getParameter("exportId");
-        if (exportId == null) {
-            exportId = request.getPreferences().getValue("exportId", null);
-            exportId = (exportId == null ? "" : exportId);
+        String categoryTemplateId = request.getParameter("categoryTemplateId");
+        if (categoryTemplateId == null) {
+            categoryTemplateId = request.getPreferences().getValue("categoryTemplateId", null);
+            categoryTemplateId = (categoryTemplateId == null ? "-1" : categoryTemplateId);
         }
-        request.setAttribute("exportId", exportId);
-
+        request.setAttribute("categoryTemplateId", categoryTemplateId);
 
         // Get templates list
         try {
@@ -99,24 +98,33 @@ public class ConfigActions {
             }
         }
 
-        return "/jsp/content/config.jsp";
+        return "/jsp/content/config/config.jsp";
     }
 
-    public void actionSaveConfig(ActionRequest request, ActionResponse response) throws PortletException, IOException {
-        String saveTemplateId = request.getParameter("saveTemplateId");
-        String saveListenId = request.getParameter("saveListenId");
-        String saveExportId = request.getParameter("saveExportId");
+    public void actionSaveConfig(ActionRequest request, ActionResponse response, UserWcm userWcm) throws PortletException, IOException {
+        String mainTemplateId = request.getParameter("mainTemplateId");
+        String postTemplateId = request.getParameter("postTemplateId");
+        String categoryTemplateId = request.getParameter("categoryTemplateId");
+
+        if (mainTemplateId != null && !mainTemplateId.equals("")) {
+            request.getPreferences().setValue("mainTemplateId", mainTemplateId);
+        }
+        if (postTemplateId != null && !postTemplateId.equals("")) {
+            request.getPreferences().setValue("postTemplateId", postTemplateId);
+        }
+        if (categoryTemplateId != null && !categoryTemplateId.equals("")) {
+            request.getPreferences().setValue("categoryTemplateId", categoryTemplateId);
+        }
+
         String listContentAttached = (String)request.getPortletSession().getAttribute("listContentAttached");
-
-        response.setRenderParameter("contentTemplateId", saveTemplateId);
-        response.setRenderParameter("listenId", saveListenId);
-        response.setRenderParameter("exportId", saveExportId);
-
-        request.getPreferences().setValue("contentTemplateId", saveTemplateId);
-        request.getPreferences().setValue("listenId", saveListenId);
-        request.getPreferences().setValue("exportId", saveExportId);
-        request.getPreferences().setValue("listContentAttached", listContentAttached);
+        if (listContentAttached != null) {
+            request.getPreferences().setValue("listContentAttached", listContentAttached);
+        }
         request.getPreferences().store();
+
+        response.setRenderParameter("mainTemplateId", mainTemplateId);
+        response.setRenderParameter("postTemplateId", postTemplateId);
+        response.setRenderParameter("categoryTemplateId", categoryTemplateId);
     }
 
     public String eventNewContentAttached(ResourceRequest request, ResourceResponse response, UserWcm userWcm) throws PortletException, IOException {
@@ -148,12 +156,13 @@ public class ConfigActions {
                     output.add(p);
                 }
             }
+            // This attribute stores objects for rendering in the config view
             request.setAttribute("listAttachedContent", output);
         } catch (WcmException e) {
             log.warning("Error query categories/posts list");
             e.printStackTrace();
         }
-        return "/jsp/content/configContentAttached.jsp";
+        return "/jsp/content/config/configContentAttached.jsp";
     }
 
     public String eventDeleteContentAttached(ResourceRequest request, ResourceResponse response, UserWcm userWcm) throws PortletException, IOException {
@@ -191,7 +200,7 @@ public class ConfigActions {
                 request.setAttribute("newTypeContent", newTypeContent);
             }
             request.setAttribute("newTypeContent", newTypeContent);
-            return "/jsp/content/configContentList.jsp";
+            return "/jsp/content/config/configContentList.jsp";
         } catch (WcmException e) {
             log.warning("Error query categories/posts list");
             e.printStackTrace();

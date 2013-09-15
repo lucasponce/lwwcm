@@ -58,6 +58,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.gatein.api</groupId>
+      <artifactId>gatein-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.gatein.pc</groupId>
       <artifactId>pc-portlet</artifactId>
       <version>${pc-portlet.version}</version>

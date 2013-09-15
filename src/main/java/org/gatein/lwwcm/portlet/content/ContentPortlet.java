@@ -1,5 +1,6 @@
 package org.gatein.lwwcm.portlet.content;
 
+import org.gatein.api.PortalRequest;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.Category;
@@ -10,7 +11,6 @@ import org.gatein.lwwcm.portlet.content.config.ConfigActions;
 import org.gatein.lwwcm.portlet.content.render.RenderActions;
 import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
-import org.gatein.pc.portlet.impl.jsr168.api.RenderRequestImpl;
 
 import javax.inject.Inject;
 import javax.portlet.*;
@@ -40,9 +40,6 @@ public class ContentPortlet extends GenericPortlet {
     @Override
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
 
-        RenderRequestImpl iRequest = (RenderRequestImpl)request;
-        log.info(iRequest.getRealRequest().getRequestURI());
-
         UserWcm userWcm = null;
         try {
             String user = (request.getUserPrincipal() != null?request.getUserPrincipal().getName():null);
@@ -58,10 +55,10 @@ public class ContentPortlet extends GenericPortlet {
 
         String profile = render.renderTemplate(request, response, userWcm);
 
-        String url = "/jsp/content/content.jsp";
+        String url = "/jsp/content/render/content.jsp";
 
         if (profile != null && profile.equals("editor")) {
-            url = "/jsp/content/contentEdit.jsp";
+            url = "/jsp/content/render/contentEdit.jsp";
         }
 
         PortletRequestDispatcher prd = getPortletContext().getRequestDispatcher(url);
@@ -89,10 +86,19 @@ public class ContentPortlet extends GenericPortlet {
     @Override
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException {
 
+        UserWcm userWcm = null;
+        try {
+            String user = (request.getUserPrincipal() != null?request.getUserPrincipal().getName():null);
+            userWcm = portal.getPortalUser(user);
+        } catch (WcmException e) {
+            log.warning("Cannot access Portal User interface.");
+            e.printStackTrace();
+        }
+
         String action = request.getParameter("action");
         if (action != null) {
             if (action.equals(Wcm.CONFIG.ACTIONS.SAVE_CONFIGURATION)) {
-                config.actionSaveConfig(request, response);
+                config.actionSaveConfig(request, response, userWcm);
             } else {
                 // No default action
             }
