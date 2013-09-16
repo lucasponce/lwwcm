@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "lwwcm_posts_history")
 @IdClass(PostHistoryPK.class)
+@Cacheable
 public class PostHistory implements Serializable {
 
 	private Long id;	

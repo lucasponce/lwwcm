@@ -101,3 +101,11 @@ pre
 .marker {
     background-color: Yellow;
 }
+
+/*
+   wcm-* tags
+*/
+wcm-list {
+    display: block !important;
+    background-color: yellow !important;
+}

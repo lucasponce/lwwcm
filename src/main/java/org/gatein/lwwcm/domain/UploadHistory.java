@@ -3,13 +3,7 @@ package org.gatein.lwwcm.domain;
 import java.io.Serializable;
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  * UploadHistory will store versioning of uploaded files.  
@@ -17,6 +11,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "lwwcm_uploads_history")
 @IdClass(UploadHistoryPK.class)
+@Cacheable
 public class UploadHistory implements Serializable {
 
 	private Long id;

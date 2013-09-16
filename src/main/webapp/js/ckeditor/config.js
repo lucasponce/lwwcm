@@ -36,6 +36,8 @@ CKEDITOR.on( 'instanceReady', function( ev )
 {
     var writer = ev.editor.dataProcessor.writer;
     writer.indentationChars = '  ';
+    writer.selfClosingEnd = ' />';
+
     var dtd = CKEDITOR.dtd;
 
     for ( var e in CKEDITOR.tools.extend( {'wcm-list':1, 'script':1, 'wcm-iter':1}, dtd.$block) )

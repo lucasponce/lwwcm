@@ -3,10 +3,7 @@ package org.gatein.lwwcm.portlet.content.render;
 import org.gatein.api.PortalRequest;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Post;
-import org.gatein.lwwcm.domain.Template;
-import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
@@ -29,12 +26,14 @@ public class RenderActions {
     @Inject
     private WcmTags tags;
 
+    private Map<String, String> urlParams;
+
     /*
         Main render method
      */
     public String renderTemplate(RenderRequest request, RenderResponse response, UserWcm userWcm) throws PortletException, IOException {
 
-        Map<String, String> urlParams = parseUrl();
+        this.urlParams = parseUrl();
 
         String listContentAttached = (String)request.getPortletSession().getAttribute("listContentAttached");
         if (listContentAttached == null) {
@@ -50,21 +49,29 @@ public class RenderActions {
         List<Object> contentAttached = null;
         String processedTemplate = null;
         String profile = "read";
+        Post postParameter = null;
+        Category catParameter = null;
 
+        // Validation if post id or category id is valid, if not we forward to the main template of the portlet
         if (urlParams.containsKey("post") && postTemplateId != null && !"".equals(postTemplateId) && !"-1".equals(postTemplateId)) {
+            postParameter = getPostParameter(urlParams, userWcm);
+        } else if (urlParams.containsKey("category") && categoryTemplateId != null && !"".equals(categoryTemplateId) && !"-1".equals(categoryTemplateId))  {
+            catParameter = getCategoryParameter(urlParams, userWcm);
+        }
+
+        if (postParameter != null) {
             // Template
             template = getTemplate(postTemplateId, userWcm);
             // Content used: content attached in portlet configuration + content defined in parameter
             contentAttached = getContentAttached(listContentAttached, userWcm);
-            Post postParameter = getPostParameter(urlParams, userWcm);
             // Processing template with content
             processedTemplate = processTemplate(template, postParameter, null, contentAttached, userWcm);
-        } else if (urlParams.containsKey("category") && categoryTemplateId != null && !"".equals(categoryTemplateId) && !"-1".equals(categoryTemplateId)) {
+        } else if (catParameter != null) {
             // Template
             template = getTemplate(categoryTemplateId, userWcm);
             // Content used: content attached in portlet configuration + content defined in parameter
             contentAttached = getContentAttached(listContentAttached, userWcm);
-            Category catParameter = getCategoryParameter(urlParams, userWcm);
+
             // Processing template with content
             processedTemplate = processTemplate(template, null, catParameter, contentAttached, userWcm);
         } else {
@@ -133,6 +140,10 @@ public class RenderActions {
         Post postParameter = null;
         try {
             postParameter = wcm.findPost(new Long(params.get("id")), userWcm);
+            if (postParameter != null && postParameter.getPostStatus() != null && !postParameter.getPostStatus().equals(Wcm.POSTS.PUBLISHED)) {
+                // Only show published posts
+                postParameter = null;
+            }
         } catch(WcmException e) {
             log.warning("Error query post");
             e.printStackTrace();
@@ -169,20 +180,76 @@ public class RenderActions {
             int indexPost = 0;
             while (!foundTag) {
                 if (tags.hasTag("wcm-list", processedTemplate)) {
-                    // Get Posts from category attached
-                    List<Post> listPosts = getPostsFromCategory(contentAttached, indexList, userWcm);
-                    processedTemplate = tags.tagWcmList("wcm-list", processedTemplate, listPosts);
+                    // Check explicit order for content in the template
+                    String tag = tags.extractTag("wcm-list", processedTemplate);
+                    Map<String, String> properties = tags.propertiesTag(tag);
+                    int customIndex = -1;
+                    if (properties.containsKey("index")) {
+                        try {
+                            customIndex = new Integer(properties.get("index")).intValue();
+                        } catch (Exception e) {
+                            // Default customIndex and error
+                        }
+                    }
+                    // Get Posts attached
+                    List<Post> listPosts = null;
+                    if (customIndex != -1) {
+                        listPosts = getPostsFromCategory(contentAttached, customIndex, userWcm);
+                    } else {
+                        // Default order
+                        listPosts = getPostsFromCategory(contentAttached, indexList, userWcm);
+                    }
+                    processedTemplate = tags.tagWcmList("wcm-list", processedTemplate, listPosts, this.urlParams);
                     indexList++;
                 } else if (tags.hasTag("wcm-single", processedTemplate)) {
+                    // Check explicit order for content in the template
+                    String tag = tags.extractTag("wcm-single", processedTemplate);
+                    Map<String, String> properties = tags.propertiesTag(tag);
+                    int customIndex = -1;
+                    if (properties.containsKey("index")) {
+                        try {
+                            customIndex = new Integer(properties.get("index")).intValue();
+                        } catch (Exception e) {
+                            // Default customIndex and error
+                        }
+                    }
                     // Get Post attached
-                    Post post = getPost(contentAttached, indexPost, userWcm);
-                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post);
+                    Post post = null;
+                    if (customIndex != -1) {
+                        post = getPost(contentAttached, customIndex, userWcm);
+                    } else {
+                        // Default order
+                        post = getPost(contentAttached, indexPost, userWcm);
+                    }
+                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post, this.urlParams);
                     indexPost++;
                 } else if (tags.hasTag("wcm-param-single", processedTemplate)) {
-                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter);
+                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter, this.urlParams);
                 } else if (tags.hasTag("wcm-param-list", processedTemplate)) {
                     List<Post> listPosts = getPostsFromCategory(catParameter, userWcm);
-                    processedTemplate = tags.tagWcmList("wcm-param-list", processedTemplate, listPosts);
+                    processedTemplate = tags.tagWcmList("wcm-param-list", processedTemplate, listPosts, this.urlParams);
+                } else if (tags.hasTag("wcm-file-list", processedTemplate)) {
+                    // Check explicit order for content in the template
+                    String tag = tags.extractTag("wcm-file-list", processedTemplate);
+                    Map<String, String> properties = tags.propertiesTag(tag);
+                    int customIndex = -1;
+                    if (properties.containsKey("index")) {
+                        try {
+                            customIndex = new Integer(properties.get("index")).intValue();
+                        } catch (Exception e) {
+                            // Default customIndex and error
+                        }
+                    }
+                    // Get Posts attached
+                    List<Upload> listUploads = null;
+                    if (customIndex != -1) {
+                        listUploads = getUploadsFromCategory(contentAttached, customIndex, userWcm);
+                    } else {
+                        // Default order
+                        listUploads = getUploadsFromCategory(contentAttached, indexList, userWcm);
+                    }
+                    processedTemplate = tags.tagWcmFileList("wcm-file-list", processedTemplate, listUploads, this.urlParams);
+                    indexList++;
                 } else {
                     foundTag = true;
                 }
@@ -256,6 +323,31 @@ public class RenderActions {
         }
         return listPosts;
     }
+
+    private List<Upload> getUploadsFromCategory(List<Object> contentAttached, int indexCategory, UserWcm userWcm) {
+        Category c = null;
+        List<Upload> listUploads = null;
+        int localIndex = 0;
+        for (Object o : contentAttached) {
+            if (o instanceof Category) {
+                if (localIndex == indexCategory) {
+                    c = (Category)o;
+                    break;
+                }
+                localIndex++;
+            }
+        }
+        if (c != null) {
+            try {
+                listUploads = wcm.findUploads(c.getId(), userWcm);
+            } catch (WcmException e) {
+                log.warning("Error query posts list");
+                e.printStackTrace();
+            }
+        }
+        return listUploads;
+    }
+
 
     /*
         Reserved words for page names:

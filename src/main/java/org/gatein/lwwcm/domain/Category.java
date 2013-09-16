@@ -95,6 +95,7 @@ public class Category implements Serializable {
     @JoinTable(name = "lwwcm_categories_uploads",
             joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
             inverseJoinColumns = { @JoinColumn(name = "upload_id", referencedColumnName = "upload_id") })
+    @OrderBy("modified desc, created desc")
     public Set<Upload> getUploads() {
         return uploads;
     }
@@ -106,6 +107,7 @@ public class Category implements Serializable {
     @JoinTable(name = "lwwcm_categories_templates",
             joinColumns = { @JoinColumn(name = "category_id", referencedColumnName = "category_id") },
             inverseJoinColumns = { @JoinColumn(name = "template_id", referencedColumnName = "template_id") })
+    @OrderBy("modified desc, created desc")
     public Set<Template> getTemplates() {
         return templates;
     }

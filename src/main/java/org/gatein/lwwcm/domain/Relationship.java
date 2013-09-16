@@ -2,12 +2,7 @@ package org.gatein.lwwcm.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * It represents a relationship between content.
@@ -16,6 +11,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "lwwcm_relationships")
+@Cacheable
 public class Relationship implements Serializable {
 	
 	private Long id;

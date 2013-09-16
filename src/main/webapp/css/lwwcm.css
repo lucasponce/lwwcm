@@ -840,3 +840,6 @@ input[type="button"]:active                 {
 .cke_button_label.cke_button__uploads_label {
     display: inline;
 }
+.cke_button_label.cke_button__maximize_label {
+    display: inline;
+}

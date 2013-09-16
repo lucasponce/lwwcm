@@ -349,7 +349,7 @@ public class WcmServiceImpl implements WcmService {
         if (id == null) return null;
         try {
             Post p = em.find(Post.class, id);
-            if (p.getAcls() != null) {
+            if (p != null && p.getAcls() != null) {
                 if (canRead(p.getAcls(), user)) return p;
                 else return null;
             }

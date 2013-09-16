@@ -106,9 +106,16 @@
 }
 
 /* wcm list spotlight */
-.lwwcm-list-spotlight {
+ul.lwwcm-list-spotlight {
     margin: 0;
     padding: 0;
+}
+div.lwwcm-list-spotlight {
+    width: 308px;
+    height: 300px;
+    margin-bottom: 16px;
+    position: relative;
+    background-color: #000;
 }
 .lwwcm-list-spotlight li {
     list-style-type: none;
