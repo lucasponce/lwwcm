@@ -6,12 +6,16 @@ import org.gatein.lwwcm.domain.Category;
 import org.gatein.lwwcm.domain.Template;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
+import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -22,6 +26,9 @@ public class TemplatesActions {
 
     @Inject
     private WcmService wcm;
+
+    @Inject
+    private PortalService portal;
 
     public String actionNewTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String templateName = request.getParameter("templateName");
@@ -42,7 +49,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error saving template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionRightTemplates(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -60,12 +67,13 @@ public class TemplatesActions {
     }
 
     public String actionEditTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String templateEditId = request.getParameter("templateEditId");
         String templateName = request.getParameter("templateName");
         String templateLocale = request.getParameter("templateLocale");
         String templateContent = request.getParameter("templateContent");
         String templateType = request.getParameter("templateType");
         try {
-            Template updateTemplate = (Template)request.getPortletSession().getAttribute("edit");
+            Template updateTemplate = wcm.findTemplate(new Long(templateEditId), userWcm);
             updateTemplate.setName(templateName);
             updateTemplate.setLocale(templateLocale);
             updateTemplate.setContent(templateContent);
@@ -77,7 +85,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error uploading template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionAddCategoryTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -93,7 +101,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionFilterCategoryTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -170,7 +178,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionDeleteSelectedTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -186,7 +194,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionAddSelectedCategoryTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -205,7 +213,7 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
     public String actionRemoveCategoryTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -219,16 +227,20 @@ public class TemplatesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to template " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.TEMPLATES;
     }
 
-    public void viewTemplates(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewTemplates(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         // Check view metadata
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
         try {
             // Categories
             List<Category> categories = wcm.findCategories(userWcm);
-            request.getPortletSession().setAttribute("categories", categories);
+            request.setAttribute("categories", categories);
+
+            // Wcm groups
+            Set<String> wcmGroups = portal.getWcmGroups();
+            request.setAttribute("wcmGroups", wcmGroups);
 
             // New default view
             if (viewMetadata == null || viewMetadata.getViewType() != ViewMetadata.ViewType.TEMPLATES) {
@@ -240,10 +252,10 @@ public class TemplatesActions {
                     viewMetadata.resetPagination();
                     if (viewMetadata.getTotalIndex() > 0) {
                         List<Template> viewList = allTemplates.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                        request.getPortletSession().setAttribute("list", viewList);
+                        request.setAttribute("list", viewList);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     } else {
-                        request.getPortletSession().setAttribute("list", null);
+                        request.setAttribute("list", null);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     }
                 }
@@ -257,10 +269,10 @@ public class TemplatesActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Template> viewList = filterTemplates.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -272,10 +284,10 @@ public class TemplatesActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Template> viewList = filterTemplates.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -287,10 +299,10 @@ public class TemplatesActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Template> viewList = allTemplates.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -299,19 +311,35 @@ public class TemplatesActions {
         } catch(WcmException e) {
             log.warning("Error accessing templates.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing templates: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing templates: " + e.toString());
         }
     }
 
-    public void viewEditTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewEditTemplate(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         String editId = request.getParameter("editid");
         try {
+            // Categories
+            List<Category> categories = wcm.findCategories(userWcm);
+            request.setAttribute("categories", categories);
+
             Template template = wcm.findTemplate(new Long(editId), userWcm);
-            request.getPortletSession().setAttribute("edit", template);
+            request.setAttribute("edit", template);
         } catch (WcmException e) {
             log.warning("Error accessing templates.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing templates: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing templates: " + e.toString());
+        }
+    }
+
+    public void viewNewTemplate(RenderRequest request, RenderResponse response, UserWcm userWcm) {
+        try {
+            // Categories
+            List<Category> categories = wcm.findCategories(userWcm);
+            request.setAttribute("categories", categories);
+        } catch (WcmException e) {
+            log.warning("Error accessing templates.");
+            e.printStackTrace();
+            request.setAttribute("errorWcm", "Error accessing templates: " + e.toString());
         }
     }
 }

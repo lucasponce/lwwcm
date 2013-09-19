@@ -5,20 +5,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  * Upload represents files uploaded into wcm as images or resources.
@@ -145,6 +132,7 @@ public class Upload implements Serializable {
     }
 
 	@OneToMany(mappedBy = "upload", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @OrderBy("permission desc, principal asc")
 	public Set<Acl> getAcls() {
 		return acls;
 	}

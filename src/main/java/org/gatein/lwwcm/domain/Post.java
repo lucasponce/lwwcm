@@ -6,21 +6,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.gatein.lwwcm.Wcm;
 
@@ -195,6 +181,7 @@ public class Post implements Serializable {
 	}
 	
 	@OneToMany(mappedBy = "post", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @OrderBy("permission desc, principal asc")
 	public Set<Acl> getAcls() {
 		return acls;
 	}

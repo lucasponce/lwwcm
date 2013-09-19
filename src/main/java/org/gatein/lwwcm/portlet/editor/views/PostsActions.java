@@ -2,16 +2,15 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Post;
-import org.gatein.lwwcm.domain.Upload;
-import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
+import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
 import javax.portlet.*;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -22,6 +21,9 @@ public class PostsActions {
 
     @Inject
     private WcmService wcm;
+
+    @Inject
+    private PortalService portal;
 
     public String actionNewPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String postTitle = request.getParameter("postTitle");
@@ -46,7 +48,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error saving post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionRightPosts(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -64,6 +66,7 @@ public class PostsActions {
     }
 
     public String actionEditPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String postEditId = request.getParameter("postEditId");
         String postTitle = request.getParameter("postTitle");
         String postExcerpt = request.getParameter("postExcerpt");
         String postLocale = request.getParameter("postLocale");
@@ -71,7 +74,7 @@ public class PostsActions {
         String postCommentsStatus = request.getParameter("postCommentsStatus");
         String postContent = request.getParameter("postContent");
         try {
-            Post updatePost = (Post)request.getPortletSession().getAttribute("edit");
+            Post updatePost = wcm.findPost(new Long(postEditId), userWcm);
             updatePost.setTitle(postTitle);
             updatePost.setExcerpt(postExcerpt);
             updatePost.setLocale(postLocale);
@@ -86,7 +89,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error uploading post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionAddCategoryPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -102,7 +105,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionFilterCategoryPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -179,7 +182,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionDeleteSelectedPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -195,7 +198,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionAddSelectedCategoryPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -214,7 +217,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionRemoveCategoryPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -228,7 +231,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionPublishPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -244,7 +247,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error publishing post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionPublishPosts(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -263,7 +266,7 @@ public class PostsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error publishing post " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.POSTS;
     }
 
     public void viewInitPosts(RenderRequest request, RenderResponse response, UserWcm userWcm) {
@@ -272,7 +275,12 @@ public class PostsActions {
         try {
             // Categories
             List<Category> categories = wcm.findCategories(userWcm);
-            request.getPortletSession().setAttribute("categories", categories);
+            request.setAttribute("categories", categories);
+
+            // Wcm groups
+            Set<String> wcmGroups = portal.getWcmGroups();
+            request.setAttribute("wcmGroups", wcmGroups);
+
             // New default view
             if (viewMetadata == null || viewMetadata.getViewType() != ViewMetadata.ViewType.POSTS) {
                 List<Post> allPosts = wcm.findPosts(userWcm);
@@ -283,10 +291,10 @@ public class PostsActions {
                     viewMetadata.resetPagination();
                     if (viewMetadata.getTotalIndex() > 0) {
                         List<Post> viewList = allPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                        request.getPortletSession().setAttribute("list", viewList);
+                        request.setAttribute("list", viewList);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     } else {
-                        request.getPortletSession().setAttribute("list", null);
+                        request.setAttribute("list", null);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     }
                 }
@@ -297,13 +305,17 @@ public class PostsActions {
         }
     }
 
-    public void viewPosts(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewPosts(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         // Check view metadata
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
         try {
             // Categories
             List<Category> categories = wcm.findCategories(userWcm);
-            request.getPortletSession().setAttribute("categories", categories);
+            request.setAttribute("categories", categories);
+
+            // Wcm groups
+            Set<String> wcmGroups = portal.getWcmGroups();
+            request.setAttribute("wcmGroups", wcmGroups);
 
             // New default view
             if (viewMetadata == null || viewMetadata.getViewType() != ViewMetadata.ViewType.POSTS) {
@@ -315,10 +327,10 @@ public class PostsActions {
                     viewMetadata.resetPagination();
                     if (viewMetadata.getTotalIndex() > 0) {
                         List<Post> viewList = allPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                        request.getPortletSession().setAttribute("list", viewList);
+                        request.setAttribute("list", viewList);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     } else {
-                        request.getPortletSession().setAttribute("list", null);
+                        request.setAttribute("list", null);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     }
                 }
@@ -332,10 +344,10 @@ public class PostsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Post> viewList = filterPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -347,10 +359,10 @@ public class PostsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Post> viewList = filterPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -362,10 +374,10 @@ public class PostsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Post> viewList = allPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -374,19 +386,35 @@ public class PostsActions {
         } catch(WcmException e) {
             log.warning("Error accessing posts.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing posts: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing posts: " + e.toString());
         }
     }
 
-    public void viewEditPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewEditPost(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         String editId = request.getParameter("editid");
         try {
+            // Categories
+            List<Category> categories = wcm.findCategories(userWcm);
+            request.setAttribute("categories", categories);
+
             Post post = wcm.findPost(new Long(editId), userWcm);
-            request.getPortletSession().setAttribute("edit", post);
+            request.setAttribute("edit", post);
         } catch (WcmException e) {
             log.warning("Error accessing posts.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing posts: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing posts: " + e.toString());
+        }
+    }
+
+    public void viewNewPost(RenderRequest request, RenderResponse response, UserWcm userWcm) {
+        try {
+            // Categories
+            List<Category> categories = wcm.findCategories(userWcm);
+            request.setAttribute("categories", categories);
+        } catch (WcmException e) {
+            log.warning("Error accessing posts.");
+            e.printStackTrace();
+            request.setAttribute("errorWcm", "Error accessing posts: " + e.toString());
         }
     }
 
@@ -408,7 +436,118 @@ public class PostsActions {
         } catch(WcmException e) {
             log.warning("Error accesing uploads.");
             e.printStackTrace();
+        } catch(Exception e) {
+            log.warning("Error parsing filterCategoryId: " + filterCategoryId);
+            e.printStackTrace();
         }
         return "/jsp/posts/postUploads.jsp";
     }
+
+    public String eventShowPostAcls(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        try {
+            Post post = null;
+            if (postId != null && !"".equals(postId) && namespace != null && !"".equals(namespace)) {
+                post = wcm.findPost(new Long(postId), userWcm);
+                if (!userWcm.canWrite(post)) post = null;
+            }
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch(WcmException e) {
+            log.warning("Error accesing post acls.");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error parsing postId: " + postId);
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsAcls.jsp";
+    }
+
+    public String eventAddAclPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclPostId = request.getParameter("aclpostid");
+        String aclType = request.getParameter("acltype");
+        String aclWcmGroup = request.getParameter("aclwcmgroup");
+        String namespace = request.getParameter("namespace");
+        try {
+            Post post = wcm.findPost(new Long(aclPostId), userWcm);
+            if (post != null && aclType != null && aclWcmGroup != null && userWcm.canWrite(post)) {
+                Acl newAcl = new Acl();
+                if (aclType.equals(Wcm.ACL.WRITE.toString())) {
+                    newAcl.setPermission(Wcm.ACL.WRITE);
+                } else {
+                    newAcl.setPermission(Wcm.ACL.NONE);
+                }
+                newAcl.setPrincipal(aclWcmGroup);
+
+                // Check if exists
+                boolean found = false;
+                for (Acl acl : post.getAcls()) {
+                    if (acl.getPermission().equals(newAcl.getPermission()) &&
+                            acl.getPrincipal().equals(newAcl.getPrincipal())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    post.getAcls().add(newAcl);
+                    newAcl.setPost(post);
+                    wcm.update(post, userWcm);
+                }
+            } else {
+                post = null;
+            }
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error adding Acl to Post");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsAcls.jsp";
+    }
+
+    public String eventRemoveAclPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclPostId = request.getParameter("aclpostid");
+        String aclId = request.getParameter("aclid");
+        String namespace = request.getParameter("namespace");
+        try {
+            Post post = wcm.findPost(new Long(aclPostId), userWcm);
+            if (post != null && aclId != null && userWcm.canWrite(post)) {
+                // Check if exists
+                Acl found = null;
+                for (Acl acl : post.getAcls()) {
+                    if (acl.getId().toString().equals(aclId)) {
+                        found = acl;
+                        break;
+                    }
+                }
+                // Rules to remove:
+                // - at least 1 WRITE ACL should exists
+                if ((found.getPermission() == Wcm.ACL.NONE && post.getAcls().size() > 1) ||
+                        (found.getPermission() == Wcm.ACL.WRITE && countAcl(post.getAcls(), Wcm.ACL.WRITE) > 1)) {
+                    wcm.remove(found, userWcm);
+                    post.getAcls().remove(found);
+                    post = wcm.findPost(new Long(aclPostId), userWcm);
+                    if (!userWcm.canWrite(post)) post = null;
+                }
+            } else {
+                post = null;
+            }
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+
+        } catch (Exception e) {
+            log.warning("Error removing Acl to Post");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsAcls.jsp";
+    }
+
+    private int countAcl(Set<Acl> acl, Character type) {
+        if (acl == null) return -1;
+        int count = 0;
+        for (Acl a : acl) if (a.getPermission() == type) count++;
+        return count;
+    }
+
 }

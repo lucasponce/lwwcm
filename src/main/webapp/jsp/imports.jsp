@@ -36,6 +36,18 @@
 <c:set var="rsc" value="${portletConfig.getResourceBundle(renderRequest.locale)}" />
 <%
     /*
+        UserWcm of request
+     */
+    Object o = renderRequest.getAttribute("userWcm");
+    UserWcm userWcm = null;
+    boolean isManager = false;
+    if (o instanceof UserWcm) {
+        userWcm = (UserWcm)o;
+        isManager = userWcm.isManager();
+    }
+%>
+<%
+    /*
         Global layer for modal window containing warning messages
      */
 %>

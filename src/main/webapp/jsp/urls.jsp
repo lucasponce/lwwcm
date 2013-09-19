@@ -161,4 +161,24 @@
 <portlet:resourceURL var="showPostUploadsEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_UPLOADS %>" />
 </portlet:resourceURL>
+<portlet:resourceURL var="showPostAclsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_ACLS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="addAclPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_ACL_POST %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="showCategoryAclsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_CATEGORY_ACLS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="addAclCategoryEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_ACL_CATEGORY %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="showUploadAclsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_UPLOAD_ACLS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="addAclUploadEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_ACL_UPLOAD %>" />
+</portlet:resourceURL>
+
+
 

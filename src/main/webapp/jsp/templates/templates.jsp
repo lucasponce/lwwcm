@@ -15,7 +15,7 @@
     <input type="hidden" id="${n}listTemplateId" name="listTemplateId" />
     <table class="lwwcm-posts" id="${n}templates">
         <%
-            List<Template> listTemplates = (List<Template>)portletSession.getAttribute("list");
+            List<Template> listTemplates = (List<Template>)renderRequest.getAttribute("list");
             if (listTemplates != null) {
                 for (Template t : listTemplates) {
         %>

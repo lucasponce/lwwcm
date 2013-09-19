@@ -10,7 +10,7 @@
     <%@include file="../menu.jsp"%>
     <%@include file="../submenu.jsp"%>
     <%
-        List<Category> listCategories = (List<Category>)portletSession.getAttribute("categories");
+        List<Category> listCategories = (List<Category>)request.getAttribute("categories");
     %>
     <div id="${n}uploads-preview" class="lwwcm-upload-preview">
         <img id="${n}uploads-preview-content" class="lwwcm-upload-image" src="" />
@@ -46,10 +46,11 @@
     </div>
 
     <%
-        Template t = (Template) portletSession.getAttribute("edit");
+        Template t = (Template) request.getAttribute("edit");
         if (t != null) {
     %>
     <form id="${n}editTemplateForm" method="post" action="${editTemplateAction}">
+    <input type="hidden" id="${n}templateEditId" name="templateEditId" value="<%= t.getId() %>" />
     <div class="lwwcm-newpost-title"><input id="${n}templateName" name="templateName" class="lwwcm-input" value="<%= t.getName() %>" onfocus="if (this.value == 'Template Name') this.value=''" onblur="if (this.value == '') this.value='Template Name'"/></div>
     <div class="lwwcm-newtemplate">
         Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}templateLocale" name="templateLocale" class="lwwcm-input" value="<%= t.getLocale() %>"/></div>

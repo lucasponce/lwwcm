@@ -112,11 +112,17 @@ public class ViewMetadata {
         if (toIndex >= totalIndex) toIndex = totalIndex - 1;
     }
 
+    // Helpers to render attributes
     public static String categoryTitle(Category cat) {
         if (cat == null) return "";
         if (cat.getParent() == null)
             return cat.getName();
         else
             return categoryTitle(cat.getParent()) + "/" + cat.getName();
+    }
+
+    public static String aclType(Character type) {
+        if (type == Wcm.ACL.WRITE) return "WRITE";
+        else return "NONE";
     }
 }

@@ -22,8 +22,8 @@ public interface WcmService {
     List<Category> findCategories(UserWcm user) throws WcmException;
 	List<Category> findCategories(Character type, UserWcm user) throws WcmException;
     List<Category> findRootCategories(UserWcm user) throws WcmException;
-    List<Category> findChildren(Category cat) throws WcmException;
-    List<Category> findChildren(Long id) throws WcmException;
+    List<Category> findChildren(Category cat, UserWcm user) throws WcmException;
+    List<Category> findChildren(Long id, UserWcm user) throws WcmException;
 
 
 	/*
@@ -42,6 +42,10 @@ public interface WcmService {
     List<Post> findPosts(Long categoryId, Character status, UserWcm user) throws WcmException;
     List<Post> findPosts(String filterName, UserWcm user) throws WcmException;
 
+    /*
+     * Acl API
+     */
+    void remove(Acl acl, UserWcm user) throws WcmException;
 	
 	/*
 	 * Upload API.

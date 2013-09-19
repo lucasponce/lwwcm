@@ -9,7 +9,7 @@
     <%@include file="../menu.jsp"%>
     <%@include file="../submenu.jsp"%>
     <%
-        List<Category> listCategories = (List<Category>)portletSession.getAttribute("categories");
+        List<Category> listCategories = (List<Category>)request.getAttribute("categories");
     %>
     <div id="${n}uploads-preview" class="lwwcm-upload-preview">
         <img id="${n}uploads-preview-content" class="lwwcm-upload-image" src="" />

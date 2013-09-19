@@ -6,22 +6,19 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Upload;
-import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
+import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
+import javax.portlet.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -32,6 +29,9 @@ public class UploadsActions {
 
     @Inject
     private WcmService wcm;
+
+    @Inject
+    private PortalService portal;
 
     public String actionNewUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String tmpDir = System.getProperty(Wcm.UPLOADS.TMP_DIR);
@@ -59,7 +59,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error uploading file " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionRightUploads(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -84,25 +84,30 @@ public class UploadsActions {
             List<FileItem> items = upload.parseRequest(request);
             FileItem file = null;
             String description = null;
+            String editUploadId = null;
             for (FileItem item : items) {
                 if (!item.isFormField()) {
                     file = item;
                 } else {
                     if (item.getFieldName().equals("uploadFileDescription")) {
                         description = item.getString();
+                    } else if (item.getFieldName().equals("editUploadId")) {
+                        editUploadId = item.getString();
                     }
                 }
             }
-            Upload updateUpload = (Upload)request.getPortletSession().getAttribute("edit");
-            if (file != null && file.getSize() > 0 && !file.getName().equals("")) {
-                updateUpload.setFileName(file.getName());
-                updateUpload.setMimeType(file.getContentType());
-                updateUpload.setDescription(description);
-                wcm.update(updateUpload, file.getInputStream(), userWcm);
-            } else {
-                if (description != null) {
+            Upload updateUpload = wcm.findUpload(new Long(editUploadId), userWcm);
+            if (updateUpload != null) {
+                if (file != null && file.getSize() > 0 && !file.getName().equals("")) {
+                    updateUpload.setFileName(file.getName());
+                    updateUpload.setMimeType(file.getContentType());
                     updateUpload.setDescription(description);
-                    wcm.update(updateUpload, userWcm);
+                    wcm.update(updateUpload, file.getInputStream(), userWcm);
+                } else {
+                    if (description != null) {
+                        updateUpload.setDescription(description);
+                        wcm.update(updateUpload, userWcm);
+                    }
                 }
             }
             return Wcm.VIEWS.UPLOADS;
@@ -111,7 +116,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error uploading file " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionAddCategoryUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -127,7 +132,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to upload " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionFilterCategoryUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -204,7 +209,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting upload " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionDeleteSelectedUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -220,7 +225,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting upload " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionAddSelectedCategoryUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -239,7 +244,7 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to upload " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
     public String actionRemoveCategoryUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -253,16 +258,20 @@ public class UploadsActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to upload " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.UPLOADS;
     }
 
-    public void viewUploads(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewUploads(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         // Check view metadata
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
         try {
             // Categories
             List<Category> categories = wcm.findCategories(userWcm);
-            request.getPortletSession().setAttribute("categories", categories);
+            request.setAttribute("categories", categories);
+
+            // Wcm groups
+            Set<String> wcmGroups = portal.getWcmGroups();
+            request.setAttribute("wcmGroups", wcmGroups);
 
             // New default view
             if (viewMetadata == null || viewMetadata.getViewType() != ViewMetadata.ViewType.UPLOADS) {
@@ -274,10 +283,10 @@ public class UploadsActions {
                     viewMetadata.resetPagination();
                     if (viewMetadata.getTotalIndex() > 0) {
                         List<Upload> viewList = allUploads.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                        request.getPortletSession().setAttribute("list", viewList);
+                        request.setAttribute("list", viewList);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     } else {
-                        request.getPortletSession().setAttribute("list", null);
+                        request.setAttribute("list", null);
                         request.getPortletSession().setAttribute("metadata", viewMetadata);
                     }
                 }
@@ -291,10 +300,10 @@ public class UploadsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Upload> viewList = filterUploads.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -306,10 +315,10 @@ public class UploadsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Upload> viewList = filterUploads.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -321,10 +330,10 @@ public class UploadsActions {
                         viewMetadata.checkPagination();
                         if (viewMetadata.getTotalIndex() > 0) {
                             List<Upload> viewList = allUploads.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                            request.getPortletSession().setAttribute("list", viewList);
+                            request.setAttribute("list", viewList);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         } else {
-                            request.getPortletSession().setAttribute("list", null);
+                            request.setAttribute("list", null);
                             request.getPortletSession().setAttribute("metadata", viewMetadata);
                         }
                     }
@@ -333,19 +342,19 @@ public class UploadsActions {
         } catch(WcmException e) {
             log.warning("Error accessing uploads.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing upoads: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing upoads: " + e.toString());
         }
     }
 
-    public void viewEditUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewEditUpload(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         String editId = request.getParameter("editid");
         try {
             Upload upload = wcm.findUpload(new Long(editId), userWcm);
-            request.getPortletSession().setAttribute("edit", upload);
+            request.setAttribute("edit", upload);
         } catch (WcmException e) {
             log.warning("Error accessing uploads.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing uploads: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing uploads: " + e.toString());
         }
     }
 
@@ -397,6 +406,113 @@ public class UploadsActions {
         input.close();
         output.flush();
         output.close();
+    }
+
+    public String eventShowUploadAcls(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String uploadId = request.getParameter("uploadid");
+        try {
+            Upload upload = null;
+            if (uploadId != null && !"".equals(uploadId) && namespace != null && !"".equals(namespace)) {
+                upload = wcm.findUpload(new Long(uploadId), userWcm);
+                if (!userWcm.canWrite(upload)) upload = null;
+            }
+            request.setAttribute("upload", upload);
+            request.setAttribute("namespace", namespace);
+        } catch(WcmException e) {
+            log.warning("Error accesing upload acls.");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error parsing uploadId: " + uploadId);
+            e.printStackTrace();
+        }
+        return "/jsp/uploads/uploadsAcls.jsp";
+    }
+
+    public String eventAddAclUpload(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclUploadId = request.getParameter("acluploadid");
+        String aclType = request.getParameter("acltype");
+        String aclWcmGroup = request.getParameter("aclwcmgroup");
+        String namespace = request.getParameter("namespace");
+        try {
+            Upload upload = wcm.findUpload(new Long(aclUploadId), userWcm);
+            if (upload != null && aclType != null && aclWcmGroup != null && userWcm.canWrite(upload)) {
+                Acl newAcl = new Acl();
+                if (aclType.equals(Wcm.ACL.WRITE.toString())) {
+                    newAcl.setPermission(Wcm.ACL.WRITE);
+                } else {
+                    newAcl.setPermission(Wcm.ACL.NONE);
+                }
+                newAcl.setPrincipal(aclWcmGroup);
+
+                // Check if exists
+                boolean found = false;
+                for (Acl acl : upload.getAcls()) {
+                    if (acl.getPermission().equals(newAcl.getPermission()) &&
+                            acl.getPrincipal().equals(newAcl.getPrincipal())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    upload.getAcls().add(newAcl);
+                    newAcl.setUpload(upload);
+                    wcm.update(upload, userWcm);
+                }
+            } else {
+                upload = null;
+            }
+            request.setAttribute("upload", upload);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error adding Acl to Upload");
+            e.printStackTrace();
+        }
+        return "/jsp/uploads/uploadsAcls.jsp";
+    }
+
+    public String eventRemoveAclUpload(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclUploadId = request.getParameter("acluploadid");
+        String aclId = request.getParameter("aclid");
+        String namespace = request.getParameter("namespace");
+        try {
+            Upload upload = wcm.findUpload(new Long(aclUploadId), userWcm);
+            if (upload != null && aclId != null && userWcm.canWrite(upload)) {
+                // Check if exists
+                Acl found = null;
+                for (Acl acl : upload.getAcls()) {
+                    if (acl.getId().toString().equals(aclId)) {
+                        found = acl;
+                        break;
+                    }
+                }
+                // Rules to remove:
+                // - at least 1 WRITE ACL should exists
+                if ((found.getPermission() == Wcm.ACL.NONE && upload.getAcls().size() > 1) ||
+                        (found.getPermission() == Wcm.ACL.WRITE && countAcl(upload.getAcls(), Wcm.ACL.WRITE) > 1)) {
+                    wcm.remove(found, userWcm);
+                    upload.getAcls().remove(found);
+                    upload = wcm.findUpload(new Long(aclUploadId), userWcm);
+                    if (!userWcm.canWrite(upload)) upload = null;
+                }
+            } else {
+                upload = null;
+            }
+            request.setAttribute("upload", upload);
+            request.setAttribute("namespace", namespace);
+
+        } catch (Exception e) {
+            log.warning("Error removing Acl to Upload");
+            e.printStackTrace();
+        }
+        return "/jsp/uploads/uploadsAcls.jsp";
+    }
+
+    private int countAcl(Set <Acl> acl, Character type) {
+        if (acl == null) return -1;
+        int count = 0;
+        for (Acl a : acl) if (a.getPermission() == type) count++;
+        return count;
     }
 
 }

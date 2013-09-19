@@ -43,7 +43,7 @@
                             for (Category cat : list) {
                                 if (!cat.getId().equals(c.getId())) {
                     %>
-                    <option value="<%= cat.getId() %>" <% if (c.getParent() !=null && c.getParent().getId().equals(cat.getId())) { %> selected <% } %>><%= ViewMetadata.categoryTitle(c) %></option>
+                    <option value="<%= cat.getId() %>" <% if (c.getParent() !=null && c.getParent().getId().equals(cat.getId())) { %> selected <% } %>><%= ViewMetadata.categoryTitle(cat) %></option>
                     <%          }
                             }
                         }

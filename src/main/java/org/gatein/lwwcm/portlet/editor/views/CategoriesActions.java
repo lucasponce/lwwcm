@@ -2,16 +2,17 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.domain.Acl;
 import org.gatein.lwwcm.domain.Category;
+import org.gatein.lwwcm.domain.Upload;
 import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
+import javax.portlet.*;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -22,6 +23,9 @@ public class CategoriesActions {
 
     @Inject
     private WcmService wcm;
+
+    @Inject
+    private PortalService portal;
 
     public String actionNewCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         // Get parameters
@@ -63,7 +67,7 @@ public class CategoriesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error creating new category " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.CATEGORIES;
     }
 
     public String actionDeleteCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -76,7 +80,7 @@ public class CategoriesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error deleting category " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.CATEGORIES;
     }
 
     public String actionEditCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -123,35 +127,40 @@ public class CategoriesActions {
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error updating category " + e.toString());
         }
-        return null;
+        return Wcm.VIEWS.CATEGORIES;
     }
 
-    public void viewCategories(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewCategories(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         List<Category> categories = null;
         try {
             categories = wcm.findRootCategories(userWcm);
             // "list" variable will be global and it will be used to store all list from action phase to render phase
             // this way it can survive several invocation of third party portlets
-            request.getPortletSession().setAttribute("list", categories);
+            request.setAttribute("list", categories);
+
+            // Wcm groups
+            Set<String> wcmGroups = portal.getWcmGroups();
+            request.setAttribute("wcmGroups", wcmGroups);
         } catch (WcmException e) {
             log.warning("Error accessing categories.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing categories: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing categories: " + e.toString());
         }
     }
 
-    public void viewNewCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewNewCategory(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         List<Category> categories = null;
         try {
             categories = wcm.findCategories(Wcm.CATEGORIES.FOLDER, userWcm);
         } catch (WcmException e) {
             log.warning("Error accessing categories.");
             e.printStackTrace();
+            request.setAttribute("errorWcm", "Error accessing categories: " + e.toString());
         }
-        request.getPortletSession().setAttribute("categories", categories);
+        request.setAttribute("categories", categories);
     }
 
-    public void viewEditCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+    public void viewEditCategory(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         String editId = request.getParameter("editid");
         try {
             Category category = wcm.findCategory(new Long(editId), userWcm);
@@ -161,7 +170,7 @@ public class CategoriesActions {
         } catch (WcmException e) {
             log.warning("Error accessing categories.");
             e.printStackTrace();
-            response.setRenderParameter("errorWcm", "Error accessing categories: " + e.toString());
+            request.setAttribute("errorWcm", "Error accessing categories: " + e.toString());
         }
     }
 
@@ -170,7 +179,7 @@ public class CategoriesActions {
         String namespace = request.getParameter("namespace");
         List<Category> categories = null;
         try {
-            categories = wcm.findChildren(new Long(parentid));
+            categories = wcm.findChildren(new Long(parentid), userWcm);
         } catch (WcmException e) {
             log.warning("Error accessing categories.");
             e.printStackTrace();
@@ -179,6 +188,139 @@ public class CategoriesActions {
         request.setAttribute("namespace", namespace);
         request.setAttribute("parentid", parentid);
         return "/jsp/categories/categoriesChildren.jsp";
+    }
+
+    public String eventShowCategoryAcls(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String categoryId = request.getParameter("categoryid");
+        try {
+            Category category = null;
+            if (categoryId != null && !"".equals(categoryId) && namespace != null && !"".equals(namespace)) {
+                category = wcm.findCategory(new Long(categoryId), userWcm);
+                if (!userWcm.canWrite(category)) category = null;
+            }
+            request.setAttribute("category", category);
+            request.setAttribute("namespace", namespace);
+        } catch(WcmException e) {
+            log.warning("Error accesing category acls.");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error parsing categoryId: " + categoryId);
+            e.printStackTrace();
+        }
+        return "/jsp/categories/categoriesAcls.jsp";
+    }
+
+    public String eventAddAclCategory(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclCategoryId = request.getParameter("aclcategoryid");
+        String aclType = request.getParameter("acltype");
+        String aclWcmGroup = request.getParameter("aclwcmgroup");
+        String namespace = request.getParameter("namespace");
+        try {
+            Category category = wcm.findCategory(new Long(aclCategoryId), userWcm);
+            if (category != null && aclType != null && aclWcmGroup != null && userWcm.canWrite(category)) {
+                Acl newAcl = new Acl();
+                if (aclType.equals(Wcm.ACL.WRITE.toString())) {
+                    newAcl.setPermission(Wcm.ACL.WRITE);
+                } else {
+                    newAcl.setPermission(Wcm.ACL.NONE);
+                }
+                newAcl.setPrincipal(aclWcmGroup);
+                propagateAddAcl(category,newAcl, userWcm);
+            } else {
+                category = null;
+            }
+            request.setAttribute("category", category);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error adding Acl to Category");
+            e.printStackTrace();
+        }
+        return "/jsp/categories/categoriesAcls.jsp";
+    }
+
+    private void propagateAddAcl(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        Acl clone = new Acl(acl.getPrincipal(), acl.getPermission());
+        cat.getAcls().add(clone);
+        clone.setCategory(cat);
+        wcm.update(cat, user);
+        List<Category> children = wcm.findChildren(cat, user);
+        if (children != null && children.size() > 0) {
+            for (Category c : children) {
+                propagateAddAcl(c, acl, user);
+            }
+        }
+    }
+
+    public String eventRemoveAclCategory(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String aclCategoryId = request.getParameter("aclcategoryid");
+        String aclId = request.getParameter("aclid");
+        String namespace = request.getParameter("namespace");
+        try {
+            Category category = wcm.findCategory(new Long(aclCategoryId), userWcm);
+            if (category != null && aclId != null && userWcm.canWrite(category)) {
+                // Check if exists
+                Acl found = null;
+                for (Acl acl : category.getAcls()) {
+                    if (acl.getId().toString().equals(aclId)) {
+                        found = acl;
+                        break;
+                    }
+                }
+                if (found != null) {
+                    propagateRemoveAcl(category, found, userWcm);
+                    category = wcm.findCategory(new Long(aclCategoryId), userWcm);
+                    if (!userWcm.canWrite(category)) category = null;
+                }
+            } else {
+                category = null;
+            }
+            request.setAttribute("category", category);
+            request.setAttribute("namespace", namespace);
+
+        } catch (Exception e) {
+            log.warning("Error removing Acl to Category");
+            e.printStackTrace();
+        }
+        return "/jsp/categories/categoriesAcls.jsp";
+    }
+
+    /*
+        Rules to remove:
+        - at least 1 WRITE ACL should exists
+     */
+    private void propagateRemoveAcl(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        // Check if exists
+        Acl found = null;
+        for (Acl a : cat.getAcls()) {
+            if (a.getPermission().equals(acl.getPermission()) && a.getPrincipal().equals(acl.getPrincipal())) {
+                found = a;
+                break;
+            }
+        }
+        if (found != null &&
+                ((acl.getPermission() == Wcm.ACL.NONE && cat.getAcls().size() > 1) ||
+                        (acl.getPermission() == Wcm.ACL.WRITE && countAcl(cat.getAcls(), Wcm.ACL.WRITE) > 1)
+                )
+                ) {
+            wcm.remove(found, user);
+            cat.getAcls().remove(found);
+        }
+        List<Category> children = wcm.findChildren(cat, user);
+        if (children != null && children.size() > 0) {
+            for (Category c : children) {
+                propagateRemoveAcl(c, acl, user);
+            }
+        }
+    }
+
+    private int countAcl(Set <Acl> acl, Character type) {
+        if (acl == null) return -1;
+        int count = 0;
+        for (Acl a : acl) if (a.getPermission() == type) count++;
+        return count;
     }
 
 }

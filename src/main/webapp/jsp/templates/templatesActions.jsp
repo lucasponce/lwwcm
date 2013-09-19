@@ -26,7 +26,7 @@
     </div>
 
     <%  ViewMetadata metadata = (ViewMetadata)portletSession.getAttribute("metadata");
-        List<Category> listCategories = (List<Category>)portletSession.getAttribute("categories");
+        List<Category> listCategories = (List<Category>)request.getAttribute("categories");
     %>
     <form id="${n}filterCategoryTemplatesForm" method="post" action="${filterCategoryTemplatesAction}">
         <input type="hidden" id="${n}filterCategoryId" name="filterCategoryId" />

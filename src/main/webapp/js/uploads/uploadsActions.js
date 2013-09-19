@@ -214,3 +214,92 @@ function hidePreview(namespace, link, uploadId) {
         $(id).fadeOut(100);
     });
 }
+
+function showSingleAclUpload(namespace, link, href, uploadId, hrefClose) {
+    require(["SHARED/jquery"], function($) {
+        // Show popup
+        var id = "#" + namespace + "uploads-acls";
+        var linkid = "#" + link; // namespace included
+        var aclId = "#" + namespace + "uploads-acls-attached";
+        var aclUploadId = "#" + namespace + "aclUploadId";
+        $(id).css('top',  $(linkid).offset().top - $(document).scrollTop());
+        $(id).css('left', $(linkid).offset().left);
+        $(id).fadeIn(100);
+
+        $(aclUploadId).val( uploadId );
+
+        $.ajax({
+            type: "POST",
+            url: href + "&uploadid=" + uploadId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing showSingleAclUpload()");
+            }
+        });
+
+        var closeid = "#" + namespace + "close-uploads-acls";
+        $(closeid).click(function (e) {
+            e.preventDefault();
+            $(id).hide();
+            window.location.assign(hrefClose);
+        });
+    });
+}
+
+function addAcl(namespace, href) {
+    var aclTypeId = "#" + namespace + "aclType";
+    var aclWcmGroupId = "#" + namespace + "aclWcmGroup";
+    var aclUploadId = "#" + namespace + "aclUploadId";
+    var aclId = "#" + namespace + "uploads-acls-attached";
+
+    require(["SHARED/jquery"], function($) {
+
+        $.ajax({
+            type: "POST",
+            url: href + "&acluploadid=" + $(aclUploadId).val() + "&namespace=" + namespace + "&acltype=" + $(aclTypeId).val() + "&aclwcmgroup=" + $(aclWcmGroupId).val(),
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing addAcl()");
+            }
+        });
+
+    });
+}
+
+function deleteAcl(namespace, href, aclAclId, aclUploadId) {
+    var aclId = "#" + namespace + "uploads-acls-attached";
+
+    require(["SHARED/jquery"], function($) {
+
+        $.ajax({
+            type: "POST",
+            url: href + "&aclid=" + aclAclId + "&namespace=" + namespace + "&acluploadid=" + aclUploadId,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing deleteAcl()");
+            }
+        });
+
+    });
+}

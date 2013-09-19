@@ -182,17 +182,25 @@ public class WcmTags {
     /*
         <wcm-single> / <wcm-param-single> tag processing
      */
-    public String tagWcmSingle(String tagWcmSingle, String initialTemplate, Post post, Map<String, String> params) {
+    public String tagWcmSingle(String tagWcmSingle, String initialTemplate, Post post, Map<String, String> params, boolean canWrite) {
         String processedTemplate = null;
         String tag = extractTag(tagWcmSingle, initialTemplate);
         this.urlParams = params;
 
         if (tag != null) {
             String inside = insideTag(tagWcmSingle, tag);
+            Map<String, String> properties = propertiesTag(tag);
+            String wcmClass = "";
+            if (properties.containsKey("class")) {
+                wcmClass += " class=\"" + properties.get("class") + "\"";
+            }
             String outputSingle = combine(inside, post, 0);
+            if (canWrite) {
+                outputSingle = "<div " + wcmClass + " contenteditable=\"true\">" + outputSingle + "</div>";
+            }
             processedTemplate = initialTemplate.replace(tag, outputSingle);
         } else {
-            processedTemplate = initialTemplate.replace(tag, "<div>No content found</div>");
+            processedTemplate = initialTemplate.replace(tag, "<div \" + wcmClass + \">No content found</div>");
         }
         return processedTemplate;
     }

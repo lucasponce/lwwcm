@@ -125,6 +125,7 @@ public class Category implements Serializable {
 	}
 	
 	@OneToMany(mappedBy = "category", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @OrderBy("permission desc, principal asc")
 	public Set<Acl> getAcls() {
 		return acls;
 	}

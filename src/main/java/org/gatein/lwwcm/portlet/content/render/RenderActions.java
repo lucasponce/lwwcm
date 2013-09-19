@@ -7,9 +7,7 @@ import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.WcmService;
 
 import javax.inject.Inject;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -60,12 +58,27 @@ public class RenderActions {
         }
 
         if (postParameter != null) {
+            // Can write postParameter
+            boolean canWrite = false;
+            if (!"anonymous".equals(userWcm.toString()) && userWcm.canWrite(postParameter)) {
+                canWrite = true;
+                profile = "editor";
+                // Categories for editor
+                List<Category> categories = null;
+                try {
+                    categories = wcm.findCategories(userWcm);
+                } catch (WcmException e) {
+                    log.warning("Error accessing categories.");
+                    e.printStackTrace();
+                }
+                request.setAttribute("categories", categories);
+            }
             // Template
             template = getTemplate(postTemplateId, userWcm);
             // Content used: content attached in portlet configuration + content defined in parameter
             contentAttached = getContentAttached(listContentAttached, userWcm);
             // Processing template with content
-            processedTemplate = processTemplate(template, postParameter, null, contentAttached, userWcm);
+            processedTemplate = processTemplate(canWrite, template, postParameter, null, contentAttached, userWcm);
         } else if (catParameter != null) {
             // Template
             template = getTemplate(categoryTemplateId, userWcm);
@@ -73,7 +86,7 @@ public class RenderActions {
             contentAttached = getContentAttached(listContentAttached, userWcm);
 
             // Processing template with content
-            processedTemplate = processTemplate(template, null, catParameter, contentAttached, userWcm);
+            processedTemplate = processTemplate(false, template, null, catParameter, contentAttached, userWcm);
         } else {
             // Processing main template
             if (mainTemplateId != null && !"".equals(mainTemplateId) && !"-1".equals(mainTemplateId)) {
@@ -82,7 +95,7 @@ public class RenderActions {
                 // Content used: content attached in portlet configuration + content defined in parameter
                 contentAttached = getContentAttached(listContentAttached, userWcm);
                 // Processing template with content
-                processedTemplate = processTemplate(template, null, null, contentAttached, userWcm);
+                processedTemplate = processTemplate(false, template, null, null, contentAttached, userWcm);
             }
         }
 
@@ -171,7 +184,7 @@ public class RenderActions {
     /*
         Main process method
      */
-    private String processTemplate(Template template, Post postParameter, Category catParameter, List<Object> contentAttached, UserWcm userWcm) {
+    private String processTemplate(boolean canWrite, Template template, Post postParameter, Category catParameter, List<Object> contentAttached, UserWcm userWcm) {
         String processedTemplate = null;
         if (template != null) {
             processedTemplate = template.getContent();
@@ -221,10 +234,10 @@ public class RenderActions {
                         // Default order
                         post = getPost(contentAttached, indexPost, userWcm);
                     }
-                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post, this.urlParams);
+                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post, this.urlParams, false);
                     indexPost++;
                 } else if (tags.hasTag("wcm-param-single", processedTemplate)) {
-                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter, this.urlParams);
+                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter, this.urlParams, canWrite);
                 } else if (tags.hasTag("wcm-param-list", processedTemplate)) {
                     List<Post> listPosts = getPostsFromCategory(catParameter, userWcm);
                     processedTemplate = tags.tagWcmList("wcm-param-list", processedTemplate, listPosts, this.urlParams);
@@ -399,6 +412,32 @@ public class RenderActions {
         }
 
         return out;
+    }
+
+    // For Content Editor events
+    public String eventShowPostUploads(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        try {
+            List<Upload> uploads = null;
+            if (filterCategoryId != null && !filterCategoryId.equals("") && !filterCategoryId.equals("-1")) {
+                uploads = wcm.findUploads(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !filterName.equals("")) {
+                uploads = wcm.findUploads(filterName, userWcm);
+            } else {
+                uploads = wcm.findUploads(userWcm);
+            }
+            request.setAttribute("uploads", uploads);
+            request.setAttribute("namespace", namespace);
+        } catch(WcmException e) {
+            log.warning("Error accesing uploads.");
+            e.printStackTrace();
+        } catch(Exception e) {
+            log.warning("Error parsing filterCategoryId: " + filterCategoryId);
+            e.printStackTrace();
+        }
+        return "/jsp/content/render/contentUploads.jsp";
     }
 
 }

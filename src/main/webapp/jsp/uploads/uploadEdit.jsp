@@ -8,7 +8,7 @@
     <%@include file="../submenu.jsp"%>
 
     <%
-        Upload u = (Upload) portletSession.getAttribute("edit");
+        Upload u = (Upload) renderRequest.getAttribute("edit");
         if (u != null) {
     %>
     <portlet:resourceURL var="downloadUploadEvent">

@@ -125,6 +125,9 @@ public class ContentPortlet extends GenericPortlet {
                 url = config.eventNewContentAttached(request, response, userWcm);
             } else if (event.equals(Wcm.CONFIG.EVENTS.DELETE_CONTENT_ATTACHED)) {
                 url = config.eventDeleteContentAttached(request, response, userWcm);
+            } if (event.equals(Wcm.EVENTS.SHOW_POST_UPLOADS)) {
+                // Show list uploads
+                url = render.eventShowPostUploads(request, response, userWcm);
             } else {
                 // No default event
             }

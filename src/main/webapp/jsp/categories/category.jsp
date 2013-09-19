@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
+<%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
@@ -26,11 +27,11 @@
                 <select id="${n}newCategoryParent" name="newCategoryParent" class="lwwcm-input">
                     <option value="-1">Root (no parent)</option>
                     <%
-                        List<Category> list = (List<Category>)portletSession.getAttribute("categories");
+                        List<Category> list = (List<Category>)renderRequest.getAttribute("categories");
                         if (list != null) {
                             for (Category cat : list) {
                     %>
-                    <option value="<%= cat.getId() %>"><%= cat.getName() %> [<%= cat.getId() %>]</option>
+                    <option value="<%= cat.getId() %>"><%= ViewMetadata.categoryTitle(cat) %></option>
                     <%
                             }
                         }

@@ -22,6 +22,9 @@
 .margin-right                               {
     margin-right: 5px !important;
 }
+.margin-left-cat {
+    margin-left: 5px !important;
+}
 .margin-left                                {
     margin-left: 10px !important;
 }
@@ -298,6 +301,74 @@ a.lwwcm-delete-category:hover {
     background-color: #ebebeb;
     cursor: pointer;
 }
+
+/* Acl dialog
+ ============ */
+.lwwcm-acl-new {
+    margin: 0px 0px;
+    padding: 0px 0px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+.lwwcm-acl-type {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-right: 10px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    width: 65px;
+    overflow: hidden;
+}
+
+.lwwcm-acl-type-input {
+    width:103px !important;
+}
+
+.lwwcm-acl-group {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    margin-right: 5px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    width: 255px;
+    overflow: hidden;
+}
+
+.lwwcm-acl-group-input {
+    width:293px !important;
+}
+
+.lwwcm-acl-attached {
+    margin: 5 0 0 0;
+    padding: 0px 0px;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+.lwwcm-acl-attached ul {
+    margin: 0 10px;
+    list-style: none;
+    padding: 5px 0px;
+}
+.lwwcm-acl-attached li {
+    margin-right: 20px;
+    padding: 3px 5px;
+    list-style-type: none;
+    position: relative;
+}
+.lwwcm-acl-attached a {
+    font-size: 0.8em;
+    float: right;
+    display: block;
+    position: relative;
+}
+.lwwcm-acl-remove {
+    position: absolute;
+    display: block;
+    top: 4px;
+    left: 11px;
+}
+
 
 /* New Post
 =========== */
@@ -742,7 +813,7 @@ input[type="button"]:active                 {
     height:auto;
     padding: 4px;
     background-color: #ffffff;
-    z-index: 9999;
+    z-index: 29999;
     border: 1px solid #b2b2b2;
 }
 .lwwcm-upload-image {

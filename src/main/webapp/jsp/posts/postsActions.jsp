@@ -1,4 +1,5 @@
 <%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
+<%@ page import="java.util.Set" %>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/posts/postsActions.js") %>"></script>
 <div class="lwwcm-posts-actions">
     <div class="lwwcm-checkbox left">
@@ -28,7 +29,7 @@
     </div>
 
     <%  ViewMetadata metadata = (ViewMetadata)portletSession.getAttribute("metadata");
-        List<Category> listCategories = (List<Category>)portletSession.getAttribute("categories");
+        List<Category> listCategories = (List<Category>)renderRequest.getAttribute("categories");
     %>
     <form id="${n}filterCategoryPostsForm" method="post" action="${filterCategoryPostsAction}">
         <input type="hidden" id="${n}filterCategoryId" name="filterCategoryId" />
@@ -89,9 +90,11 @@
                 <%
                     if (listCategories != null) {
                         for (Category c : listCategories) {
+                            if (userWcm.canWrite(c)) {
                 %>
                 <option value="<%= c.getId()%>"><%= ViewMetadata.categoryTitle(c) %> </option>
                 <%
+                            }
                         }
                     }
                 %>
@@ -99,5 +102,41 @@
         </div>
         <a href="#" class="button right" title="Assign Category" id="${n}assign-single-category"><span class="glyphicon glyphicon-tag"></span></a>
         <div class="clear"></div>
+    </div>
+</div>
+
+
+<input type="hidden" id="${n}aclPostId" name="aclPostId" />
+<div id="${n}posts-acls" class="lwwcm-popup-categories lwwcm-dialog">
+    <div id="${n}posts-acls-title" class="lwwcm-dialog-title">ACLs</div>
+    <a href="#" id="${n}close-posts-acls" class="lwwcm-dialog-close"><span> </span></a>
+    <div class="lwwcm-dialog-body">
+        <div class="lwwcm-acl-new">
+            New ACL:
+
+            <div class="lwwcm-acl-type"><select id="${n}aclType" name="aclType" class="lwwcm-input lwwcm-acl-type-input">
+                <option value="<%= Wcm.ACL.WRITE %>">WRITE</option>
+                <option value="<%= Wcm.ACL.NONE%>">NONE</option>
+            </select></div>
+
+            <div class="lwwcm-acl-group"><select id="${n}aclWcmGroup" name="aclWcmGroup" class="lwwcm-input lwwcm-acl-group-input">
+                <option value="<%= Wcm.GROUPS.ALL%>">ALL</option>
+                <%
+                    Set<String> wcmGroups = (Set<String>)request.getAttribute("wcmGroups");
+                    if (wcmGroups != null) {
+                        for (String groupId : wcmGroups) {
+                %>
+                <option value="<%= groupId %>"><%= groupId %></option>
+                <%
+                        }
+                    }
+                %>
+            </select></div>
+            <a href="javascript:;" onclick="addAcl('${n}', '${addAclPostEvent}')" id="${n}addAclButton" class="button" title="Add ACL"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+
+        <div class="lwwcm-acl-attached" id="${n}posts-acls-attached">
+        </div>
+
     </div>
 </div>

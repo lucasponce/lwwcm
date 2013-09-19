@@ -9,16 +9,15 @@ public interface Wcm {
     static final String CONFIGURATION_FILE = "lwwcm.properties";
 	
 	interface GROUPS {
-		static final String ADMINISTRATORS = "/platform/administrators";
-        static final String EDITOR = (System.getProperty("lwwcm.groups.editor") == null ? "/wcm/editor" : System.getProperty("lwwcm.groups.editor"));
+        static final String WCM = (System.getProperty("lwwcm.groups.wcm") == null ? "/wcm" : System.getProperty("lwwcm.groups.wcm"));
 		static final String ALL = "*";
+        static final String MANAGER = (System.getProperty("lwwcm.groups.manager") == null ? "manager" : System.getProperty("lwwcm.groups.manager"));
+        static final String LOST = (System.getProperty("lwwcm.groups.lost") == null ? "/wcm/lost" : System.getProperty("lwwcm.groups.lost"));
 	}
 	
 	interface ACL {	
 		static final Character WRITE = 'W';
-		static final Character READ = 'R';
 		static final Character NONE = 'N';
-		static final Character PUBLISHER = 'P';
 	}
 	
 	interface CATEGORIES {
@@ -119,6 +118,15 @@ public interface Wcm {
         static final String SHOW_CATEGORIES_CHILDREN = "showcategorieschildren";
         static final String DOWNLOAD_UPLOAD = "downloadupload";
         static final String SHOW_POST_UPLOADS = "showpostuploads";
+        static final String SHOW_POST_ACLS = "showpostacls";
+        static final String ADD_ACL_POST = "addaclpost";
+        static final String REMOVE_ACL_POST = "removeaclpost";
+        static final String SHOW_CATEGORY_ACLS = "showcategoryacls";
+        static final String ADD_ACL_CATEGORY = "addaclcategory";
+        static final String REMOVE_ACL_CATEGORY = "removeaclcategory";
+        static final String SHOW_UPLOAD_ACLS = "showuploadacls";
+        static final String ADD_ACL_UPLOAD = "addaclupload";
+        static final String REMOVE_ACL_UPLOAD = "removeaclupload";
     }
 
     interface CONFIG {
@@ -137,9 +145,9 @@ public interface Wcm {
     }
 
     interface SUFFIX {
-        static final String POST = "post";
-        static final String CATEGORY = "cat";
-        static final String ID = "id";
-        static final String NAME = "name";
+        static final String POST = (System.getProperty("lwwcm.parameters.post") == null ? "post" : System.getProperty("lwwcm.parameters.post"));
+        static final String CATEGORY = (System.getProperty("lwwcm.parameters.category") == null ? "cat" : System.getProperty("lwwcm.parameters.category"));
+        static final String ID = (System.getProperty("lwwcm.parameters.id") == null ? "id" : System.getProperty("lwwcm.parameters.id"));
+        static final String NAME = (System.getProperty("lwwcm.parameters.name") == null ? "name" : System.getProperty("lwwcm.parameters.name"));
     }
 }

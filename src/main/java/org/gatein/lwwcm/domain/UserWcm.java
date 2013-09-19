@@ -1,5 +1,7 @@
 package org.gatein.lwwcm.domain;
 
+import org.gatein.lwwcm.Wcm;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +24,8 @@ public class UserWcm implements Serializable {
 
 	private String username;
 	private Set<String> groups = new HashSet<String>();
+    private Set<String> writeGroups = new HashSet<String>();
+    private boolean manager = false;
 	
 	public UserWcm() { }
 	
@@ -45,6 +49,11 @@ public class UserWcm implements Serializable {
 		if (group == null) return;
 		if (groups.contains(group)) return;
 		groups.add(group);
+        // We are not using memberships
+        // One exception is "/wcm" group, that is considering as a simple mark that a user can access to lw wcm editor
+        if (!group.equals(Wcm.GROUPS.WCM)) {
+            writeGroups.add(group);
+        }
 	}
 	
 	public void remove(String group) {
@@ -52,7 +61,90 @@ public class UserWcm implements Serializable {
 		groups.remove(group);
 	}
 
-	@Override
+    /*
+        Validate if group if one of the children of /wcm
+     */
+    public boolean checkWcmGroup(String group) {
+        if (group == null) return false;
+        if ("".equals(group)) return false;
+        return writeGroups.contains(group);
+    }
+
+    public Set<String> getWriteGroups() {
+        return writeGroups;
+    }
+
+    public boolean isManager() {
+        return manager;
+    }
+
+    public void setManager(boolean manager) {
+        this.manager = manager;
+    }
+
+    /*
+        A User can write if:
+
+            Explicit Wcm.ACL.WRITE Acl present attached to a group under /wcm root group
+     */
+    public boolean canWrite(Object o) {
+        if (o == null) return false;
+        Set<Acl> acls = null;
+        if (o instanceof Post) {
+            acls = ((Post)o).getAcls();
+        } else if (o instanceof Category) {
+            acls = ((Category)o).getAcls();
+        } else if (o instanceof Upload) {
+            acls = ((Upload)o).getAcls();
+        } else {
+            return false;
+        }
+        if (acls == null) return false;
+        for (Acl acl : acls) {
+            if (acl.getPrincipal().equals(Wcm.GROUPS.ALL) && acl.getPermission().equals(Wcm.ACL.WRITE)) {
+                return true;
+            } else if (this.checkWcmGroup(acl.getPrincipal()) && acl.getPermission().equals(Wcm.ACL.WRITE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+        A User can read if:
+
+            Explicit Wcm.ACL.WRITE Acl present attached to a group under /wcm root group
+            Not Explicit Wcm.ACL.NONE Acl present to a group under /wcm root group
+     */
+    public boolean canRead(Object o) {
+        if (o == null) return false;
+        Set<Acl> acls;
+        if (o instanceof Post) {
+            acls = ((Post)o).getAcls();
+        } else if (o instanceof Category) {
+            acls = ((Category)o).getAcls();
+        } else if (o instanceof Upload) {
+            acls = ((Upload)o).getAcls();
+        } else {
+            return true;
+        }
+        if (acls == null) return true;
+        for (Acl acl : acls) {
+            if (acl.getPrincipal().equals(Wcm.GROUPS.ALL) && acl.getPermission().equals(Wcm.ACL.WRITE)) {
+                return true;
+            } else if (this.checkWcmGroup(acl.getPrincipal()) && acl.getPermission().equals(Wcm.ACL.WRITE)) {
+                return true;
+            }
+            if (acl.getPrincipal().equals(Wcm.GROUPS.ALL) && acl.getPermission().equals(Wcm.ACL.NONE)) {
+                return false;
+            } else if (this.checkWcmGroup(acl.getPrincipal()) && acl.getPermission().equals(Wcm.ACL.NONE)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
 	public String toString() {
 		return "UserWcm [username=" + username + ", groups=" + groups + "]";
 	}

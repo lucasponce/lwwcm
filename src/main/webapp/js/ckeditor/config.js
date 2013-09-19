@@ -29,6 +29,8 @@ CKEDITOR.editorConfig = function( config ) {
     config.allowedContent = true;
 
     config.extraPlugins = 'uploads';
+
+    config.templates_replaceContent = false;
 };
 
 // Adding these rules to templates indentation

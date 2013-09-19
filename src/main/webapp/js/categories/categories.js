@@ -54,3 +54,92 @@ function deleteCategory(namespace, catid) {
         }
     });
 }
+
+function showSingleAclCategory(namespace, link, href, categoryId, hrefClose) {
+    require(["SHARED/jquery"], function($) {
+        // Show popup
+        var id = "#" + namespace + "categories-acls";
+        var linkid = "#" + link; // namespace included
+        var aclId = "#" + namespace + "categories-acls-attached";
+        var aclCategoryId = "#" + namespace + "aclCategoryId";
+        $(id).css('top',  $(linkid).offset().top - $(document).scrollTop());
+        $(id).css('left', $(linkid).offset().left);
+        $(id).fadeIn(100);
+
+        $(aclCategoryId).val( categoryId );
+
+        $.ajax({
+            type: "POST",
+            url: href + "&categoryid=" + categoryId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing showSingleAclCategory()");
+            }
+        });
+
+        var closeid = "#" + namespace + "close-categories-acls";
+        $(closeid).click(function (e) {
+            e.preventDefault();
+            $(id).hide();
+            window.location.assign(hrefClose);
+        });
+    });
+}
+
+function addAcl(namespace, href) {
+    var aclTypeId = "#" + namespace + "aclType";
+    var aclWcmGroupId = "#" + namespace + "aclWcmGroup";
+    var aclCategoryId = "#" + namespace + "aclCategoryId";
+    var aclId = "#" + namespace + "categories-acls-attached";
+
+    require(["SHARED/jquery"], function($) {
+
+        $.ajax({
+            type: "POST",
+            url: href + "&aclcategoryid=" + $(aclCategoryId).val() + "&namespace=" + namespace + "&acltype=" + $(aclTypeId).val() + "&aclwcmgroup=" + $(aclWcmGroupId).val(),
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing addAcl()");
+            }
+        });
+
+    });
+}
+
+function deleteAcl(namespace, href, aclAclId, aclCategoryId) {
+    var aclId = "#" + namespace + "categories-acls-attached";
+
+    require(["SHARED/jquery"], function($) {
+
+        $.ajax({
+            type: "POST",
+            url: href + "&aclid=" + aclAclId + "&namespace=" + namespace + "&aclcategoryid=" + aclCategoryId,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write ACL data
+                $(aclId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing deleteAcl()");
+            }
+        });
+
+    });
+}

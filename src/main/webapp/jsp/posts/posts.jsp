@@ -20,15 +20,18 @@
     </form>
     <table class="lwwcm-posts" id="${n}posts">
         <%
-            List<Post> listPosts = (List<Post>)portletSession.getAttribute("list");
+            List<Post> listPosts = (List<Post>)renderRequest.getAttribute("list");
             if (listPosts != null) {
                 for (Post p : listPosts) {
+                    boolean canWrite = userWcm.canWrite(p);
         %>
         <tr class="row-post">
             <td class="row-checkbox">
                 <div class="lwwcm-checkbox margin-left">
+                    <% if (canWrite) { %>
                     <input type="checkbox" value="<%= p.getId() %>" id="${n}selectRow<%= p.getId() %>" name="" onchange="selectPost('${n}', '<%= p.getId() %>')" />
                     <label for="${n}selectRow<%= p.getId() %>"></label>
+                    <% } %>
                 </div>
             </td>
             <td class="row-type"><span class="glyphicon glyphicon-file margin-right"></span></td>
@@ -37,11 +40,13 @@
                     <div class="lwwcm-post-title"><a href="${editPostView}&editid=<%= p.getId() %>"><%= p.getTitle() %></a></div>
                     <div class="lwwcm-post-categories"><%
                         for (Category cU : p.getCategories()) {
-                    %>[<a href="javascript:showFilterCategoriesById('${n}', '<%= cU.getId() %>');"><%= cU.getName() %></a> <a href="${removeCategoryPostAction}&catid=<%= cU.getId() %>&postid=<%= p.getId() %>" class="lwwcm-delete-category"><span class="glyphicon glyphicon-remove middle"></span></a>] <%
+                            if (userWcm.canRead(cU)) {
+                    %>[<a href="javascript:showFilterCategoriesById('${n}', '<%= cU.getId() %>');"><%= cU.getName() %></a><% if (canWrite) { %> <a href="${removeCategoryPostAction}&catid=<%= cU.getId() %>&postid=<%= p.getId() %>" class="lwwcm-delete-category"><span class="glyphicon glyphicon-remove middle"></span></a><% } %>] <%
+                            }
                         }
                     %>
                     </div>
-                    <div class="lwwcm-post-actions"><a href="${editPostView}&editid=<%= p.getId() %>">Edit</a> | <a href="javascript:deletePost('${n}', <%= p.getId() %>)">Delete</a> | <a href="javascript:;" onclick="javascript:showSingleCategoriesPost('${n}', this.id, '<%= p.getId() %>');" id="${n}addCategory<%= p.getId() %>">Category</a> | <a href="javascript:;">Comments(0)</a></div>
+                    <div class="lwwcm-post-actions"><% if (canWrite) { %><a href="${editPostView}&editid=<%= p.getId() %>">Edit</a> | <a href="javascript:deletePost('${n}', <%= p.getId() %>)">Delete</a> | <a href="javascript:;" onclick="javascript:showSingleCategoriesPost('${n}', this.id, '<%= p.getId() %>');" id="${n}addCategory<%= p.getId() %>">Category</a> | <a href="javascript:;" onclick="javascript:showSingleAclPost('${n}', this.id, '${showPostAclsEvent}', '<%= p.getId() %>', '${postsView}');" id="${n}addAcl<%= p.getId() %>">Security</a> | <% } %> <a href="javascript:;">Comments(0)</a></div>
                 </div>
             </td>
             <td class="row-author"><%= p.getAuthor() %></td>
@@ -57,7 +62,7 @@
                     nextStatus = Wcm.POSTS.DRAFT.toString();
                 }
             %>
-            <td class="row-status"><a href="javascript:publishPost('${n}', '<%= p.getId() %>', '<%= nextStatus %>');"><span class="glyphicon glyphicon-thumbs-<%= statusThumb %> lwwcm-<%=statusColor %> middle"> <%= status %></span></a> </td>
+            <td class="row-status"><% if (canWrite) { %><a href="javascript:publishPost('${n}', '<%= p.getId() %>', '<%= nextStatus %>');"><% } %><span class="glyphicon glyphicon-thumbs-<%= statusThumb %> lwwcm-<%=statusColor %> middle"> <%= status %></span><% if (canWrite) { %></a><% } %> </td>
             <td class="row-timestamp"><%= ParseDates.parse(p.getModified()) %></td>
         </tr>
         <%

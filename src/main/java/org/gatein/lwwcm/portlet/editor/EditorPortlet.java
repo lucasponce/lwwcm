@@ -28,6 +28,7 @@ import org.gatein.lwwcm.services.PortalService;
 import javax.inject.Inject;
 import javax.portlet.*;
 import java.io.*;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -68,10 +69,10 @@ public class EditorPortlet extends GenericPortlet {
             try {
                 String user = request.getUserPrincipal().getName();
                 userWcm = portal.getPortalUser(user);
-                if (!userWcm.getGroups().contains(Wcm.GROUPS.EDITOR)) {
+                if (!userWcm.getGroups().contains(Wcm.GROUPS.WCM)) {
                     url = "/jsp/notaccess.jsp";
-                    request.setAttribute("userWcm", userWcm);
                 }
+                request.setAttribute("userWcm", userWcm);
             } catch (WcmException e) {
                 log.warning("Cannot access Portal User interface.");
                 e.printStackTrace();
@@ -87,29 +88,52 @@ public class EditorPortlet extends GenericPortlet {
                 }
                 url = "/jsp/posts/posts.jsp";
             } else {
+                // Redirect to view
                 if (view.equals(Wcm.VIEWS.POSTS))  {
+                    // Query list of posts
+                    posts.viewPosts(request, response, userWcm);
                     url = "/jsp/posts/posts.jsp";
                 } else if (view.equals(Wcm.VIEWS.NEW_POST)) {
+                    // Query categories for post editor
+                    posts.viewNewPost(request, response, userWcm);
                     url = "/jsp/posts/post.jsp";
                 } else if (view.equals(Wcm.VIEWS.CATEGORIES))  {
+                    // Query list of categories
+                    categories.viewCategories(request, response, userWcm);
                     url = "/jsp/categories/categories.jsp";
                 } else if (view.equals(Wcm.VIEWS.NEW_CATEGORY)) {
+                    // New category
+                    categories.viewNewCategory(request, response, userWcm);
                     url = "/jsp/categories/category.jsp";
                 } else if (view.equals(Wcm.VIEWS.UPLOADS))  {
+                    // Query list of uploads
+                    uploads.viewUploads(request, response, userWcm);
                     url = "/jsp/uploads/uploads.jsp";
                 } else if (view.equals(Wcm.VIEWS.NEW_UPLOAD)) {
                     url = "/jsp/uploads/upload.jsp";
                 } else if (view.equals(Wcm.VIEWS.TEMPLATES))  {
+                    // Query list of templates
+                    templates.viewTemplates(request, response, userWcm);
                     url = "/jsp/templates/templates.jsp";
                 } else if (view.equals(Wcm.VIEWS.NEW_TEMPLATE)) {
+                    // Query list of categories
+                    templates.viewNewTemplate(request, response, userWcm);
                     url = "/jsp/templates/template.jsp";
                 } else if (view.equals(Wcm.VIEWS.EDIT_CATEGORY)) {
+                    // Query edit category
+                    categories.viewEditCategory(request, response, userWcm);
                     url = "/jsp/categories/categoryEdit.jsp";
                 } else if (view.equals(Wcm.VIEWS.EDIT_UPLOAD)) {
+                    // Query edit upload
+                    uploads.viewEditUpload(request, response, userWcm);
                     url = "/jsp/uploads/uploadEdit.jsp";
                 } else if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
+                    // Query edit template
+                    templates.viewEditTemplate(request, response, userWcm);
                     url = "/jsp/templates/templateEdit.jsp";
                 } else if (view.equals(Wcm.VIEWS.EDIT_POST)) {
+                    // Query edit post
+                    posts.viewEditPost(request, response, userWcm);
                     url = "/jsp/posts/postEdit.jsp";
                 } else {
                    // View parameter wrong. Default view.
@@ -138,6 +162,19 @@ public class EditorPortlet extends GenericPortlet {
         // Get parameters
         String action = request.getParameter("action");
         String view = request.getParameter("view");
+
+        // Views
+        // Transfer parameters from action to render phase
+        if (view!=null) {
+            if (view.equals(Wcm.VIEWS.EDIT_CATEGORY) ||
+                view.equals(Wcm.VIEWS.EDIT_UPLOAD) ||
+                view.equals(Wcm.VIEWS.EDIT_TEMPLATE) ||
+                view.equals(Wcm.VIEWS.EDIT_POST)) {
+                response.setRenderParameter("editid", request.getParameter("editid"));
+            }
+            if (request.getParameter("errorWcm") != null)
+                response.setRenderParameter("errorWcm", request.getParameter("errorWcm"));
+        }
 
         // Actions
         if (action != null) {
@@ -259,41 +296,7 @@ public class EditorPortlet extends GenericPortlet {
                 // View parameter doesn't modified by actions
             }
         }
-
-        // Views
-        if (view != null) {
-            if (view.equals(Wcm.VIEWS.CATEGORIES)) {
-                // Query list of categories
-                categories.viewCategories(request, response, userWcm);
-            } else if (view.equals(Wcm.VIEWS.NEW_CATEGORY)) {
-                // New category
-                categories.viewNewCategory(request, response, userWcm);
-            } else if (view.equals(Wcm.VIEWS.EDIT_CATEGORY)) {
-                // Query edit category
-                categories.viewEditCategory(request, response, userWcm);
-            } else if (view.equals(Wcm.VIEWS.UPLOADS)) {
-                // Query list of uploads
-                uploads.viewUploads(request, response, userWcm);
-            } else if (view.equals(Wcm.VIEWS.EDIT_UPLOAD)) {
-                // Query edit upload
-                uploads.viewEditUpload(request, response, userWcm);
-            } if (view.equals(Wcm.VIEWS.TEMPLATES)) {
-               // Query list of templates
-                templates.viewTemplates(request, response, userWcm);
-            } if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) {
-               // Query edit template
-                templates.viewEditTemplate(request, response, userWcm);
-            } if (view.equals(Wcm.VIEWS.POSTS)) {
-                // Query list of posts
-                posts.viewPosts(request, response, userWcm);
-            } if (view.equals(Wcm.VIEWS.EDIT_POST)) {
-                // Query edit post
-                posts.viewEditPost(request, response, userWcm);
-            } else {
-                // No new action attached to view
-            }
-            response.setRenderParameter("view", view);
-        }
+        response.setRenderParameter("view", view);
     }
 
     /*
@@ -307,6 +310,7 @@ public class EditorPortlet extends GenericPortlet {
         try {
             String user = (request.getUserPrincipal() != null?request.getUserPrincipal().getName():null);
             userWcm = portal.getPortalUser(user);
+            request.setAttribute("userWcm", userWcm);
         } catch (WcmException e) {
             log.warning("Cannot access Portal User interface.");
             e.printStackTrace();
@@ -324,6 +328,33 @@ public class EditorPortlet extends GenericPortlet {
             } else if (event.equals(Wcm.EVENTS.SHOW_POST_UPLOADS)) {
                 // Show list uploads
                 url = posts.eventShowPostUploads(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_POST_ACLS)) {
+                // Show list acls
+                url = posts.eventShowPostAcls(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_ACL_POST)) {
+                // Add acl post action
+                url = posts.eventAddAclPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_ACL_POST)) {
+                // Remove acl post action
+                url = posts.eventRemoveAclPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_CATEGORY_ACLS)) {
+                // Show list acls
+                url = categories.eventShowCategoryAcls(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_ACL_CATEGORY)) {
+                // Add acl category action
+                url = categories.eventAddAclCategory(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_ACL_CATEGORY)) {
+                // Remove acl category action
+                url = categories.eventRemoveAclCategory(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_UPLOAD_ACLS)) {
+                // Show list acls
+                url = uploads.eventShowUploadAcls(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_ACL_UPLOAD)) {
+                // Add acl upload action
+                url = uploads.eventAddAclUpload(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_ACL_UPLOAD)) {
+                // Remove acl upload action
+                url = uploads.eventRemoveAclUpload(request, response, userWcm);
             } else {
                 // No default view.
             }
