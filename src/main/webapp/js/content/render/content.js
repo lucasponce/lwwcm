@@ -154,7 +154,7 @@ function filterNameUploadsPost(namespace, editor) {
             },
             error: function(XMLHttpRequest, textStatus, errorThrown)
             {
-                alert("Problem accessing showSelectUploadsPost()");
+                alert("Problem accessing filterNameUploadsPost()");
             }
         });
 
@@ -189,8 +189,52 @@ function showPreview(namespace, link, uploadId) {
 
 function hidePreview(namespace, link, uploadId) {
     require(["SHARED/jquery"], function($) {
-        // Show popup
+        // Hide popup
         var id = "#" + namespace + "uploads-preview";
         $(id).fadeOut(100);
+    });
+}
+
+function preSave(namespace, editor) {
+    require(["SHARED/jquery"], function($) {
+        var originalContentId = "#" + namespace + "originalContent";
+        var selected = $(".cke_focus");
+        var postId = "#" + namespace + "postId";
+        var contentTypeId = "#" + namespace + "contentType";
+        $(postId).val(selected.attr("data-post-id"));
+        $(contentTypeId).val(selected.attr("data-post-attr"));
+        $(originalContentId).val(editor.getData());
+    });
+}
+
+function postSave(namespace, editor) {
+    require(["SHARED/jquery"], function($) {
+        var originalContentId = "#" + namespace + "originalContent";
+        var newData = editor.getData();
+        if ($(originalContentId).val() != newData) {
+            var hrefId = "#" + namespace + "urlUpdateContentEvent";
+            var postId = "#" + namespace + "postId";
+            var contentTypeId = "#" + namespace + "contentType";
+
+            $.ajax({
+                type: "POST",
+                url: $(hrefId).val() + "&postId=" + $(postId).val() + "&contentType=" + $(contentTypeId).val(),
+                cache: false,
+                data: {
+                    'original' : $(originalContentId).val(),
+                    'newData' : editor.getData()
+                },
+                dataType: "text",
+                success: function(data)
+                {
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem saving post in postSave()");
+                }
+            });
+        }
+
     });
 }

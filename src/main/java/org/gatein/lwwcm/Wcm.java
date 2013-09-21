@@ -21,9 +21,9 @@ public interface Wcm {
 	}
 	
 	interface CATEGORIES {
-		static final Character CATEGORY = 'C';
-		static final Character TAG = 'T';
-		static final Character FOLDER = 'F';
+		static final Character CATEGORY = '2';
+		static final Character TAG = '3';
+		static final Character FOLDER = '1';
 	}
 	
 	interface POSTS {
@@ -127,6 +127,7 @@ public interface Wcm {
         static final String SHOW_UPLOAD_ACLS = "showuploadacls";
         static final String ADD_ACL_UPLOAD = "addaclupload";
         static final String REMOVE_ACL_UPLOAD = "removeaclupload";
+        static final String UPDATE_CONTENT_POST = "updatecontentpost";
     }
 
     interface CONFIG {

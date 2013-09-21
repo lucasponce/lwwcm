@@ -84,7 +84,7 @@ public class EditorPortlet extends GenericPortlet {
             if (view == null) {
                 // First access shows default post list
                 if (request.getPortletSession().getAttribute("list") == null) {
-                    posts.viewInitPosts(request, response, userWcm);
+                    posts.viewPosts(request, response, userWcm);
                 }
                 url = "/jsp/posts/posts.jsp";
             } else {

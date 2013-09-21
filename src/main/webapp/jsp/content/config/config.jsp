@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.gatein.lwwcm.domain.Category" %>
 <%@ page import="org.gatein.lwwcm.domain.Post" %>
+<%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -191,7 +192,7 @@
                     if (categories != null) {
                         for (Category c : categories) {
             %>
-            <option value="<%= c.getId() %>"><%= c.getName() %></option>
+            <option value="<%= c.getId() %>"><%= ViewMetadata.categoryTitle(c) %></option>
             <%
                     }
                 }

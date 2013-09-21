@@ -15,12 +15,12 @@ import javax.persistence.*;
 @Table(name = "lwwcm_categories")
 @Cacheable
 @NamedQueries({
-        @NamedQuery(name = "listAllCategories", query = "from Category c order by c.parent.id asc, c.name asc"),
+        @NamedQuery(name = "listAllCategories", query = "from Category c order by c.parent.id, c.type, c.name, c.id"),
 		@NamedQuery(name = "listCategoriesName", query = "from Category c where c.name like :name"),
 		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type"),
 		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type"),
-		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id"),
-        @NamedQuery(name = "listRootCategories", query = "from Category c where c.parent is null order by c.id")
+		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id order by c.type, c.name, c.id"),
+        @NamedQuery(name = "listRootCategories", query = "from Category c where c.parent is null order by c.type, c.name, c.id")
 })
 public class Category implements Serializable {
 

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /*
     Wcm custom tags processing
@@ -81,7 +82,7 @@ public class WcmTags {
                 for (int i = from; i < to; i++) {
                     Post p = listPosts.get(i);
                     if (size > 1) outputList += "<li>";
-                    outputList += combine(inside, p, i);
+                    outputList += combine(inside, p, i, false);
                     if (size > 1) outputList += "</li>";
                 }
             }
@@ -189,15 +190,17 @@ public class WcmTags {
 
         if (tag != null) {
             String inside = insideTag(tagWcmSingle, tag);
+            String outputSingle = combine(inside, post, 0, canWrite);
+            /*
             Map<String, String> properties = propertiesTag(tag);
             String wcmClass = "";
             if (properties.containsKey("class")) {
                 wcmClass += " class=\"" + properties.get("class") + "\"";
             }
-            String outputSingle = combine(inside, post, 0);
             if (canWrite) {
                 outputSingle = "<div " + wcmClass + " contenteditable=\"true\">" + outputSingle + "</div>";
             }
+            */
             processedTemplate = initialTemplate.replace(tag, outputSingle);
         } else {
             processedTemplate = initialTemplate.replace(tag, "<div \" + wcmClass + \">No content found</div>");
@@ -208,7 +211,7 @@ public class WcmTags {
     /*
         Combine in-line tags with Post object
      */
-    public String combine(String template, Post post, int iteration) {
+    public String combine(String template, Post post, int iteration, boolean canWrite) {
         if (post == null) return "";
         boolean foundTag = false;
         String output = template;
@@ -216,11 +219,11 @@ public class WcmTags {
             if (hasTag("wcm-link", output)) {
                 output = tagWcmLink(output, post);
             } else if (hasTag("wcm-img", output)) {
-                output = tagWcmImg(output, post);
+                output = tagWcmImg(output, post, canWrite);
             } else if (hasTag("wcm-title", output)) {
-                output = tagWcmTitle(output, post);
+                output = tagWcmTitle(output, post, canWrite);
             } else if (hasTag("wcm-excerpt", output)) {
-                output = tagWcmExcerpt(output, post);
+                output = tagWcmExcerpt(output, post, canWrite);
             } else if (hasTag("wcm-iter", output)) {
                 output = tagWcmIter(output, iteration);
             } else if (hasTag("wcm-created", output)) {
@@ -228,7 +231,7 @@ public class WcmTags {
             } else if (hasTag("wcm-author", output)) {
                 output = tagWcmAuthor(output, post);
             } else if (hasTag("wcm-content", output)) {
-                output = tagWcmContent(output, post);
+                output = tagWcmContent(output, post, canWrite);
             } else {
                 foundTag = true;
             }
@@ -324,7 +327,7 @@ public class WcmTags {
     /*
         <wcm-img> tag processing
      */
-    public String tagWcmImg(String template, Post post) {
+    public String tagWcmImg(String template, Post post, boolean canWrite) {
         String tag = extractTag("wcm-img", template);
         String inside = insideTag("wcm-img", template);
         Map<String, String> properties = propertiesTag(tag);
@@ -346,14 +349,18 @@ public class WcmTags {
             output = "<img class=\"" + cssClass + "\" " + output.substring(4);
         }
         // Cleaning hard code style
-        output = output.replaceAll("style=\"[0-9a-zA-Z :;,-]*\"", "");
+        // output = output.replaceAll("style=\"[0-9a-zA-Z :;,-]*\"", "");
+        // Editing tags
+        if (canWrite) {
+            output = "<p contenteditable=\"true\" class=\"lwwcm-content-edit\" data-post-id=\"" + post.getId() + "\" data-post-attr=\"image\">" + output + "</p>";
+        }
         return template.replace(tag, output);
     }
 
     /*
         <wcm-title> tag processing
      */
-    public String tagWcmTitle(String template, Post post) {
+    public String tagWcmTitle(String template, Post post, boolean canWrite) {
         String tag = extractTag("wcm-title", template);
         String inside = insideTag("wcm-title", template);
         Map<String, String> properties = propertiesTag(tag);
@@ -369,13 +376,17 @@ public class WcmTags {
         } else {
             output = post.getTitle();
         }
+        // Editing tags
+        if (canWrite) {
+            output = "<p contenteditable=\"true\" class=\"lwwcm-content-edit\" data-post-id=\"" + post.getId() + "\" data-post-attr=\"title\">" + output + "</p>";
+        }
         return template.replace(tag, output);
     }
 
     /*
         <wcm-excerpt> tag processing
      */
-    public String tagWcmExcerpt(String template, Post post) {
+    public String tagWcmExcerpt(String template, Post post, boolean canWrite) {
         String tag = extractTag("wcm-excerpt", template);
         String inside = insideTag("wcm-excerpt", template);
         Map<String, String> properties = propertiesTag(tag);
@@ -390,6 +401,10 @@ public class WcmTags {
             output = post.getExcerpt().substring(0, max);
         } else {
             output = post.getExcerpt();
+        }
+        // Editing tags
+        if (canWrite) {
+            output = "<p contenteditable=\"true\" data-post-id=\"" + post.getId() + "\" data-post-attr=\"excerpt\">" + output + "</p>";
         }
         return template.replace(tag, output);
     }
@@ -471,7 +486,7 @@ public class WcmTags {
         skipImages is a list of indexes of images in the content.
         We can combine <wcm-content skipimages="0"> if we want to use <wcm-img index="0"> and I don't want to repeat the same image
      */
-    public String tagWcmContent(String template, Post post) {
+    public String tagWcmContent(String template, Post post, boolean canWrite) {
         String tag = extractTag("wcm-content", template);
         String inside = insideTag("wcm-content", template);
         Map<String, String> properties = propertiesTag(tag);
@@ -483,13 +498,18 @@ public class WcmTags {
                 for (int i=0; i<skipImages.length; i++) {
                     int iImage = new Integer(skipImages[i]).intValue();
                     String image = extractImg(output, iImage);
-                    output = output.replace(image, "");
+                    String imageNotVisible = notVisibleImg(image);
+                    output = output.replace(image, imageNotVisible);
                 }
             } catch (Exception e) {
                 log.warning("Error parsing content with skipImages " + properties.get("skipImages"));
             }
         } else {
             output = post.getContent();
+        }
+        // Editing tags
+        if (canWrite) {
+            output = "<div contenteditable=\"true\" data-post-id=\"" + post.getId() + "\" data-post-attr=\"content\">" + output + "</div>";
         }
         return template.replace(tag, output);
     }
@@ -642,6 +662,48 @@ public class WcmTags {
             output = template.substring(i+1, j);
         }
         return output;
+    }
+
+    // Rules to replace content in inline editor
+    // Covers specific cases as image extraction or cleaning whitespaces or newlines
+    public String replace(String target, String oldData, String newData) {
+        if (target == null || oldData == null || newData == null) return null;
+
+        if (oldData.indexOf("class=\"lwwcm-skip\"") != -1) {
+            oldData = oldData.replaceAll("class=\"lwwcm-skip\"", "");
+        } else if (newData.indexOf("lwwcm-skip") != -1) {
+            oldData = oldData.replaceAll("lwwcm-skip", "");
+        }
+
+        if (newData.indexOf("class=\"lwwcm-skip\"") != -1) {
+            newData = newData.replaceAll("class=\"lwwcm-skip\"", "");
+        } else if (newData.indexOf("lwwcm-skip") != -1) {
+            newData = newData.replaceAll("lwwcm-skip", "");
+        }
+
+        target = target.replace(oldData, newData);
+
+        return target;
+    }
+
+    public String replace(String newData) {
+        if (newData == null) return null;
+
+        if (newData.indexOf("class=\"lwwcm-skip\"") != -1) {
+            newData = newData.replaceAll("class=\"lwwcm-skip\"", "");
+        } else if (newData.indexOf("lwwcm-skip") != -1) {
+            newData = newData.replaceAll("lwwcm-skip", "");
+        }
+        return newData;
+    }
+
+    public String notVisibleImg(String img) {
+        if (img.indexOf("class") > -1) {
+            img = img.replaceAll("class=[\"''](.*)[\"']", "class=\"$1 lwwcm-skip\"");
+        } else {
+            img = "<img class=\"lwwcm-skip\" " + img.trim().substring(4);
+        }
+        return img;
     }
 
 }

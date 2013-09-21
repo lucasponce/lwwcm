@@ -440,4 +440,78 @@ public class RenderActions {
         return "/jsp/content/render/contentUploads.jsp";
     }
 
+    public void eventUpdateContent(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String postId = request.getParameter("postId");
+        String contentType = request.getParameter("contentType");
+        String original = request.getParameter("original");
+        String newData = request.getParameter("newData");
+        try {
+            if (postId != null && !"".equals(postId) && contentType != null && original != null && newData != null) {
+                Post post = wcm.findPost(new Long(postId), userWcm);
+                if (post != null) {
+                    if (contentType.equals("title")) {
+                        if ("".equals(post.getTitle())) {
+                            post.setTitle(newData);
+                        } else {
+                            String newTitle = "";
+                            if ("".equals(original)) {
+                                newTitle = post.getTitle() + newData;
+                            } else {
+                                newTitle = post.getTitle().replace(original, newData);
+                            }
+                            post.setTitle(newTitle);
+                        }
+                        wcm.update(post, userWcm);
+                    } else if (contentType.equals("excerpt")) {
+                        if ("".equals(post.getExcerpt())) {
+                            post.setExcerpt(newData);
+                        } else {
+                            String newExcerpt = "";
+                            if ("".equals(original)) {
+                                newExcerpt = post.getExcerpt() + newData;
+                            } else {
+                                newExcerpt = post.getExcerpt().replace(original, newData);
+                            }
+                            post.setExcerpt(newExcerpt);
+                        }
+                        wcm.update(post, userWcm);
+                    } else if (contentType.equals("image")) {
+                        if ("".equals(post.getContent())) {
+                            post.setContent(newData);
+                        } else {
+                            String newContent = "";
+                            if ("".equals(original)) {
+                                newContent = post.getContent() + newData;
+                            } else {
+                                newContent = tags.replace(post.getContent(), original, newData);
+                            }
+                            post.setContent(newContent);
+                        }
+                        wcm.update(post, userWcm);
+                    } else if (contentType.equals("content")) {
+                        if ("".equals(post.getContent())) {
+                            post.setContent(newData);
+                        } else {
+                            String newContent = "";
+                            if ("".equals(original)) {
+                                newContent = post.getContent() + newData;
+                            } else {
+                                newContent = tags.replace(newData);
+                            }
+                            post.setContent(newContent);
+                            wcm.update(post, userWcm);
+                        }
+                    } else {
+                        // Nothing
+                    }
+                }
+            }
+        } catch(WcmException e) {
+            log.warning("Error updating post.");
+            e.printStackTrace();
+        } catch(Exception e) {
+            log.warning("Error updating post");
+            e.printStackTrace();
+        }
+    }
 }

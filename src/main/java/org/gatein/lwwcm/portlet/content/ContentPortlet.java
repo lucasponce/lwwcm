@@ -128,6 +128,9 @@ public class ContentPortlet extends GenericPortlet {
             } if (event.equals(Wcm.EVENTS.SHOW_POST_UPLOADS)) {
                 // Show list uploads
                 url = render.eventShowPostUploads(request, response, userWcm);
+            } if (event.equals(Wcm.EVENTS.UPDATE_CONTENT_POST)) {
+                // Updating content
+                render.eventUpdateContent(request, response, userWcm);
             } else {
                 // No default event
             }

@@ -28,9 +28,20 @@ CKEDITOR.editorConfig = function( config ) {
     // Disable CKEditor content filter
     config.allowedContent = true;
 
+    // To show WCM uploads dialog
     config.extraPlugins = 'uploads';
 
     config.templates_replaceContent = false;
+
+    // Encoding
+    config.entities = false;
+    config.basicEntities = false;
+
+    config.entities_greek = false;
+    config.entities_latin = false;
+
+    config.entities_additional = '';
+    config.htmlEncodeOutput = false;
 };
 
 // Adding these rules to templates indentation

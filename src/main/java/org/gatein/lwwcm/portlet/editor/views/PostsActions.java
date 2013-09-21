@@ -269,42 +269,6 @@ public class PostsActions {
         return Wcm.VIEWS.POSTS;
     }
 
-    public void viewInitPosts(RenderRequest request, RenderResponse response, UserWcm userWcm) {
-        // Check view metadata
-        ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
-        try {
-            // Categories
-            List<Category> categories = wcm.findCategories(userWcm);
-            request.setAttribute("categories", categories);
-
-            // Wcm groups
-            Set<String> wcmGroups = portal.getWcmGroups();
-            request.setAttribute("wcmGroups", wcmGroups);
-
-            // New default view
-            if (viewMetadata == null || viewMetadata.getViewType() != ViewMetadata.ViewType.POSTS) {
-                List<Post> allPosts = wcm.findPosts(userWcm);
-                if (allPosts != null) {
-                    viewMetadata = new ViewMetadata();
-                    viewMetadata.setViewType(ViewMetadata.ViewType.POSTS);
-                    viewMetadata.setTotalIndex(allPosts.size());
-                    viewMetadata.resetPagination();
-                    if (viewMetadata.getTotalIndex() > 0) {
-                        List<Post> viewList = allPosts.subList(viewMetadata.getFromIndex(), viewMetadata.getToIndex()+1);
-                        request.setAttribute("list", viewList);
-                        request.getPortletSession().setAttribute("metadata", viewMetadata);
-                    } else {
-                        request.setAttribute("list", null);
-                        request.getPortletSession().setAttribute("metadata", viewMetadata);
-                    }
-                }
-            }
-        } catch(WcmException e) {
-            log.warning("Error accessing posts.");
-            e.printStackTrace();
-        }
-    }
-
     public void viewPosts(RenderRequest request, RenderResponse response, UserWcm userWcm) {
         // Check view metadata
         ViewMetadata viewMetadata = (ViewMetadata)request.getPortletSession().getAttribute("metadata");
