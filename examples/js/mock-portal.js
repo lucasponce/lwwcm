@@ -4,14 +4,6 @@ function navigation(listid, navigationid) {
         var list = "#" + listid;
         var nav = "#" + navigationid;
         var size = $(list + " li").size();
-        /*
-         * Navigation block:
-         *
-         <ol class="mockup-nav-list">
-         <li class="mockup-active"></li>
-         <li></li>
-         </ol>
-         */
         $(nav).append('<ol>').addClass('mockup-nav-list');
         for (var i=0; i<size; i++) {
             $(nav + " ol").append('<li>');

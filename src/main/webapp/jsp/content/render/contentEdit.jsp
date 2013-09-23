@@ -52,6 +52,9 @@
         editor.on( 'blur', function( event ) {
             postSave('${n}', event.editor);
         });
+        editor.on( 'configLoaded', function() {
+            editor.config.removePlugins = 'stylescombo';
+        });
     });
 </script>
 <portlet:resourceURL var="showPostUploadsEvent">

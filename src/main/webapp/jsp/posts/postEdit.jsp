@@ -78,6 +78,9 @@
         CKEDITOR.on( 'instanceCreated', function( event ) {
             editor = event.editor;
             editor.portalnamespace='${n}';
+            editor.on( 'configLoaded', function() {
+               editor.config.removePlugins = 'stylescombo';
+            });
         });
         <% if (!canWrite) { %>
         CKEDITOR.on( 'currentInstance', function() {

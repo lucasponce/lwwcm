@@ -307,7 +307,7 @@ public class WcmTags {
         String inside = insideTag("wcm-link", template);
         Map<String, String> properties = propertiesTag(tag);
 
-        String uploadUrl = "/lwwcm/rs/u" + upload.getId();
+        String uploadUrl = "/lwwcm/rs/u/" + upload.getId();
 
         String output = "<a";
         if (properties.containsKey("target")) {
@@ -316,7 +316,7 @@ public class WcmTags {
         if (properties.containsKey("class")) {
             output += " class=\"" + properties.get("class") + "\"";
         }
-        output += "href=\"" + uploadUrl + "\" ";
+        output += " href=\"" + uploadUrl + "\" ";
         output += ">";
         output += inside;
         output += "</a>";

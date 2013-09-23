@@ -33,18 +33,20 @@ CKEDITOR.stylesSet.add( 'default', [
 
     { name: 'Wcm List', element: 'wcm-list' },
     { name: 'Wcm Single', element: 'wcm-single' },
-
-	{ name: 'Italic Title',		element: 'h2', styles: { 'font-style': 'italic' } },
-	{ name: 'Subtitle',			element: 'h3', styles: { 'color': '#aaa', 'font-style': 'italic' } },
-	{
-		name: 'Special Container',
-		element: 'div',
-		styles: {
-			padding: '5px 10px',
-			background: '#eee',
-			border: '1px solid #ccc'
-		}
-	},
+    { name: 'Wcm Param List', element: 'wcm-param-list' },
+    { name: 'Wcm Param Single', element: 'wcm-param-single' },
+    { name: 'Wcm File List', element: 'wcm-file-list' },
+    { name: 'Wcm Author', element: 'wcm-author' },
+    { name: 'Wcm Content', element: 'wcm-content' },
+    { name: 'Wcm Created', element: 'wcm-created' },
+    { name: 'Wcm Description', element: 'wcm-description' },
+    { name: 'Wcm Excerpt', element: 'wcm-excerpt' },
+    { name: 'Wcm Filename', element: 'wcm-filename' },
+    { name: 'Wcm Image', element: 'wcm-img' },
+    { name: 'Wcm Iteration', element: 'wcm-iter' },
+    { name: 'Wcm Link', element: 'wcm-link' },
+    { name: 'Wcm Mimetype', element: 'wcm-mimetype' },
+    { name: 'Wcm Title', element: 'wcm-title' },
 
 	/* Inline Styles */
 
@@ -59,26 +61,6 @@ CKEDITOR.stylesSet.add( 'default', [
 	{ name: 'Subscript',		element: 'sub' },
 	{ name: 'Superscript',		element: 'sup' },
 	*/
-
-	{ name: 'Marker',			element: 'span', attributes: { 'class': 'marker' } },
-
-	{ name: 'Big',				element: 'big' },
-	{ name: 'Small',			element: 'small' },
-	{ name: 'Typewriter',		element: 'tt' },
-
-	{ name: 'Computer Code',	element: 'code' },
-	{ name: 'Keyboard Phrase',	element: 'kbd' },
-	{ name: 'Sample Text',		element: 'samp' },
-	{ name: 'Variable',			element: 'var' },
-
-	{ name: 'Deleted Text',		element: 'del' },
-	{ name: 'Inserted Text',	element: 'ins' },
-
-	{ name: 'Cited Work',		element: 'cite' },
-	{ name: 'Inline Quotation',	element: 'q' },
-
-	{ name: 'Language: RTL',	element: 'span', attributes: { 'dir': 'rtl' } },
-	{ name: 'Language: LTR',	element: 'span', attributes: { 'dir': 'ltr' } },
 
 	/* Object Styles */
 

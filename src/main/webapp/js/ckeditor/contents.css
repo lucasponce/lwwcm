@@ -6,7 +6,8 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 body
 {
 	/* Font */
-	font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
+	/* font-family: sans-serif, Arial, Verdana, "Trebuchet MS"; */
+    font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 12px;
 
 	/* Text color */
@@ -20,7 +21,7 @@ body
 
 .cke_editable
 {
-	font-size: 13px;
+	font-size: 1.0em;
 	line-height: 1.6em;
 }
 
@@ -105,7 +106,147 @@ pre
 /*
    wcm-* tags
 */
+/* Block tags */
 wcm-list {
     display: block !important;
-    background-color: yellow !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-list.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
 }
+
+wcm-param-list {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-param-list.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+    position: relative;
+}
+wcm-single {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-single.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-param-single {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-param-single.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-file-list {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-file-list.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-content {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-content.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+/* Inline tags */
+wcm-author {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-author.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-created {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-created.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-description {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-description.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-excerpt {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-excerpt.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-filename {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-filename.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-img {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-img.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-iter {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-iter.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-link {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-link.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-mimetype {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-mimetype.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-title {
+    min-width: 60px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-title.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+
+

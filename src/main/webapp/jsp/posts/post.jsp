@@ -70,6 +70,9 @@
         CKEDITOR.on( 'instanceCreated', function( event ) {
             var editor = event.editor;
             editor.portalnamespace='${n}';
+            editor.on( 'configLoaded', function() {
+                editor.config.removePlugins = 'stylescombo';
+            });
         });
     </script>
     <textarea class="ckeditor" id="${n}postContent" name="postContent"></textarea>

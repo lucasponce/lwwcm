@@ -71,9 +71,12 @@
     left: 0;
     float: left;
 }
+.mockup-item-label p {
+    font-size: 1.2em;
+}
 .mockup-item-label-title {
     font-family: Arial,sans-serif;
-    font-size: 1.538em;
+    font-size: 1.7em;
     font-weight: bold;
     color: #fff;
     text-decoration: none;
@@ -139,7 +142,7 @@ div.lwwcm-list-spotlight {
     left: 0;
     float: left;
     font-family: Arial,sans-serif;
-    font-size: 1.3em;
+    font-size: 1.6em;
     font-weight: bold;
     color: #fff;
 }
@@ -157,7 +160,7 @@ div.lwwcm-list-spotlight {
     background: none repeat scroll 0 0 rgba(64, 206, 65, 0.70);
 }
 .mockup-blue-background {
-    background: none repeat scroll 0 0 rgba(65, 64, 206, 0.70);
+    background: none repeat scroll 0 0 rgba(0, 118, 188, 0.70);
 }
 .mockup-item-description-spotlight {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0.70);
@@ -169,7 +172,7 @@ div.lwwcm-list-spotlight {
     bottom: 0;
     left: 0;
     font-family: Arial,sans-serif;
-    font-size: 0.9em;
+    font-size: 1.2em;
     color: #fff;
 }
 
@@ -185,11 +188,9 @@ div.lwwcm-list-spotlight {
     margin-right: 16px;
 }
 .mockup-module h2 {
-    font-size: 1.6em;
+    font-size: 3em;
     font-weight: bold;
-    line-height: 1.4285em;
-    letter-spacing: -0.2px;
-    font-family: Arial,sans-serif;
+    font-family: "Rokkitt", serif;
     border-top: 1px solid #d3d3d3;
     margin-bottom: 4px;
     border-bottom: solid 1px #d3d3d3;
@@ -197,7 +198,7 @@ div.lwwcm-list-spotlight {
 .mockup-module p {
     color: #505050;
     font-family: Arial,sans-serif;
-    font-size: 0.9em;
+    font-size: 1.2em;
     margin: 0;
     padding: 0;
 }
@@ -212,7 +213,7 @@ div.lwwcm-list-spotlight {
     color: #a30000;
 }
 .mockup-blue {
-    color: #0075ad;
+    color: #0076bc;
 }
 
 /* Single concert */
@@ -220,6 +221,7 @@ div.lwwcm-list-spotlight {
     width: 304px;
     height: 176px;
     overflow: hidden;
+    margin-bottom: 4px;
 }
 .mockup-item-image-concert img {
     height:auto;
@@ -228,10 +230,11 @@ div.lwwcm-list-spotlight {
     max-height:300px;
 }
 .mockup-item-concert-title {
-    font-size: 1.4em;
+    font-size: 1.6em;
     font-weight: bold;
     font-family: Arial,sans-serif;
     text-decoration: none;
+    margin-bottom: 4px;
 }
 .mockup-item-concert-title:hover {
     text-decoration: underline;
@@ -247,7 +250,7 @@ div.lwwcm-list-spotlight {
 .lwwcm-list-concert li {
     list-style-type: none;
     width: 304px;
-    font-size: 1.0em;
+    font-size: 1.4em;
     font-weight: bold;
     font-family: Arial,sans-serif;
     margin-bottom: 4px;
@@ -265,7 +268,7 @@ div.lwwcm-list-spotlight {
 
 /* Single sporting */
 .mockup-item-sporting-title {
-    font-size: 1.4em;
+    font-size: 1.6em;
     font-weight: bold;
     font-family: Arial,sans-serif;
     display: block;
@@ -298,7 +301,7 @@ div.lwwcm-list-spotlight {
 .lwwcm-list-sporting li {
     list-style-type: none;
     width: 304px;
-    font-size: 1.0em;
+    font-size: 1.4em;
     font-weight: bold;
     font-family: Arial,sans-serif;
     margin-bottom: 4px;
@@ -315,6 +318,38 @@ div.lwwcm-list-spotlight {
 }
 .mockup-clear {
     clear: both;
+}
+.mockup-title {
+    background: url(/lwwcm/rs/u/704) repeat scroll 0 0 transparent;
+}
+.mockup-title img {
+    height: 90px;
+    margin: 0 auto 0px;
+    padding: 0;
+}
+.mockup-title h2 {
+    font-family: "Rokkitt", serif;
+    font-size: 38.5px;
+    line-height: 30px;
+    text-shadow: 0 1px 1px #858585;
+    color: #fff;
+    padding: 5px 10px 5px 10px;
+    margin: 0 0 0 0;
+}
+.mockup-title p {
+    padding: 5px 10px 5px 10px;
+    font-family: Arial,sans-serif;
+    font-size: 1.4em;
+    color: #fff;
+}
+.mockup-title a {
+    font-weight: bold;
+    font-size: 1.6;
+    text-decoration: underline;
+    color: #fff;
+}
+.mockup-title a:hover {
+    text-decoration: none;
 }
 
 
