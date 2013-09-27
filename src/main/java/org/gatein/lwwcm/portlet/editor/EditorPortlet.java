@@ -355,6 +355,18 @@ public class EditorPortlet extends GenericPortlet {
             } else if (event.equals(Wcm.EVENTS.REMOVE_ACL_UPLOAD)) {
                 // Remove acl upload action
                 url = uploads.eventRemoveAclUpload(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_POST_COMMENTS)) {
+                // Show comments post
+                url = posts.eventShowPostComments(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_COMMENT_POST)) {
+                // Add Comment Post action
+                url = posts.eventAddCommentPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UPDATE_COMMENTS_POST)) {
+                // Update Comments state in Post
+                url = posts.eventUpdateCommentsPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UPDATE_STATUS_COMMENT_POST)) {
+                // Update Comment's status inside Post
+                url = posts.eventUpdateCommentStatusPost(request, response, userWcm);
             } else {
                 // No default view.
             }

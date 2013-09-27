@@ -19,11 +19,13 @@ public interface WcmService {
 	void update(Category cat, UserWcm user) throws WcmAuthorizationException, WcmException;
     void deleteCategory(Long id, UserWcm user) throws WcmAuthorizationException, WcmException;
     Category findCategory(Long id, UserWcm user) throws WcmException;
+    Category findCategory(String path, UserWcm user) throws WcmException;
     List<Category> findCategories(UserWcm user) throws WcmException;
 	List<Category> findCategories(Character type, UserWcm user) throws WcmException;
     List<Category> findRootCategories(UserWcm user) throws WcmException;
     List<Category> findChildren(Category cat, UserWcm user) throws WcmException;
     List<Category> findChildren(Long id, UserWcm user) throws WcmException;
+    List<Category> findChildren(String path, Character type, UserWcm user) throws WcmException;
 
 
 	/*
@@ -46,7 +48,12 @@ public interface WcmService {
      * Acl API
      */
     void remove(Acl acl, UserWcm user) throws WcmException;
-	
+
+    /*
+     * Comments API
+     */
+    void remove(Comment c, UserWcm user) throws WcmException;
+
 	/*
 	 * Upload API.
 	 */

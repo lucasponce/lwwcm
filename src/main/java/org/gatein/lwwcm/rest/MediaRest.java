@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.io.File;
 import java.util.logging.Logger;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -45,7 +46,12 @@ public class MediaRest {
                 }
                 fullPath = dirPath + File.separator + upload.getStoredName();
                 output = new File(fullPath);
-                return Response.ok(output, upload.getMimeType()).build();
+
+                CacheControl cc = new CacheControl();
+                cc.setMaxAge(Wcm.UPLOADS.CACHE.MAX_AGE);
+                cc.setPrivate(false);
+
+                return Response.ok(output, upload.getMimeType()).cacheControl(cc).build();
             } else {
                 log.warning("Upload ID: " + id + " not found.");
             }

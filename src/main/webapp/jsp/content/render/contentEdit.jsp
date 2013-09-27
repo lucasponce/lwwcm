@@ -3,12 +3,17 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.gatein.lwwcm.portlet.util.ViewMetadata" %>
 <%@include file="../../imports.jsp"%>
-
+<portlet:resourceURL var="addCommentPost">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_COMMENT_POST %>" />
+</portlet:resourceURL>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/content/render/content.js") %>"></script>
+<script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/content/render/contentEditor.js") %>"></script>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/ckeditor/ckeditor.js") %>"></script>
 <%
     List<Category> listCategories = (List<Category>)request.getAttribute("categories");
 %>
+<% String n = renderResponse.getNamespace(); %>
+<input id="<%=n%>-addCommentPost" type="hidden" value="<%= addCommentPost %>" />
 <div id="${n}uploads-preview" class="lwwcm-upload-preview">
     <img id="${n}uploads-preview-content" class="lwwcm-upload-image" src="" />
 </div>

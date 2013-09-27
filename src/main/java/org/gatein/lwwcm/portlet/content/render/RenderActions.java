@@ -33,6 +33,8 @@ public class RenderActions {
 
         this.urlParams = parseUrl();
 
+        tags.setNamespace(response.getNamespace());
+
         String listContentAttached = (String)request.getPortletSession().getAttribute("listContentAttached");
         if (listContentAttached == null) {
             listContentAttached = request.getPreferences().getValue("listContentAttached", null);
@@ -60,7 +62,10 @@ public class RenderActions {
         if (postParameter != null) {
             // Can write postParameter
             boolean canWrite = false;
-            if (!"anonymous".equals(userWcm.toString()) && userWcm.canWrite(postParameter)) {
+            boolean activeEditor = false;
+            activeEditor = request.getPortletSession().getAttribute("activeEditor") != null && request.getPortletSession().getAttribute("activeEditor").equals("true");
+            // Activating Editor
+            if (!"anonymous".equals(userWcm.toString()) && userWcm.canWrite(postParameter) && activeEditor) {
                 canWrite = true;
                 profile = "editor";
                 // Categories for editor
@@ -72,6 +77,12 @@ public class RenderActions {
                     e.printStackTrace();
                 }
                 request.setAttribute("categories", categories);
+                // Reset inline editor
+                request.getPortletSession().setAttribute("activeEditor", null);
+            }
+            // Editor disabled but "Can Write" icon
+            if (!"anonymous".equals(userWcm.toString()) && userWcm.canWrite(postParameter) && !activeEditor) {
+                profile = "write";
             }
             // Template
             template = getTemplate(postTemplateId, userWcm);
@@ -84,7 +95,6 @@ public class RenderActions {
             template = getTemplate(categoryTemplateId, userWcm);
             // Content used: content attached in portlet configuration + content defined in parameter
             contentAttached = getContentAttached(listContentAttached, userWcm);
-
             // Processing template with content
             processedTemplate = processTemplate(false, template, null, catParameter, contentAttached, userWcm);
         } else {
@@ -192,6 +202,7 @@ public class RenderActions {
             int indexList = 0;
             int indexPost = 0;
             while (!foundTag) {
+                // <wcm-cat-list> to prevent order in nested with wcm-list
                 if (tags.hasTag("wcm-list", processedTemplate)) {
                     // Check explicit order for content in the template
                     String tag = tags.extractTag("wcm-list", processedTemplate);
@@ -204,15 +215,21 @@ public class RenderActions {
                             // Default customIndex and error
                         }
                     }
+                    String path = properties.containsKey("path") ? properties.get("path") : null;
+
                     // Get Posts attached
                     List<Post> listPosts = null;
-                    if (customIndex != -1) {
-                        listPosts = getPostsFromCategory(contentAttached, customIndex, userWcm);
+                    if (path != null) {
+                        listPosts = getPostsFromCategoryPath(path, userWcm);
                     } else {
-                        // Default order
-                        listPosts = getPostsFromCategory(contentAttached, indexList, userWcm);
+                        if (customIndex != -1) {
+                            listPosts = getPostsFromCategory(contentAttached, customIndex, userWcm);
+                        } else {
+                            // Default order
+                            listPosts = getPostsFromCategory(contentAttached, indexList, userWcm);
+                        }
                     }
-                    processedTemplate = tags.tagWcmList("wcm-list", processedTemplate, listPosts, this.urlParams);
+                    processedTemplate = tags.tagWcmList("wcm-list", processedTemplate, listPosts, this.urlParams, userWcm);
                     indexList++;
                 } else if (tags.hasTag("wcm-single", processedTemplate)) {
                     // Check explicit order for content in the template
@@ -234,13 +251,16 @@ public class RenderActions {
                         // Default order
                         post = getPost(contentAttached, indexPost, userWcm);
                     }
-                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post, this.urlParams, false);
+                    processedTemplate = tags.tagWcmSingle("wcm-single", processedTemplate, post, this.urlParams, false, userWcm);
                     indexPost++;
                 } else if (tags.hasTag("wcm-param-single", processedTemplate)) {
-                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter, this.urlParams, canWrite);
+                    processedTemplate = tags.tagWcmSingle("wcm-param-single", processedTemplate, postParameter, this.urlParams, canWrite, userWcm);
                 } else if (tags.hasTag("wcm-param-list", processedTemplate)) {
                     List<Post> listPosts = getPostsFromCategory(catParameter, userWcm);
-                    processedTemplate = tags.tagWcmList("wcm-param-list", processedTemplate, listPosts, this.urlParams);
+                    processedTemplate = tags.tagWcmList("wcm-param-list", processedTemplate, listPosts, this.urlParams, userWcm);
+                } else if (tags.hasTag("wcm-param-name", processedTemplate)) {
+                    // Used to render category name pased as parameter
+                    processedTemplate = tags.tagWcmParamName("wcm-param-name", processedTemplate, catParameter);
                 } else if (tags.hasTag("wcm-file-list", processedTemplate)) {
                     // Check explicit order for content in the template
                     String tag = tags.extractTag("wcm-file-list", processedTemplate);
@@ -253,16 +273,29 @@ public class RenderActions {
                             // Default customIndex and error
                         }
                     }
+                    String path = properties.containsKey("path") ? properties.get("path") : null;
                     // Get Posts attached
                     List<Upload> listUploads = null;
-                    if (customIndex != -1) {
-                        listUploads = getUploadsFromCategory(contentAttached, customIndex, userWcm);
+                    if (path != null) {
+                        listUploads = getUploadsFromCategoryPath(path, userWcm);
                     } else {
-                        // Default order
-                        listUploads = getUploadsFromCategory(contentAttached, indexList, userWcm);
+                        if (customIndex != -1) {
+                            listUploads = getUploadsFromCategory(contentAttached, customIndex, userWcm);
+                        } else {
+                            // Default order
+                            listUploads = getUploadsFromCategory(contentAttached, indexList, userWcm);
+                        }
                     }
-                    processedTemplate = tags.tagWcmFileList("wcm-file-list", processedTemplate, listUploads, this.urlParams);
+                    processedTemplate = tags.tagWcmFileList("wcm-file-list", processedTemplate, listUploads, this.urlParams, userWcm);
                     indexList++;
+                } else if (tags.hasTag("wcm-cat-list", processedTemplate)) {
+                    // Absolute cat link
+                    String tag = tags.extractTag("wcm-cat-list", processedTemplate);
+                    Map<String, String> properties = tags.propertiesTag(tag);
+                    String parent = properties.containsKey("parent") ? properties.get("parent") : "/";
+                    String type = properties.containsKey("type") ? properties.get("type") : "all";
+                    List<Category> categories = getCategoriesFromParameters(parent, type, userWcm);
+                    processedTemplate = tags.tagWcmCatList("wcm-cat-list", processedTemplate, categories, this.urlParams);
                 } else {
                     foundTag = true;
                 }
@@ -337,6 +370,21 @@ public class RenderActions {
         return listPosts;
     }
 
+    private List<Post> getPostsFromCategoryPath(String path, UserWcm userWcm) {
+        List<Post> listPosts = null;
+        if (path != null && userWcm != null) {
+            try {
+                Category c = wcm.findCategory(path, userWcm);
+                if (c != null)
+                    listPosts = wcm.findPosts(c.getId(), userWcm);
+            } catch (WcmException e) {
+                log.warning("Error query posts list");
+                e.printStackTrace();
+            }
+        }
+        return listPosts;
+    }
+
     private List<Upload> getUploadsFromCategory(List<Object> contentAttached, int indexCategory, UserWcm userWcm) {
         Category c = null;
         List<Upload> listUploads = null;
@@ -354,11 +402,47 @@ public class RenderActions {
             try {
                 listUploads = wcm.findUploads(c.getId(), userWcm);
             } catch (WcmException e) {
-                log.warning("Error query posts list");
+                log.warning("Error query uploads list");
                 e.printStackTrace();
             }
         }
         return listUploads;
+    }
+
+    private List<Upload> getUploadsFromCategoryPath(String path, UserWcm userWcm) {
+        List<Upload> listUploads = null;
+        if (path != null && userWcm != null) {
+            try {
+                Category c = wcm.findCategory(path, userWcm);
+                if (c != null)
+                    listUploads = wcm.findUploads(c.getId(), userWcm);
+            } catch (WcmException e) {
+                log.warning("Error query uploads list");
+                e.printStackTrace();
+            }
+        }
+        return listUploads;
+    }
+
+    private List<Category> getCategoriesFromParameters(String parent, String type, UserWcm userWcm) {
+        List<Category> categories = null;
+        try {
+            if ("all".equals(type)) {
+                categories = wcm.findChildren(parent, null, userWcm);
+            } else if ("category".equals(type)) {
+                categories = wcm.findChildren(parent, Wcm.CATEGORIES.CATEGORY, userWcm);
+            } else if ("folder".equals(type)) {
+                categories = wcm.findChildren(parent, Wcm.CATEGORIES.FOLDER, userWcm);
+            } else if ("tag".equals(type)) {
+                categories = wcm.findChildren(parent, Wcm.CATEGORIES.TAG, userWcm);
+            } else {
+                // No default action here
+            }
+        } catch (WcmException e) {
+            log.warning("Error query categories");
+            e.printStackTrace();
+        }
+        return categories;
     }
 
 
@@ -514,4 +598,36 @@ public class RenderActions {
             e.printStackTrace();
         }
     }
+
+    public void eventAddCommentPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String postId = request.getParameter("postid");
+        String content = request.getParameter("content");
+        String author = request.getParameter("author");
+        String email = request.getParameter("email");
+        String url = request.getParameter("url");
+        try {
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            Comment c = new Comment();
+            c.setContent(content);
+            if (userWcm == null || userWcm.getUsername().equals("anonymous")) {
+                c.setAuthor(author.equals("")?"anonymous":author);
+                c.setAuthorEmail(email);
+                c.setAuthorUrl(url);
+            } else {
+                c.setAuthor(userWcm.getUsername());
+            }
+            c.setPost(post);
+            if (post.getCommentsStatus().equals(Wcm.COMMENTS.ANONYMOUS)) {
+                c.setStatus(Wcm.COMMENT.PUBLIC);
+            } else {
+                // TODO We can implement a mini-flow for approval comments...
+                c.setStatus(Wcm.COMMENT.PUBLIC);
+            }
+            wcm.add(post, c);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Comments");
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -179,6 +179,21 @@
 <portlet:resourceURL var="addAclUploadEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_ACL_UPLOAD %>" />
 </portlet:resourceURL>
+<portlet:resourceURL var="showPostCommentsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_COMMENTS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="addCommentPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_COMMENT_POST %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="changeCommentsPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UPDATE_COMMENTS_POST %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="changeStatusCommentPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UPDATE_STATUS_COMMENT_POST %>" />
+</portlet:resourceURL>
+
+
+
 
 
 

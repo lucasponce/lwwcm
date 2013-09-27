@@ -35,6 +35,7 @@ CKEDITOR.stylesSet.add( 'default', [
     { name: 'Wcm Single', element: 'wcm-single' },
     { name: 'Wcm Param List', element: 'wcm-param-list' },
     { name: 'Wcm Param Single', element: 'wcm-param-single' },
+    { name: 'Wcm Param Name', element: 'wcm-param-name' },
     { name: 'Wcm File List', element: 'wcm-file-list' },
     { name: 'Wcm Author', element: 'wcm-author' },
     { name: 'Wcm Content', element: 'wcm-content' },
@@ -47,6 +48,14 @@ CKEDITOR.stylesSet.add( 'default', [
     { name: 'Wcm Link', element: 'wcm-link' },
     { name: 'Wcm Mimetype', element: 'wcm-mimetype' },
     { name: 'Wcm Title', element: 'wcm-title' },
+    { name: 'Wcm Categories', element: 'wcm-categories' },
+    { name: 'Wcm Category List', element: 'wcm-cat-list' },
+    { name: 'Wcm Category Name', element: 'wcm-cat-name' },
+    { name: 'Wcm Category Type', element: 'wcm-cat-type' },
+    { name: 'Wcm Comments', element: 'wcm-comments' },
+    { name: 'Wcm Comment Content', element: 'wcm-comment-content' },
+    { name: 'Wcm Comment Author', element: 'wcm-comment-author' },
+    { name: 'Wcm Comment Created', element: 'wcm-comment-created' },
 
 	/* Inline Styles */
 

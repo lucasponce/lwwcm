@@ -294,3 +294,114 @@ function deleteAcl(namespace, href, aclAclId, aclPostId) {
     });
 }
 
+function showCommentsPost(namespace, link, href, postId, hrefClose) {
+    require(["SHARED/jquery"], function($) {
+        // Show popup
+        var id = "#" + namespace + "posts-comments";
+        var linkid = "#" + link; // namespace included
+        var commentsId = "#" + namespace + "post-comments-list";
+
+        // Open comments in the center
+        var w = (($(window).width() - 980)/2);
+        if (w < 0) w = 100;
+        else w = w + 100;
+        $(id).css('top',  200);    // Fixed at the beginning of
+        $(id).css('left', w);
+        $(id).fadeIn(100);
+
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write Comment data
+                $(commentsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing showCommentsPost()");
+            }
+        });
+
+        var closeid = "#" + namespace + "close-posts-comments";
+        $(closeid).click(function (e) {
+            e.preventDefault();
+            $(id).hide();
+            window.location.assign(hrefClose);
+        });
+    });
+}
+
+function addComment(namespace, href, postId) {
+    require(["SHARED/jquery"], function($) {
+        var newCommentId = "#" + namespace + "newComment";
+        var commentsId = "#" + namespace + "post-comments-list";
+
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            data: { comment: $(newCommentId).val() },
+            success: function(data)
+            {
+                // Write Comment data
+                $(commentsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing addComment()");
+            }
+        });
+
+    });
+}
+
+function changeStatusComment(namespace, href, postId, commentId, status) {
+    require(["SHARED/jquery"], function($) {
+        var commentsId = "#" + namespace + "post-comments-list";
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            data: { commentId: commentId, status: status },
+            success: function(data)
+            {
+                // Write Comment data
+                $(commentsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing changeStatusComment()");
+            }
+        });
+    });
+}
+
+function changeCommentsPost(namespace, href, postId) {
+    require(["SHARED/jquery"], function($) {
+        var postCommentsStatusId = "#" + namespace + "postCommentsStatus";
+        var commentsId = "#" + namespace + "post-comments-list";
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            data: { postCommentsStatus: $(postCommentsStatusId).val() },
+            success: function(data)
+            {
+                // Write Comment data
+                $(commentsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing changeCommentsPost()");
+            }
+        });
+    });
+}
+
+

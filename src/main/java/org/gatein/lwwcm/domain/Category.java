@@ -16,9 +16,9 @@ import javax.persistence.*;
 @Cacheable
 @NamedQueries({
         @NamedQuery(name = "listAllCategories", query = "from Category c order by c.parent.id, c.type, c.name, c.id"),
-		@NamedQuery(name = "listCategoriesName", query = "from Category c where c.name like :name"),
-		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type"),
-		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type"),
+		@NamedQuery(name = "listCategoriesName", query = "from Category c where upper(c.name) like upper(:name) order by c.parent.id, c.type, c.name, c.id"),
+		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type order by c.parent.id, c.type, c.name, c.id"),
+		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type order by c.parent.id, c.type, c.name, c.id"),
 		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id order by c.type, c.name, c.id"),
         @NamedQuery(name = "listRootCategories", query = "from Category c where c.parent is null order by c.type, c.name, c.id")
 })

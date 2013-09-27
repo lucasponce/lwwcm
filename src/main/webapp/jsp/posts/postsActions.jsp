@@ -140,3 +140,11 @@
 
     </div>
 </div>
+
+<div id="${n}posts-comments" class="lwwcm-popup-categories lwwcm-dialog">
+    <div id="${n}posts-comments-title" class="lwwcm-dialog-title">Comments</div>
+    <a href="#" id="${n}close-posts-comments" class="lwwcm-dialog-close"><span> </span></a>
+    <div class="lwwcm-dialog-body" id="${n}post-comments-list">
+
+    </div>
+</div>

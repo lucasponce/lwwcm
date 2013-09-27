@@ -49,6 +49,10 @@ public interface Wcm {
         static final String TMP_DIR = "java.io.tmpdir";
 		static final int LENGTH_BUFFER = (System.getProperty("lwwcm.uploads.length_buffer") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.length_buffer")));
         static final int MAX_FILE_SIZE = (System.getProperty("lwwcm.uploads.max_file_size") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.max_file_size"))); // 5 Mb as default max size for file upload
+
+        interface CACHE {
+            static final int MAX_AGE = (System.getProperty("lwwcm.uploads.cache.max-age") == null ? 300 : new Integer(System.getProperty("lwwcm.uploads.cache.max-age")));
+        }
 	}
 
     interface TEMPLATES {
@@ -128,6 +132,10 @@ public interface Wcm {
         static final String ADD_ACL_UPLOAD = "addaclupload";
         static final String REMOVE_ACL_UPLOAD = "removeaclupload";
         static final String UPDATE_CONTENT_POST = "updatecontentpost";
+        static final String SHOW_POST_COMMENTS = "showpostcomments";
+        static final String ADD_COMMENT_POST = "addcommentpost";
+        static final String UPDATE_COMMENTS_POST = "updatecommentspost";
+        static final String UPDATE_STATUS_COMMENT_POST = "updatestatuscommentpost";
     }
 
     interface CONFIG {
@@ -142,6 +150,12 @@ public interface Wcm {
             static final String CHANGE_CHOOSE_CONTENT = "changechoosecontent";
             static final String NEW_CONTENT_ATTACHED = "newcontentattached";
             static final String DELETE_CONTENT_ATTACHED = "deletecontentattached";
+        }
+    }
+
+    interface CONTENT {
+        interface ACTIONS {
+            static final String INLINE_EDITOR = "inlineeditor";
         }
     }
 

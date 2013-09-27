@@ -126,6 +126,18 @@ public class WcmServiceImpl implements WcmService {
 		return filtered;
 	}
 
+    private List<Category> categoryFilter(List<Category> categories, Character type) {
+        if (categories == null) return null;
+        if (type == null) return categories;
+        List<Category> filtered = new ArrayList<Category>();
+        for (Category c: categories) {
+            if (c.getType() == type) {
+                filtered.add(c);
+            }
+        }
+        return filtered;
+    }
+
     private List statusFilter(List col, Character status) {
         if (col == null) return null;
         List filtered = new ArrayList();
@@ -209,6 +221,88 @@ public class WcmServiceImpl implements WcmService {
             return aclFilter(result, user);
         } catch (Exception e) {
             throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public List<Category> findChildren(String path, Character type, UserWcm user) throws WcmException {
+        List<Category> children = null;
+        if (user == null) return null;
+        if (path == null || "".equals(path)) path = "/";
+        try {
+            String name = child(path);
+            List<Category> parents = null;
+            Category parent = null;
+            if (name != null && !"".equals(name)) {
+                parents = em.createNamedQuery("listCategoriesName", Category.class)
+                            .setParameter("name", name)
+                            .getResultList();
+                if (parents != null && parents.size() > 1) {
+                    for (Category c : parents) {
+                        if (hasPath(c, path)) {
+                            parent = c;
+                        }
+                    }
+                } else if (parents != null && parents.size() == 1) {
+                    parent = parents.get(0);
+                }
+                if (parent != null) {
+                    children = findChildren(parent, user);
+                    children = aclFilter(children, user);
+                    if (type == null) {
+                        return children;
+                    } else {
+                        children = categoryFilter(children, type);
+                    }
+                }
+            } else {
+                children = findRootCategories(user);
+                children = categoryFilter(children, type);
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+        return children;
+    }
+
+    @Override
+    public Category findCategory(String path, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (path == null || "".equals(path)) path = "/";
+        Category output = null;
+        try {
+            String name = child(path);
+            List<Category> candidates = null;
+            if (name != null && !"".equals(name)) {
+                candidates = em.createNamedQuery("listCategoriesName", Category.class)
+                        .setParameter("name", name)
+                        .getResultList();
+                if (candidates != null && candidates.size() > 1) {
+                    for (Category c : candidates) {
+                        if (hasPath(c, path)) {
+                            output = c;
+                        }
+                    }
+                } else if (candidates != null && candidates.size() == 1) {
+                    output = candidates.get(0);
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+        return output;
+    }
+
+    private boolean hasPath(Category c, String path) {
+        if (path == null || "".equals(path)) return false;
+        if (c.getName().equals(child(path))) {
+            if (c.getParent() == null && "".equals(parent(path))) {
+                return true;
+            } else {
+                return hasPath(c.getParent(), parent(path));
+            }
+        } else {
+            return false;
         }
     }
 
@@ -420,6 +514,29 @@ public class WcmServiceImpl implements WcmService {
                 c.getAcls().remove(pAcl);
                 pAcl.setCategory(null);
                 em.remove(pAcl);
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Override
+    public void remove(Comment c, UserWcm user) throws WcmException {
+        if (c == null) return;
+        if (c.getId() == null) return;
+        if (c.getPost() == null) return;
+        if (user == null) return;
+        try {
+            Post p = em.find(Post.class, c.getPost().getId());
+            if (user.canWrite(p)) {
+                    Comment delete = em.find(Comment.class, c.getId());
+                    if (delete != null) {
+                        delete.setPost(null);
+                        p.getComments().remove(delete);
+                        em.remove(delete);
+                    }
+            } else {
+                throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + p);
             }
         } catch (Exception e) {
             throw new WcmException(e);
@@ -934,4 +1051,18 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /*
+        Aux functions to extract path for categories
+     */
+    public String child(String path) {
+        if (path == null || "".equals(path)) return path;
+        if (path.indexOf("/") == -1) return path;
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    public String parent(String path) {
+        if (path == null || "".equals(path)) return path;
+        if (path.indexOf("/") == -1) return "";
+        return path.substring(0, path.lastIndexOf("/"));
+    }
 }

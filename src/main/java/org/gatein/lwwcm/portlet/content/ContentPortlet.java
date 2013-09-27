@@ -55,10 +55,12 @@ public class ContentPortlet extends GenericPortlet {
 
         String profile = render.renderTemplate(request, response, userWcm);
 
-        String url = "/jsp/content/render/content.jsp";
+        String url = "/jsp/content/render/contentRead.jsp";
 
         if (profile != null && profile.equals("editor")) {
             url = "/jsp/content/render/contentEdit.jsp";
+        } else if (profile != null && profile.equals("write")) {
+            url = "/jsp/content/render/contentWrite.jsp";
         }
 
         PortletRequestDispatcher prd = getPortletContext().getRequestDispatcher(url);
@@ -99,6 +101,10 @@ public class ContentPortlet extends GenericPortlet {
         if (action != null) {
             if (action.equals(Wcm.CONFIG.ACTIONS.SAVE_CONFIGURATION)) {
                 config.actionSaveConfig(request, response, userWcm);
+            } else if (action.equals(Wcm.CONTENT.ACTIONS.INLINE_EDITOR)) {
+              String activeEditor = request.getParameter("activeEditor");
+                if (activeEditor != null)
+                    request.getPortletSession().setAttribute("activeEditor", activeEditor);
             } else {
                 // No default action
             }
@@ -111,6 +117,9 @@ public class ContentPortlet extends GenericPortlet {
         try {
             String user = (request.getUserPrincipal() != null?request.getUserPrincipal().getName():null);
             userWcm = portal.getPortalUser(user);
+            if (userWcm == null) {
+                userWcm = new UserWcm("anonymous");
+            }
         } catch (WcmException e) {
             log.warning("Cannot access Portal User interface.");
             e.printStackTrace();
@@ -131,6 +140,9 @@ public class ContentPortlet extends GenericPortlet {
             } if (event.equals(Wcm.EVENTS.UPDATE_CONTENT_POST)) {
                 // Updating content
                 render.eventUpdateContent(request, response, userWcm);
+            } if (event.equals(Wcm.EVENTS.ADD_COMMENT_POST)) {
+              // Updating comment post
+                render.eventAddCommentPost(request, response, userWcm);
             } else {
                 // No default event
             }

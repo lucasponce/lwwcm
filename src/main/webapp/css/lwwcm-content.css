@@ -1,3 +1,27 @@
 .lwwcm-skip {
     display: none !important;
 }
+.lwwcm-write {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+.lwwcm-inline-editor {
+    position: absolute;
+    z-index: 29999;
+    right: 2px;
+    top: 2px;
+    padding: 4px 4px 0px 4px;
+    background-color: #579d1c;
+    border: 1px solid #fff;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+.lwwcm-inline-editor a {
+    color: #fff;
+    font-size: 1.4em;
+    text-decoration: none;
+}
+.lwwcm-inline-editor a:hover {
+    text-decoration: underline;
+}

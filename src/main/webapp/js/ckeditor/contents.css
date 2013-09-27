@@ -157,9 +157,34 @@ wcm-content {
     background: url(lwwcm/wcm-content.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
+wcm-cat-list {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-cat-list.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-categories {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-categories.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-comments {
+    display: block !important;
+    position: relative;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-comments.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+
 /* Inline tags */
 wcm-author {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -168,7 +193,7 @@ wcm-author {
     border: 1px dotted #b5b6b6;
 }
 wcm-created {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -177,7 +202,7 @@ wcm-created {
     border: 1px dotted #b5b6b6;
 }
 wcm-description {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -186,7 +211,7 @@ wcm-description {
     border: 1px dotted #b5b6b6;
 }
 wcm-excerpt {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -195,7 +220,7 @@ wcm-excerpt {
     border: 1px dotted #b5b6b6;
 }
 wcm-filename {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -204,7 +229,7 @@ wcm-filename {
     border: 1px dotted #b5b6b6;
 }
 wcm-img {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -213,7 +238,7 @@ wcm-img {
     border: 1px dotted #b5b6b6;
 }
 wcm-iter {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -222,7 +247,7 @@ wcm-iter {
     border: 1px dotted #b5b6b6;
 }
 wcm-link {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -231,7 +256,7 @@ wcm-link {
     border: 1px dotted #b5b6b6;
 }
 wcm-mimetype {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -240,7 +265,7 @@ wcm-mimetype {
     border: 1px dotted #b5b6b6;
 }
 wcm-title {
-    min-width: 60px;
+    min-width: 120px;
     min-height: 20px;
     display: inline-block;
     padding-left: 8px;
@@ -248,5 +273,62 @@ wcm-title {
     background: url(lwwcm/wcm-title.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
+wcm-cat-name {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-cat-name.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-cat-type {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-cat-type.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-param-name {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-param-name.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-comment-content {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-comment-content.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-comment-author {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-comment-author.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+wcm-comment-created {
+    min-width: 120px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 8px;
+    padding-top: 8px;
+    background: url(lwwcm/wcm-comment-created.png) no-repeat top left;
+    border: 1px dotted #b5b6b6;
+}
+
+
+
 
 

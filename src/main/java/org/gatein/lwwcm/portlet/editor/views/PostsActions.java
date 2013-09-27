@@ -418,6 +418,7 @@ public class PostsActions {
             }
             request.setAttribute("post", post);
             request.setAttribute("namespace", namespace);
+            request.setAttribute("userWcm", userWcm);
         } catch(WcmException e) {
             log.warning("Error accesing post acls.");
             e.printStackTrace();
@@ -505,6 +506,103 @@ public class PostsActions {
             e.printStackTrace();
         }
         return "/jsp/posts/postsAcls.jsp";
+    }
+
+    public String eventShowPostComments(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        try {
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Comments");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsComments.jsp";
+    }
+
+    public String eventAddCommentPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String comment = request.getParameter("comment");
+        try {
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            Comment c = new Comment();
+            c.setContent(comment);
+            c.setAuthor(userWcm.getUsername());
+            c.setPost(post);
+            c.setStatus(Wcm.COMMENT.PUBLIC);
+            wcm.add(post, c);
+            post = wcm.findPost(post.getId(), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Comments");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsComments.jsp";
+    }
+
+    public String eventUpdateCommentsPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String postCommentsStatus = request.getParameter("postCommentsStatus");
+        try {
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            if (postCommentsStatus.equals(Wcm.COMMENTS.ANONYMOUS.toString())) {
+                post.setCommentsStatus(Wcm.COMMENTS.ANONYMOUS);
+            } else if (postCommentsStatus.equals(Wcm.COMMENTS.LOGGED.toString())) {
+                post.setCommentsStatus(Wcm.COMMENTS.LOGGED);
+            } else if (postCommentsStatus.equals(Wcm.COMMENTS.NO_COMMENTS.toString())) {
+                post.setCommentsStatus(Wcm.COMMENTS.NO_COMMENTS);
+            }
+            wcm.update(post, userWcm);
+
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error updating Post's Comments");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsComments.jsp";
+    }
+
+    public String eventUpdateCommentStatusPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String commentId = request.getParameter("commentId");
+        String status = request.getParameter("status");
+        try {
+            Post post = wcm.findPost(new Long(postId), userWcm);
+
+            if (post.getComments() != null) {
+                Comment cDeleted = null;
+                for (Comment c : post.getComments()) {
+                    if (c.getId().equals(new Long(commentId))) {
+                        if (status.equals(Wcm.COMMENT.DELETED.toString())) {
+                            cDeleted = c;
+                        } else if (status.equals(Wcm.COMMENT.REJECTED.toString())) {
+                            c.setStatus(Wcm.COMMENT.REJECTED);
+                        } else if (status.equals(Wcm.COMMENT.PUBLIC.toString())) {
+                            c.setStatus(Wcm.COMMENT.PUBLIC);
+                        }
+                    }
+                }
+                if (status.equals(Wcm.COMMENT.DELETED.toString())) {
+                    wcm.remove(cDeleted, userWcm);
+                } else {
+                    wcm.update(post, userWcm);
+                }
+            }
+            post = wcm.findPost(new Long(postId), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error updating Post's Comments");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsComments.jsp";
     }
 
     private int countAcl(Set<Acl> acl, Character type) {

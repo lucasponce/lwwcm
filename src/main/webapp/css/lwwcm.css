@@ -362,11 +362,85 @@ a.lwwcm-delete-category:hover {
     display: block;
     position: relative;
 }
-.lwwcm-acl-remove {
+.lwwcm-acl-remove
+{
     position: absolute;
     display: block;
     top: 4px;
     left: 11px;
+}
+
+/* Comments
+=========== */
+.lwwcm-comments {
+    width: 760px;
+    height: 400px;
+    overflow-y: scroll;
+
+}
+.lwwcm-comments ul {
+    margin: 0;
+    padding: 0;
+}
+.lwwcm-comments li {
+    list-style-type: none;
+    margin: 0 0 8px 0;
+    padding: 0;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    position: relative;
+}
+.lwwcm-comment-a {
+    float: left;
+    width: 20px;
+    font-size: 1.4em;
+    color: #bdbdbd;
+    margin-left: 20px;
+}
+.lwwcm-comment-b {
+    float: left;
+    width: 500px;
+    min-height: 40px;
+    border: 1px dotted #d3d3d3;
+    padding: 4px 4px 4px 4px;
+    margin: 0 20px 0 20px;
+    font-size: 0.9em;
+}
+.lwwcm-comment-c {
+    float: left;
+    width: 150px;
+}
+.lwwcm-comment-date,
+.lwwcm-comment-user,
+.lwwcm-comment-actions
+{
+    font-size: 1.4em;
+    position: relative;
+}
+.lwwcm-comment-actions a {
+    font-size: 0.8em;
+    text-decoration: underline;
+}
+.lwwcm-comment-actions a:hover {
+    text-decoration: none;
+}
+
+.lwwcm-newcomment {
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    position: relative;
+    border-top: 1px solid #d3d3d3;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+.lwwcm-newcomment-comment {
+    width: 500px !important;
+    height: 80px;
+}
+.lwwcm-comment-type {
+    width: 150px !important;;
+    margin-top: 10px;
+}
+.lwwcm-comment-select {
+    width: 181px !important;;
 }
 
 

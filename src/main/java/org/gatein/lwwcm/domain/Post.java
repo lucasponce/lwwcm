@@ -151,6 +151,7 @@ public class Post implements Serializable {
 	}
 
 	@OneToMany(mappedBy = "post", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @OrderBy("created desc")
 	public Set<Comment> getComments() {
 		return comments;
 	}

@@ -3,14 +3,7 @@ package org.gatein.lwwcm.domain;
 import java.io.Serializable;
 import java.util.Calendar;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Comments are attached to posts.
@@ -101,7 +94,7 @@ public class Comment implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Comment [id=" + id + ", post=" + post + ", author=" + author
+		return "Comment [id=" + id + ", author=" + author
 				+ ", authorEmail=" + authorEmail + ", authorUrl=" + authorUrl
 				+ ", created=" + created + ", content=" + content + ", status="
 				+ status + "]";
@@ -119,7 +112,6 @@ public class Comment implements Serializable {
 		result = prime * result + ((content == null) ? 0 : content.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((post == null) ? 0 : post.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
@@ -162,11 +154,6 @@ public class Comment implements Serializable {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
-			return false;
-		if (post == null) {
-			if (other.post != null)
-				return false;
-		} else if (!post.equals(other.post))
 			return false;
 		if (status == null) {
 			if (other.status != null)
