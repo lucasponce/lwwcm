@@ -7,7 +7,7 @@ function saveNewPost(namespace) {
         var excerptId = "#" + namespace + "postExcerpt";
         // null validation
         if ($(titleId).val() == '' || $(titleId).val() == 'Post Title') {
-            showMsg(namespace, 'Post title cannot be empty');
+            showMsg(namespace, 'Post title cannot be empty', 'Posts');
         } else {
             if ( $(excerptId).val() == 'Summary / Excerpt') {
                 $(excerptId).val('');
@@ -77,8 +77,8 @@ function showSelectUploadsPost(namespace, editor) {
             }
         });
 
-        $(id).css('top',  $(linkid).offset().top + 32);
-        $(id).css('left', $(linkid).offset().left + 8);
+        $(id).css('top',  $(linkid).offset().top + 32 - $(document).scrollTop());
+        $(id).css('left', $(linkid).offset().left + 8 - $(document).scrollLeft());
         $(id).css('z-index', 9996);
         $(id).fadeIn(100);
 

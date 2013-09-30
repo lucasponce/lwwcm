@@ -56,6 +56,14 @@ CKEDITOR.stylesSet.add( 'default', [
     { name: 'Wcm Comment Content', element: 'wcm-comment-content' },
     { name: 'Wcm Comment Author', element: 'wcm-comment-author' },
     { name: 'Wcm Comment Created', element: 'wcm-comment-created' },
+    { name: 'Wcm Form Comments', element: 'wcm-form-comments' },
+    { name: 'Wcm Form Content', element: 'wcm-form-content' },
+    { name: 'Wcm Form Author', element: 'wcm-form-author' },
+    { name: 'Wcm Form Email', element: 'wcm-form-email' },
+    { name: 'Wcm Form Url', element: 'wcm-form-url' },
+    { name: 'Wcm Form Button', element: 'wcm-form-button' },
+
+
 
 	/* Inline Styles */
 

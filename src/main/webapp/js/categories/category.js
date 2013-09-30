@@ -20,7 +20,7 @@ function saveNewCategory(namespace) {
         var nameId = "#" + namespace + "newCategoryName";
         // null validation
         if ($(nameId).val() == '') {
-            showMsg(namespace, 'Category name cannot be empty');
+            showMsg(namespace, 'Category name cannot be empty', 'Categories');
         } else {
             $(formId).submit();
         }
@@ -33,7 +33,7 @@ function saveUpdateCategory(namespace) {
         var nameId = "#" + namespace + "newCategoryName";
         // null validation
         if ($(nameId).val() == '') {
-            showMsg(namespace, 'Category name cannot be empty');
+            showMsg(namespace, 'Category name cannot be empty', 'Categories');
         } else {
             $(formId).submit();
         }

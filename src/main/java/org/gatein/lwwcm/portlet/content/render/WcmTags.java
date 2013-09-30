@@ -487,7 +487,7 @@ public class WcmTags {
                 // Default value if exception happens
             }
         }
-        output = extractImg(post.getContent(), index);
+        output = extractImg(post.getContent(), index, true);
         // Check style
         if (properties.containsKey("class")) {
             String cssClass = properties.get("class");
@@ -519,7 +519,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = post.getTitle().substring(0, max);
+            if (max < post.getTitle().length())
+                output = substringWord(post.getTitle(), max) + " ...";
+            else
+                output = post.getTitle();
         } else {
             output = post.getTitle();
         }
@@ -545,7 +548,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = post.getExcerpt().substring(0, max);
+            if (max < post.getExcerpt().length())
+                output = substringWord(post.getExcerpt(), max) + " ...";
+            else
+                output = post.getExcerpt();
         } else {
             output = post.getExcerpt();
         }
@@ -644,7 +650,7 @@ public class WcmTags {
                 String[] skipImages = properties.get("skipimages").split(",");
                 for (int i=0; i<skipImages.length; i++) {
                     int iImage = new Integer(skipImages[i]).intValue();
-                    String image = extractImg(output, iImage);
+                    String image = extractImg(output, iImage, false);
                     String imageNotVisible = notVisibleImg(image);
                     output = output.replace(image, imageNotVisible);
                 }
@@ -676,7 +682,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = upload.getFileName().substring(0, max);
+            if (max < upload.getFileName().length())
+                output = substringWord(upload.getFileName(), max) + " ...";
+            else
+                output = upload.getFileName();
         } else {
             output = upload.getFileName();
         }
@@ -698,7 +707,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = upload.getMimeType().substring(0, max);
+            if (max < upload.getMimeType().length())
+                output = substringWord(upload.getMimeType(), max) + " ...";
+            else
+                output = upload.getMimeType();
         } else {
             output = upload.getMimeType();
         }
@@ -720,7 +732,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = upload.getDescription().substring(0, max);
+            if (max < upload.getDescription().length())
+                output = substringWord(upload.getDescription(), max) + " ...";
+            else
+                output = upload.getDescription();
         } else {
             output = upload.getDescription();
         }
@@ -742,7 +757,10 @@ public class WcmTags {
             } catch (Exception e) {
                 // Default value if exception happens
             }
-            output = category.getName().substring(0, max);
+            if (max < category.getName().length())
+                output = substringWord(category.getName(), max) + " ...";
+            else
+                output = category.getName();
         } else {
             output = category.getName();
         }
@@ -1150,7 +1168,10 @@ public class WcmTags {
         return output;
     }
 
-    public String extractImg(String html, int index) {
+    /*
+        Extracts <img> tag without styling only img source.
+     */
+    public String extractImg(String html, int index, boolean skipStyles) {
         if (html == null) return "<img>";
         int found = 0;
         int i = 0;
@@ -1169,6 +1190,18 @@ public class WcmTags {
                 }
             } else {
                 found = -1;
+            }
+        }
+        // <img src="" class="" style="">
+        // Extracts only src to build a new one without styling
+        if (skipStyles)
+        {
+            String src="";
+            i = output.indexOf("src=");
+            if (i > -1) {
+                j = output.indexOf(" ", i);
+                src = output.substring(i, j);
+                output = "<img " + src + ">";
             }
         }
         return output;
@@ -1259,6 +1292,13 @@ public class WcmTags {
             }
         }
         return filtered;
+    }
+
+    private String substringWord(String html, int index) {
+        if (html == null || "".equals(html)) return html;
+        if (index > html.length()) return html;
+        int i = html.indexOf(" ", index);
+        return html.substring(0, i);
     }
 
 }

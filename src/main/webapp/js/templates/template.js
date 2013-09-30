@@ -7,7 +7,7 @@ function saveNewTemplate(namespace) {
         var nameId = "#" + namespace + "templateName";
         // null validation
         if ($(nameId).val() == '' || $(nameId).val() == 'Template Name') {
-            showMsg(namespace, 'Template name cannot be empty');
+            showMsg(namespace, 'Template name cannot be empty', 'Templates');
         } else {
             $(formId).submit();
         }
@@ -74,8 +74,8 @@ function showSelectUploadsPost(namespace, editor) {
             }
         });
 
-        $(id).css('top',  $(linkid).offset().top + 32);
-        $(id).css('left', $(linkid).offset().left + 8);
+        $(id).css('top',  $(linkid).offset().top + 32 - $(document).scrollTop());
+        $(id).css('left', $(linkid).offset().left + 8 - $(document).scrollLeft());
         $(id).css('z-index', 9996);
         $(id).fadeIn(100);
 

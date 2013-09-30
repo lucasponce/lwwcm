@@ -2,10 +2,7 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
-import org.gatein.lwwcm.domain.Acl;
-import org.gatein.lwwcm.domain.Category;
-import org.gatein.lwwcm.domain.Upload;
-import org.gatein.lwwcm.domain.UserWcm;
+import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
 
@@ -245,6 +242,8 @@ public class CategoriesActions {
         cat.getAcls().add(clone);
         clone.setCategory(cat);
         wcm.update(cat, user);
+        propagateAddAclOnPosts(cat, acl, user);
+        propagateAddAclOnUploads(cat, acl, user);
         List<Category> children = wcm.findChildren(cat, user);
         if (children != null && children.size() > 0) {
             for (Category c : children) {
@@ -252,6 +251,37 @@ public class CategoriesActions {
             }
         }
     }
+
+    private void propagateAddAclOnPosts(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        List<Post> posts = wcm.findPosts(cat.getId(), user);
+        for (Post p : posts) {
+            if (user.canWrite(p)) {
+                Acl clone = new Acl(acl.getPrincipal(), acl.getPermission());
+                if (!p.getAcls().contains(clone)) {
+                    clone.setPost(p);
+                    p.getAcls().add(clone);
+                    wcm.update(p, user);
+                }
+            }
+        }
+    }
+
+    private void propagateAddAclOnUploads(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        List<Upload> uploads = wcm.findUploads(cat.getId(), user);
+        for (Upload u : uploads) {
+            if (user.canWrite(u)) {
+                Acl clone = new Acl(acl.getPrincipal(), acl.getPermission());
+                if (!u.getAcls().contains(clone)) {
+                    clone.setUpload(u);
+                    u.getAcls().add(clone);
+                    wcm.update(u, user);
+                }
+            }
+        }
+    }
+
 
     public String eventRemoveAclCategory(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
         String aclCategoryId = request.getParameter("aclcategoryid");
@@ -300,6 +330,7 @@ public class CategoriesActions {
                 break;
             }
         }
+
         if (found != null &&
                 ((acl.getPermission() == Wcm.ACL.NONE && cat.getAcls().size() > 1) ||
                         (acl.getPermission() == Wcm.ACL.WRITE && countAcl(cat.getAcls(), Wcm.ACL.WRITE) > 1)
@@ -308,10 +339,60 @@ public class CategoriesActions {
             wcm.remove(found, user);
             cat.getAcls().remove(found);
         }
+        propagateRemoveAclOnPosts(cat, acl, user);
+        propagateRemoveAclOnUploads(cat, acl, user);
         List<Category> children = wcm.findChildren(cat, user);
         if (children != null && children.size() > 0) {
             for (Category c : children) {
                 propagateRemoveAcl(c, acl, user);
+            }
+        }
+    }
+
+    private void propagateRemoveAclOnPosts(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        List<Post> posts = wcm.findPosts(cat.getId(), user);
+        for (Post p : posts) {
+            if (user.canWrite(p)) {
+                // Check if exists
+                Acl found = null;
+                for (Acl a : p.getAcls()) {
+                    if (a.getPermission().equals(acl.getPermission()) && a.getPrincipal().equals(acl.getPrincipal())) {
+                        found = a;
+                        break;
+                    }
+                }
+                // Rules to remove:
+                // - at least 1 WRITE ACL should exists
+                if ((found.getPermission() == Wcm.ACL.NONE && p.getAcls().size() > 1) ||
+                        (found.getPermission() == Wcm.ACL.WRITE && countAcl(p.getAcls(), Wcm.ACL.WRITE) > 1)) {
+                    wcm.remove(found, user);
+                    p.getAcls().remove(found);
+                }
+            }
+        }
+    }
+
+    private void propagateRemoveAclOnUploads(Category cat, Acl acl, UserWcm user) throws Exception {
+        if (cat == null || acl == null || user == null) return;
+        List<Upload> uploads = wcm.findUploads(cat.getId(), user);
+        for (Upload u : uploads) {
+            if (user.canWrite(u)) {
+                // Check if exists
+                Acl found = null;
+                for (Acl a : u.getAcls()) {
+                    if (a.getPermission().equals(acl.getPermission()) && a.getPrincipal().equals(acl.getPrincipal())) {
+                        found = a;
+                        break;
+                    }
+                }
+                // Rules to remove:
+                // - at least 1 WRITE ACL should exists
+                if ((found.getPermission() == Wcm.ACL.NONE && u.getAcls().size() > 1) ||
+                        (found.getPermission() == Wcm.ACL.WRITE && countAcl(u.getAcls(), Wcm.ACL.WRITE) > 1)) {
+                    wcm.remove(found, user);
+                    u.getAcls().remove(found);
+                }
             }
         }
     }

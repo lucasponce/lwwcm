@@ -1,13 +1,16 @@
 /* Imports functions
 ==================== */
 
-function showMsg(namespace, msg) {
+function showMsg(namespace, msg, title) {
     require(["SHARED/jquery"], function($) {
         var id = "#" + namespace + "msg-dialog";
         var maskid = "#" + namespace + "msg-mask";
         var closeid = "#" + namespace + "close-msg-dialog";
         var msgId = "#" + namespace + "msg-dialog-body";
+        var titleId = "#" + namespace + "msg-dialog-title";
 
+        // Setting title
+        $(titleId).html(title);
         // Setting msg
         $(msgId).html(msg);
         // Setting mask

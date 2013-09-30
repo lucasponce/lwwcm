@@ -20,7 +20,7 @@ function saveNewUpload(namespace) {
         var uploadId = "#" + namespace + "uploadFile";
 
         if ($(uploadId).val() == '') {
-            showMsg(namespace, 'Upload file cannot be empty');
+            showMsg(namespace, 'Upload file cannot be empty', 'Uploads');
         } else {
             $(formId).submit();
         }

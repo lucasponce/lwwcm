@@ -56,8 +56,8 @@ function showSelectUploadsPost(namespace, editor) {
 
         // floating toolsbar editor is handle via .cke_focus
         var ckeFocus = $(".cke_focus").first().offset();
-        $(id).css('top',  ckeFocus.top);
-        $(id).css('left', ckeFocus.left);
+        $(id).css('top',  ckeFocus.top - $(document).scrollTop());
+        $(id).css('left', ckeFocus.left - $(document).scrollLeft());
         $(id).css('z-index', 19999);
         $(id).fadeIn(100);
 

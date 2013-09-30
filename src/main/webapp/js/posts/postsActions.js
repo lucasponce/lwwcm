@@ -305,8 +305,8 @@ function showCommentsPost(namespace, link, href, postId, hrefClose) {
         var w = (($(window).width() - 980)/2);
         if (w < 0) w = 100;
         else w = w + 100;
-        $(id).css('top',  200);    // Fixed at the beginning of
-        $(id).css('left', w);
+        $(id).css('top',  200 - $(document).scrollTop());    // Fixed at the beginning of
+        $(id).css('left', w - $(document).scrollLeft());
         $(id).fadeIn(100);
 
         $.ajax({

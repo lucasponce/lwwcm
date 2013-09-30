@@ -53,7 +53,7 @@
      */
 %>
 <div id="${n}msg-dialog" class="lwwcm-modal-window lwwcm-dialog">
-    <div class="lwwcm-dialog-title">Modal window</div>
+    <div id="${n}msg-dialog-title" class="lwwcm-dialog-title"></div>
     <a href="#" id="${n}close-msg-dialog" class="lwwcm-dialog-close"><span> </span></a>
     <div id="${n}msg-dialog-body" class="lwwcm-dialog-body"></div>
 </div>

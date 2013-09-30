@@ -62,5 +62,19 @@ public class RegexTest {
         String img5 = "<img src=\"Test\" class='something'>";
 
         System.out.println(img5.replaceAll("class=[\"''](.*)[\"']", "class=\"$1 mas\""));
+        System.out.println(img5.matches(".*src=(\"|').*(\"|').*"));
     }
+
+    @Test
+    public void extractImg() {
+        WcmTags tags = new WcmTags();
+        String img1 = "<img>";
+        String img5 = "<img src=\"Test\" class='something'>";
+
+        Assert.assertEquals("<img>", tags.extractImg(img1, 0, true));
+        Assert.assertEquals("<img src=\"Test\">", tags.extractImg(img5, 0, true));
+
+
+    }
+
 }
