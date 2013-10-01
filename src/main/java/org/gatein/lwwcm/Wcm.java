@@ -1,65 +1,216 @@
+/*
+ * JBoss, a division of Red Hat
+ * Copyright 2010, Red Hat Middleware, LLC, and individual
+ * contributors as indicated by the @authors tag. See the
+ * copyright.txt in the distribution for a full listing of
+ * individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.gatein.lwwcm;
 
-
 /**
- * Global interface with wcm constants.
+ * Global constants for org.gatein.lwwcm project.
+ *
+ * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
 public interface Wcm {
 
+    /**
+     * Default configuration file
+     */
     static final String CONFIGURATION_FILE = "lwwcm.properties";
-	
+
+    /**
+     * Defines relationship between GateIn user's groups and LW WCM subsystem.
+     * - There is a main wcm group, for example: /wcm, all users under this group has access to LW WCM subsystem.
+     * - Users with MANAGER membership in /wcm has administrator role in LW WCM subsystem.
+     * - Administrator role allows to manage template under LW WCM subsystem.
+     * - Under /wcm group we can define other groups, like /wcm/theatre, /wcm/sporting, /wcm/concert.
+     * - Groups under /wcm allos to define authorization about how can write content into LW WCM subsystem
+     */
 	interface GROUPS {
+        /**
+         * This group define which users can access to the LW WCM editor application.
+         * All users that belongs to this group have grant to access LW WCM Editor.
+         * Users with membership MANAGER (@see Wcm.MANAGER) also have administrator role in LW WCM editor.
+         */
         static final String WCM = (System.getProperty("lwwcm.groups.wcm") == null ? "/wcm" : System.getProperty("lwwcm.groups.wcm"));
+        /**
+         * Wildcard to refer all groups under Wcm.WCM.
+         * Used for ACLs to define a grant for all groups under Wcm.WCM
+         */
 		static final String ALL = "*";
+        /**
+         * Users with membership MANAGER in @see Wcm.WCM group have administrator role in LW WCM editor.
+         */
         static final String MANAGER = (System.getProperty("lwwcm.groups.manager") == null ? "manager" : System.getProperty("lwwcm.groups.manager"));
+        /**
+         * Users
+         */
         static final String LOST = (System.getProperty("lwwcm.groups.lost") == null ? "/wcm/lost" : System.getProperty("lwwcm.groups.lost"));
 	}
-	
-	interface ACL {	
+
+    /**
+     * Defines ACL values.
+     * By default all Posts, Category and Uploads object can be readed by any users.
+     */
+	interface ACL {
+        /**
+         * Acl with WRITE type grants write to group defined to resource (Post, Category or Upload) attached.
+         */
 		static final Character WRITE = 'W';
+        /**
+         * Acl with NONE type revokes read access to group defined to resource (Post, Category or Upload) attached.
+         */
 		static final Character NONE = 'N';
 	}
-	
+
+    /**
+     * Defines Category's types.
+     */
 	interface CATEGORIES {
+        /**
+         * Normal Category.
+         * It's defined for semantic porpuse, an object should have only 1 Category but it can have N Tags.
+         */
 		static final Character CATEGORY = '2';
+        /**
+         * Tag Category.
+         * It's defined for semantic porpuse, an object should have only 1 Category but it can have N Tags.
+         */
 		static final Character TAG = '3';
+        /**
+         * Folder Category.
+         * A Folder Category can group other categories.
+         */
 		static final Character FOLDER = '1';
 	}
-	
+
+    /**
+     * Defines Post's publishing status.
+     * There is not complex workflow in GateIn WCM.
+     * If a user has WRITE access, he can modify publishing status of post.
+     */
 	interface POSTS {
+        /**
+         * Post is public and it can be accessible from Content Portlets.
+         */
 		static final Character PUBLISHED = 'P';
+        /**
+         * Post is in draft mode and it can not be accessible from Content Portlets.
+         */
 		static final Character DRAFT = 'D';
 	}
-	
+
+    /**
+     * Defines Post's comments publication status.
+     */
 	interface COMMENTS {
+        /**
+         * Post can accept comments from non-logged users.
+         */
 		static final Character ANONYMOUS = 'A';
+        /**
+         * Post accepts only comments from GateIn users.
+         */
 		static final Character LOGGED = 'L';
+        /**
+         * This Post doesn't accept comments.
+         */
 		static final Character NO_COMMENTS = 'N';
 	}
-	
+
+    /**
+     * Defines Comment's type
+     */
 	interface COMMENT {
+        /**
+         * Comment is readable for all users that can read the Comment's Post.
+         */
 		static final Character PUBLIC = 'P';
+        /**
+         * Comment is not visible, only user with WRITE access can read it.
+         * It's used to preview Comments or to unpublish comments.
+         */
 		static final Character REJECTED = 'R';
+        /**
+         * Comment is deleted.
+         * @deprecated This tag is not used, but it's maintain for future uses.
+         */
 		static final Character DELETED = 'D';
 	}
-	
+
+    /**
+     * Defines UPLOADS common properties.
+     */
 	interface UPLOADS {
+        /**
+         * Defines system property name where to read the Upload's folder
+         */
 		static final String FOLDER = "lwwcm.uploads.folder";
+
+        /**
+         * If Wcm.UPLOADS.FOLDER is not defined is used a default location ${jboss.servere.data.dir}
+         */
 		static final String DEFAULT = "jboss.server.data.dir";
+
+        /**
+         * Defines system property name where to read a temporal directory used for uploads.
+         * This temporal directory is used for org.apache.commons.fileupload.* package.
+         */
         static final String TMP_DIR = "java.io.tmpdir";
+
+        /**
+         * Defines the buffer's length for uploads operations.
+         */
 		static final int LENGTH_BUFFER = (System.getProperty("lwwcm.uploads.length_buffer") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.length_buffer")));
+
+        /**
+         * Defines the max file size for Uploads.
+         */
         static final int MAX_FILE_SIZE = (System.getProperty("lwwcm.uploads.max_file_size") == null ? 5242880 : new Integer(System.getProperty("lwwcm.uploads.max_file_size"))); // 5 Mb as default max size for file upload
 
+        /**
+         * Defines properties for Client's browser cache.
+         * HTTP/1.1 Cache-Control parameters
+         */
         interface CACHE {
+            /**
+             * @ref http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3
+             */
             static final int MAX_AGE = (System.getProperty("lwwcm.uploads.cache.max-age") == null ? 300 : new Integer(System.getProperty("lwwcm.uploads.cache.max-age")));
         }
 	}
 
+    /**
+     * Defines Template's type
+     *
+     * @deprecated This type is not used in the current status of the software. We hold this type for future uses.
+     */
     interface TEMPLATES {
         static final Character SINGLE = 'S';
         static final Character LIST = 'L';
     }
 
+    /**
+     * Defines constants used in MVC portlet pattern for EditorPortlet.
+     * They indicates target VIEW after an ACTION.
+     */
     interface VIEWS {
         static final int MAX_PER_PAGE = (System.getProperty("lwwcm.views.max_per_page") == null ? 3 : new Integer(System.getProperty("lwwcm.views.max_per_page")));
         static final String POSTS = "posts";
@@ -76,6 +227,10 @@ public interface Wcm {
         static final String EDIT_POST = "editpost";
     }
 
+    /**
+     * Defines constants used in MVC portlet pattern for EditorPortlet.
+     * They indicates ACTIONS to perform in Portlet action phase.
+     */
     interface ACTIONS {
         static final String POSTS = "posts";
         static final String NEW_CATEGORY = "newcategory";
@@ -118,6 +273,11 @@ public interface Wcm {
         static final String PUBLISH_POSTS = "draftpost";
     }
 
+    /**
+     * Defines constants used in a MVC portlet pattern.
+     * Events are an extension of MVC portlet pattern to support AJAX calls.
+     * They indicates which action and render to server in a serveResource() portlet phase.
+     */
     interface EVENTS {
         static final String SHOW_CATEGORIES_CHILDREN = "showcategorieschildren";
         static final String DOWNLOAD_UPLOAD = "downloadupload";

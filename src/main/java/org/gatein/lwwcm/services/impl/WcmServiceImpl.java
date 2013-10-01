@@ -1,3 +1,26 @@
+/*
+ * JBoss, a division of Red Hat
+ * Copyright 2010, Red Hat Middleware, LLC, and individual
+ * contributors as indicated by the @authors tag. See the
+ * copyright.txt in the distribution for a full listing of
+ * individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.gatein.lwwcm.services.impl;
 
 import java.io.BufferedInputStream;
@@ -17,12 +40,21 @@ import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.WcmService;
 
+/**
+ * Implementation of WcmService public API.
+ * EJB3 Stateless to manage transactions inside container and pooling.
+ *
+ * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
+ */
 @Stateless
 public class WcmServiceImpl implements WcmService {
 
     @PersistenceContext
-    EntityManager em;		
+    EntityManager em;
 
+    /**
+     * @see WcmService#create(org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
 	@Override
 	public void create(Category cat, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
@@ -52,6 +84,9 @@ public class WcmServiceImpl implements WcmService {
 		}			
 	}
 
+    /**
+     * @see WcmService#update(org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
 	@Override
 	public void update(Category cat, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
@@ -82,6 +117,9 @@ public class WcmServiceImpl implements WcmService {
 		em.remove(cat);
 	}
 
+    /**
+     * @see WcmService#deleteCategory(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void deleteCategory(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (id == null || user == null) return;
@@ -96,6 +134,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findCategories(org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Category> findCategories(UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -151,6 +192,9 @@ public class WcmServiceImpl implements WcmService {
         return filtered;
     }
 
+    /**
+     * @see WcmService#findChildren(org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
 	@Override
 	public List<Category> findChildren(Category cat, UserWcm user) throws WcmException {
 		if (cat == null || cat.getId() == null) return null;
@@ -171,6 +215,9 @@ public class WcmServiceImpl implements WcmService {
 		}
 	}
 
+    /**
+     * @see WcmService#findChildren(org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Category> findChildren(Long id, UserWcm user) throws WcmException {
         if (id == null) return null;
@@ -191,6 +238,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findCategories(Character, org.gatein.lwwcm.domain.UserWcm)
+     */
 	@Override
 	public List<Category> findCategories(Character type, UserWcm user)
 			throws WcmException {
@@ -205,6 +255,9 @@ public class WcmServiceImpl implements WcmService {
 		}
 	}
 
+    /**
+     * @see WcmService#findRootCategories(org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Category> findRootCategories(UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -224,6 +277,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findChildren(String, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Category> findChildren(String path, Character type, UserWcm user) throws WcmException {
         List<Category> children = null;
@@ -265,6 +321,9 @@ public class WcmServiceImpl implements WcmService {
         return children;
     }
 
+    /**
+     * @see WcmService#findCategory(String, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public Category findCategory(String path, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -306,6 +365,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findCategory(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public Category findCategory(Long id, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -321,6 +383,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#create(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
 	public void create(Post post, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
@@ -338,7 +403,10 @@ public class WcmServiceImpl implements WcmService {
 		}			
 	}
 
-	@Override
+    /**
+     * @see WcmService#add(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void add(Post post, Category cat, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (post == null || cat == null || user == null) return;
@@ -369,7 +437,10 @@ public class WcmServiceImpl implements WcmService {
 			throw new WcmException(e);
 		}			
 	}
-	
+
+    /**
+     * @see WcmService#update(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.UserWcm)
+     */
 	@Override
 	public void update(Post post, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
@@ -389,6 +460,9 @@ public class WcmServiceImpl implements WcmService {
 		}			
 	}
 
+    /**
+     * @see WcmService#deletePost(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void deletePost(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (id == null || user == null) return;
@@ -411,6 +485,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#add(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public Post findPost(Long id, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -426,6 +503,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findPosts(org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Post> findPosts(UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -438,6 +518,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findPosts(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Post> findPosts(Long categoryId, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -452,6 +535,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findPosts(Long, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Post> findPosts(Long categoryId, Character status, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -468,6 +554,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findPosts(String, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Post> findPosts(String filterName, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -482,6 +571,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#remove(org.gatein.lwwcm.domain.Acl, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void remove(Acl acl, UserWcm user) throws WcmException {
         if (acl == null) return;
@@ -520,6 +612,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#remove(org.gatein.lwwcm.domain.Comment, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void remove(Comment c, UserWcm user) throws WcmException {
         if (c == null) return;
@@ -559,7 +654,10 @@ public class WcmServiceImpl implements WcmService {
 		return copy;		
 	}
 
-	@Override
+    /**
+     * @see WcmService#add(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.Comment)
+     */
+    @Override
 	public void add(Post post, Comment comment) throws WcmAuthorizationException, WcmException {
 		if (post == null || comment == null || post.getId() == null) return;
 		if (post.getCommentsStatus().equals(Wcm.COMMENTS.NO_COMMENTS)) {
@@ -575,7 +673,10 @@ public class WcmServiceImpl implements WcmService {
 		}		
 	}
 
-	@Override
+    /**
+     * @see WcmService#remove(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.Comment, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void remove(Post post, Comment comment, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (post == null || comment == null || post.getId() == null || comment.getId() == null) return;
@@ -594,6 +695,9 @@ public class WcmServiceImpl implements WcmService {
 		}		
 	}
 
+    /**
+     * @see WcmService#removePostCategory(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void removePostCategory(Long postId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (postId == null || catId == null || user == null) return;
@@ -629,7 +733,10 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
-	@Override
+    /**
+     * @see WcmService#create(org.gatein.lwwcm.domain.Upload, java.io.InputStream, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void create(Upload upload, InputStream is, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (upload == null || user == null) return;
@@ -682,7 +789,10 @@ public class WcmServiceImpl implements WcmService {
 	    output.close();
 	}
 
-	@Override
+    /**
+     * @see WcmService#update(org.gatein.lwwcm.domain.Upload, java.io.InputStream, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void update(Upload upload, InputStream is, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (upload == null || is == null || user == null || upload.getId() == null) return;
@@ -723,7 +833,10 @@ public class WcmServiceImpl implements WcmService {
 		return version;
 	}
 
-	@Override
+    /**
+     * @see WcmService#update(org.gatein.lwwcm.domain.Upload, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void update(Upload upload, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (upload == null || user == null || upload.getId() == null) return;
@@ -745,7 +858,10 @@ public class WcmServiceImpl implements WcmService {
 		}	
 	}
 
-	@Override
+    /**
+     * @see WcmService#delete(org.gatein.lwwcm.domain.Upload, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
 	public void delete(Upload upload, UserWcm user)
 			throws WcmAuthorizationException, WcmException {
 		if (upload == null || user == null || upload.getId() == null) return;
@@ -767,12 +883,18 @@ public class WcmServiceImpl implements WcmService {
 		}
 	}
 
+    /**
+     * @see WcmService#deleteUpload(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void deleteUpload(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
         Upload upload = findUpload(id, user);
         delete(upload, user);
     }
 
+    /**
+     * @see WcmService#findUploads(org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Upload> findUploads(UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -785,6 +907,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findUploads(String, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Upload> findUploads(String filterName, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -800,6 +925,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#add(org.gatein.lwwcm.domain.Upload, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void add(Upload upload, Category cat, UserWcm user)
             throws WcmAuthorizationException, WcmException {
@@ -831,6 +959,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#removeUploadCategory(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void removeUploadCategory(Long uploadId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (uploadId == null || catId == null || user == null) return;
@@ -866,6 +997,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findUpload(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public Upload findUpload(Long id, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -881,6 +1015,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findUploads(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Upload> findUploads(Long categoryId, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -895,6 +1032,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#create(org.gatein.lwwcm.domain.Template, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void create(Template temp, UserWcm user)
             throws WcmAuthorizationException, WcmException {
@@ -906,6 +1046,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findTemplates(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Template> findTemplates(Long categoryId, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -921,6 +1064,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findTemplates(org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Template> findTemplates(UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -934,6 +1080,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findTemplates(String, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public List<Template> findTemplates(String filterName, UserWcm user) throws WcmException {
         if (user == null) return null;
@@ -948,6 +1097,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#findTemplate(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     public Template findTemplate(Long id, UserWcm user) throws WcmException {
         if (user == null) return null;
         if (id == null) return null;
@@ -960,6 +1112,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#add(org.gatein.lwwcm.domain.Template, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void add(Template template, Category cat, UserWcm user)
             throws WcmAuthorizationException, WcmException {
@@ -988,6 +1143,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#deleteTemplate(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void deleteTemplate(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (id == null || user == null) return;
@@ -1004,6 +1162,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#removeTemplateCategory(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void removeTemplateCategory(Long templateId, Long catId, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (templateId == null || catId == null || user == null) return;
@@ -1039,6 +1200,9 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#update(org.gatein.lwwcm.domain.Template, org.gatein.lwwcm.domain.UserWcm)
+     */
     @Override
     public void update(Template template, UserWcm user)
             throws WcmAuthorizationException, WcmException {
@@ -1054,13 +1218,13 @@ public class WcmServiceImpl implements WcmService {
     /*
         Aux functions to extract path for categories
      */
-    public String child(String path) {
+    private String child(String path) {
         if (path == null || "".equals(path)) return path;
         if (path.indexOf("/") == -1) return path;
         return path.substring(path.lastIndexOf("/") + 1);
     }
 
-    public String parent(String path) {
+    private String parent(String path) {
         if (path == null || "".equals(path)) return path;
         if (path.indexOf("/") == -1) return "";
         return path.substring(0, path.lastIndexOf("/"));

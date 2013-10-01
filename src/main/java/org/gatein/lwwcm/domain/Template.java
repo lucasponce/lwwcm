@@ -1,3 +1,26 @@
+/*
+ * JBoss, a division of Red Hat
+ * Copyright 2010, Red Hat Middleware, LLC, and individual
+ * contributors as indicated by the @authors tag. See the
+ * copyright.txt in the distribution for a full listing of
+ * individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.gatein.lwwcm.domain;
 
 import java.io.Serializable;
@@ -10,6 +33,8 @@ import javax.persistence.*;
 /**
  * Template is a representation of the html fragment that wcm will use to render content.
  * A WCM org.gatein.lwwcm.portlet will combine a template with posts to render a response.
+ *
+ * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
 @Entity
 @Table(name = "lwwcm_templates")
@@ -18,7 +43,7 @@ import javax.persistence.*;
         @NamedQuery(name = "listTemplatesName", query = "from Template t where upper(t.name) like :name order by t.modified desc"),
         @NamedQuery(name = "listAllTemplates", query = "from Template t order by t.modified desc")
 })
-public class Template implements Serializable {
+final public class Template implements Serializable {
 
 	private Long id;
 	private Character type;
@@ -43,7 +68,13 @@ public class Template implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
+    /**
+     * @see org.gatein.lwwcm.Wcm.TEMPLATES
+     * @return Template's type
+     *
+     * @deprecated This functionality is deprecated in current version, Templates are not categorized, they are generic artifacts
+     */
 	@Column(name = "template_type")
 	public Character getType() {
 		return type;

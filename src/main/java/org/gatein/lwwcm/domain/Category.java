@@ -1,3 +1,26 @@
+/*
+ * JBoss, a division of Red Hat
+ * Copyright 2010, Red Hat Middleware, LLC, and individual
+ * contributors as indicated by the @authors tag. See the
+ * copyright.txt in the distribution for a full listing of
+ * individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.gatein.lwwcm.domain;
 
 import java.io.Serializable;
@@ -7,9 +30,10 @@ import java.util.Set;
 import javax.persistence.*;
 
 /**
- * Categories group content. 
- * Category have a tree structure with Category's parent reference.
- * Categories can be used to grant rights for creation or publishing in an ACL style.
+ * Categories group content (Posts, Uploads or Templates).
+ * Categories have a tree structure with Category's parent reference.
+ *
+ * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
 @Entity
 @Table(name = "lwwcm_categories")
@@ -18,11 +42,10 @@ import javax.persistence.*;
         @NamedQuery(name = "listAllCategories", query = "from Category c order by c.parent.id, c.type, c.name, c.id"),
 		@NamedQuery(name = "listCategoriesName", query = "from Category c where upper(c.name) like upper(:name) order by c.parent.id, c.type, c.name, c.id"),
 		@NamedQuery(name = "listCategoriesType", query = "from Category c where c.type = :type order by c.parent.id, c.type, c.name, c.id"),
-		@NamedQuery(name = "listCategoriesNameType", query = "from Category c where c.name like :name and c.type = :type order by c.parent.id, c.type, c.name, c.id"),
 		@NamedQuery(name = "listCategoriesChildren", query = "from Category c where c.parent is not null and c.parent.id = :id order by c.type, c.name, c.id"),
         @NamedQuery(name = "listRootCategories", query = "from Category c where c.parent is null order by c.type, c.name, c.id")
 })
-public class Category implements Serializable {
+final public class Category implements Serializable {
 
 	private Long id;
 	private String name;
@@ -61,7 +84,11 @@ public class Category implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+    /**
+     * @see org.gatein.lwwcm.Wcm.CATEGORIES
+     * @return Category's type.
+     */
 	@Column(name = "category_type")
 	public Character getType() {
 		return type;
@@ -142,6 +169,9 @@ public class Category implements Serializable {
 		this.acls.remove(acl);
 	}
 
+    /**
+     * @return number of children of this Category.
+     */
     @Transient
     public int getNumChildren() {
         return numChildren;

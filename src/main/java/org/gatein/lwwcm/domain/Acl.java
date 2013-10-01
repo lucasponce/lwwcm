@@ -1,3 +1,26 @@
+/*
+ * JBoss, a division of Red Hat
+ * Copyright 2010, Red Hat Middleware, LLC, and individual
+ * contributors as indicated by the @authors tag. See the
+ * copyright.txt in the distribution for a full listing of
+ * individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.gatein.lwwcm.domain;
 
 import java.io.Serializable;
@@ -15,23 +38,17 @@ import javax.persistence.Table;
 
 /**
  * Acl defines rights for content manipulation.
- * Acl can be linked to a Post or a Category.
- * Acl is also linked with users or groups.
- * Users and groups are read from GateIn Portal Organization service.
+ * Acl can be linked to Posts, Categories or Uploads objects.
+ * Acl is linked with a GateIn's group defined in principal
+ *
+ * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
 @Entity
 @Table(name = "lwwcm_security_acl")
 @Cacheable
-@NamedQueries({ 
-	@NamedQuery(name = "listAclCategoryPrincipal", query = "from Acl a where a.principal = :principal and a.category is not null and a.category.id = :categoryId"),
-	@NamedQuery(name = "deleteAclCategory", query = "delete from Acl a where a.category is not null and a.category.id = :id")
-})
-public class Acl implements Serializable {
+final public class Acl implements Serializable {
 
 	private Long id;
-	/**
-	 * principal can be an username or a groupname
-	 */
 	private String principal;
 	private Character permission;
 	private Category category;
@@ -53,7 +70,10 @@ public class Acl implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
+    /**
+     * @return GateIn's group with this Acl refers to
+     */
 	@Column(name = "acl_principal")
 	public String getPrincipal() {
 		return principal;
@@ -61,7 +81,11 @@ public class Acl implements Serializable {
 	public void setPrincipal(String principal) {
 		this.principal = principal;
 	}
-	
+
+    /**
+     * @see org.gatein.lwwcm.Wcm.ACL
+     * @return permission defined in this Acl.
+     */
 	@Column(name = "acl_type")
 	public Character getPermission() {
 		return permission;
@@ -69,7 +93,11 @@ public class Acl implements Serializable {
 	public void setPermission(Character permission) {
 		this.permission = permission;
 	}
-	
+
+    /**
+     * @see Category
+     * @return category attached to this Acl, It can be null.
+     */
 	@ManyToOne
 	@JoinColumn(name = "acl_category_id")	
 	public Category getCategory() {
@@ -77,8 +105,12 @@ public class Acl implements Serializable {
 	}
 	public void setCategory(Category category) {		
 		this.category = category;
-	}	
-	
+	}
+
+    /**
+     * @see Post
+     * @return post attached to this Acl, It can be null.
+     */
 	@ManyToOne
 	@JoinColumn(name = "acl_post_id")		
 	public Post getPost() {
@@ -86,9 +118,13 @@ public class Acl implements Serializable {
 	}
 	public void setPost(Post post) {
 		this.post = post;
-	}	
-	
-	@ManyToOne
+	}
+
+    /**
+     * @see Upload
+     * @return upload attached to this Acl, It can be null.
+     */
+    @ManyToOne
 	@JoinColumn(name = "acl_upload_id")
 	public Upload getUpload() {
 		return upload;
