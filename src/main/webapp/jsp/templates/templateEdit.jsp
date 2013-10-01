@@ -92,6 +92,7 @@
         CKEDITOR.on( 'instanceCreated', function( event ) {
             var editor = event.editor;
             editor.portalnamespace='${n}';
+            editor.config.enterMode = CKEDITOR.ENTER_BR;
         });
     </script>
     <textarea class="ckeditor" id="${n}templateContent" name="templateContent"><%= t.getContent() %></textarea>

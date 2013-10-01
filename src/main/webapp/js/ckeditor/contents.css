@@ -344,15 +344,6 @@ wcm-comment-created {
     background: url(lwwcm/wcm-comment-created.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
-wcm-comment-author {
-    min-width: 120px;
-    min-height: 20px;
-    display: inline-block;
-    padding-left: 8px;
-    padding-top: 8px;
-    background: url(lwwcm/wcm-comment-author.png) no-repeat top left;
-    border: 1px dotted #b5b6b6;
-}
 wcm-form-author {
     min-width: 120px;
     min-height: 20px;
