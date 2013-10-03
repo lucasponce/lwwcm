@@ -1282,8 +1282,19 @@ public class WcmTags {
             newData = newData.replaceAll("lwwcm-skip", "");
         }
 
-        target = target.replace(oldData, newData);
+        // Specific treatment for images
+        if (oldData.startsWith("<img") && newData.startsWith("<img")) {
+            int i = oldData.indexOf("src=");
+            int j = oldData.indexOf(" ", i);
+            String oldSrc = oldData.substring(i, j);
+            i = newData.indexOf("src=");
+            j = newData.indexOf(" ", j);
+            String newSrc = newData.substring(i, j);
+            oldData = oldSrc;
+            newData = newSrc;
+        }
 
+        target = target.replace(oldData, newData);
         return target;
     }
 
