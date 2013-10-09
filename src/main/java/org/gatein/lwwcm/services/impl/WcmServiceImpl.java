@@ -448,12 +448,21 @@ public class WcmServiceImpl implements WcmService {
 		if (!user.canWrite(post)) {
 			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Post " + post);
 		}
-		try {						
-			PostHistory postVersion = createVersion(post);
-			em.persist(postVersion);
-			
+		try {
+            Long nVersion = (Long)em.createNamedQuery("maxPostVersion")
+                    .setParameter("postid", post.getId())
+                    .getResultList()
+                    .get(0);
+            if (nVersion == null || nVersion < post.getVersion()) {
+                Post postOrig = em.find(Post.class, post.getId());
+                PostHistory postVersion = createVersion(postOrig, postOrig.getVersion());
+                em.persist(postVersion);
+            }
+
+            post.setAuthor(user.getUsername());
 			post.setModified(Calendar.getInstance());
-			post.setVersion(post.getVersion().longValue() + 1);
+            Long nextVersion = Math.max((nVersion == null ? 0 : nVersion) + 1, post.getVersion() + 1);
+			post.setVersion(nextVersion);
 			em.merge(post);
 		} catch (Exception e) {
 			throw new WcmException(e);
@@ -476,7 +485,11 @@ public class WcmServiceImpl implements WcmService {
                 post.remove(cat);
                 em.merge(cat);
             }
-            PostHistory postVersion = createVersion(post);
+            Long nVersion = (Long)em.createNamedQuery("maxPostVersion")
+                    .setParameter("postid", post.getId())
+                    .getResultList()
+                    .get(0);
+            PostHistory postVersion = createVersion(post, nVersion == null ? 0 : nVersion + 1);
             postVersion.setDeleted(Calendar.getInstance());
             em.persist(postVersion);
             em.remove(post);
@@ -572,6 +585,68 @@ public class WcmServiceImpl implements WcmService {
     }
 
     /**
+     * @see WcmService#versionsPost(Long, UserWcm)
+     */
+    @Override
+    public List<Long> versionsPost(Long postId, UserWcm user) throws WcmException {
+        if (postId == null) return null;
+        try {
+            List<Long> result = null;
+            Post post = findPost(postId, user);
+            if (post != null) {
+                result = em.createNamedQuery("versionsPost")
+                    .setParameter("postid", postId)
+                    .getResultList();
+                if (!result.contains(post.getVersion())) {
+                    result.add(0, post.getVersion());
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#changeVersionPost(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void changeVersionPost(Long postId, Long version, UserWcm user) throws WcmException {
+        if (postId == null || version == null || user == null) return;
+        try {
+            Post post = findPost(postId, user);
+            if (post != null) {
+                if (!post.getVersion().equals(version)) {
+                    List<Long> versions = em.createNamedQuery("versionsPost")
+                            .setParameter("postid", postId)
+                            .getResultList();
+                    if (versions != null && !versions.contains(post.getVersion())) {
+                        PostHistory postHistoryCurrent = createVersion(post, post.getVersion());
+                        em.persist(postHistoryCurrent);
+                    }
+                    PostHistoryPK key = new PostHistoryPK();
+                    key.setId(postId);
+                    key.setVersion(version);
+                    PostHistory postH = em.find(PostHistory.class, key);
+                    if (postH != null) {
+                        post.setTitle(postH.getTitle());
+                        post.setExcerpt(postH.getExcerpt());
+                        post.setContent(postH.getContent());
+                        post.setVersion(postH.getVersion());
+                        post.setAuthor(user.getUsername());
+                        post.setModified(Calendar.getInstance());
+                        post.setLocale(postH.getLocale());
+                        post.setPostStatus(postH.getPostStatus());
+                        em.merge(post);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
      * @see WcmService#remove(org.gatein.lwwcm.domain.Acl, org.gatein.lwwcm.domain.UserWcm)
      */
     @Override
@@ -638,7 +713,7 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
-    private PostHistory createVersion(Post post) {
+    private PostHistory createVersion(Post post, Long nVersion) {
 		if (post == null || post.getId() == null || post.getVersion() == null) return null;		
 		PostHistory copy = new PostHistory();
 		copy.setAuthor(post.getAuthor());
@@ -650,7 +725,7 @@ public class WcmServiceImpl implements WcmService {
 		copy.setModified(post.getModified());
 		copy.setPostStatus(post.getPostStatus());
 		copy.setTitle(post.getTitle());
-		copy.setVersion(post.getVersion());
+		copy.setVersion(nVersion);
 		return copy;		
 	}
 
@@ -800,16 +875,24 @@ public class WcmServiceImpl implements WcmService {
 			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Upload " + upload);
 		}	
 		try {
-			UploadHistory version = createVersion(upload);
-			em.persist(version);
-			
+            Long nVersion = (Long)em.createNamedQuery("maxUploadVersion")
+                    .setParameter("uploadid", upload.getId())
+                    .getResultList()
+                    .get(0);
+            if (nVersion == null || nVersion < upload.getVersion()) {
+                Upload uploadOrig = em.find(Upload.class, upload.getId());
+                UploadHistory uploadVersion = createVersion(uploadOrig, uploadOrig.getVersion());
+                em.persist(uploadVersion);
+            }
+
+
 			// upload = em.find(Upload.class, upload.getId());
 			String storedName = UUID.randomUUID().toString();
 			copyFile(is, storedName);
-            upload.setFileName(version.getFileName());
-            upload.setDescription(version.getDescription());
 			upload.setStoredName(storedName);
-			upload.setVersion(upload.getVersion().longValue() + 1);
+
+            Long nextVersion = Math.max((nVersion == null ? 0 : nVersion) + 1, upload.getVersion() + 1);
+			upload.setVersion(nextVersion);
 			upload.setUser(user.getUsername());
             upload.setModified(Calendar.getInstance());
 			em.merge(upload);				
@@ -818,7 +901,7 @@ public class WcmServiceImpl implements WcmService {
 		}		
 	}
 	
-	private UploadHistory createVersion(Upload upload) {
+	private UploadHistory createVersion(Upload upload, Long nVersion) {
 		if (upload == null) return null;
 		UploadHistory version = new UploadHistory();
 		version.setCreated(upload.getCreated());
@@ -829,7 +912,7 @@ public class WcmServiceImpl implements WcmService {
 		version.setModified(upload.getModified());
 		version.setStoredName(upload.getStoredName());
 		version.setUser(upload.getUser());
-		version.setVersion(upload.getVersion());
+		version.setVersion(nVersion);
 		return version;
 	}
 
@@ -844,15 +927,21 @@ public class WcmServiceImpl implements WcmService {
 			throw new WcmAuthorizationException("User: " + user + " has not WRITE rights on Upload " + upload);
 		}	
 		try {
-			UploadHistory version = createVersion(upload);
-			em.persist(version);
-			
-			// upload = em.find(Upload.class, upload.getId());
-			upload.setVersion(upload.getVersion().longValue() + 1);
-			upload.setUser(user.getUsername());
-            upload.setDescription(version.getDescription());
+            Long nVersion = (Long)em.createNamedQuery("maxUploadVersion")
+                    .setParameter("uploadid", upload.getId())
+                    .getResultList()
+                    .get(0);
+            if (nVersion == null || nVersion < upload.getVersion()) {
+                Upload uploadOrig = em.find(Upload.class, upload.getId());
+                UploadHistory uploadVersion = createVersion(uploadOrig, uploadOrig.getVersion());
+                em.persist(uploadVersion);
+            }
+
+            Long nextVersion = Math.max((nVersion == null ? 0 : nVersion) + 1, upload.getVersion() + 1);
+            upload.setVersion(nextVersion);
+            upload.setUser(user.getUsername());
             upload.setModified(Calendar.getInstance());
-			em.merge(upload);				
+            em.merge(upload);
 		} catch (Exception e) {
 			throw new WcmException(e);
 		}	
@@ -870,8 +959,11 @@ public class WcmServiceImpl implements WcmService {
 		}			
 		try {
             upload = em.getReference(Upload.class, upload.getId());
-
-			UploadHistory version = createVersion(upload);
+            Long nVersion = (Long)em.createNamedQuery("maxUploadVersion")
+                    .setParameter("uploadid", upload.getId())
+                    .getResultList()
+                    .get(0);
+            UploadHistory version = createVersion(upload, nVersion == null ? 0 : nVersion);
 			version.setDeleted(Calendar.getInstance());
 			em.persist(version);
             for (Category c : upload.getCategories()) {
@@ -1033,6 +1125,67 @@ public class WcmServiceImpl implements WcmService {
     }
 
     /**
+     * @see WcmService#versionsUpload(Long, UserWcm)
+     */
+    @Override
+    public List<Long> versionsUpload(Long uploadId, UserWcm user) throws WcmException {
+        if (uploadId == null) return null;
+        try {
+            List<Long> result = null;
+            Upload upload = findUpload(uploadId, user);
+            if (upload != null) {
+                result = em.createNamedQuery("versionsUpload")
+                        .setParameter("uploadid", uploadId)
+                        .getResultList();
+                if (!result.contains(upload.getVersion())) {
+                    result.add(0, upload.getVersion());
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#changeVersionUpload(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void changeVersionUpload(Long uploadId, Long version, UserWcm user) throws WcmException {
+        if (uploadId == null || version == null || user == null) return;
+        try {
+            Upload upload = findUpload(uploadId, user);
+            if (upload != null) {
+                if (!upload.getVersion().equals(version)) {
+                    List<Long> versions = em.createNamedQuery("versionsUpload")
+                            .setParameter("uploadid", uploadId)
+                            .getResultList();
+                    if (versions != null && !versions.contains(upload.getVersion())) {
+                        UploadHistory uploadHistoryCurrent = createVersion(upload, upload.getVersion());
+                        em.persist(uploadHistoryCurrent);
+                    }
+                    UploadHistoryPK key = new UploadHistoryPK();
+                    key.setId(uploadId);
+                    key.setVersion(version);
+                    UploadHistory uploadH = em.find(UploadHistory.class, key);
+                    if (uploadH != null) {
+                        upload.setFileName(uploadH.getFileName());
+                        upload.setDescription(uploadH.getDescription());
+                        upload.setMimeType(uploadH.getMimeType());
+                        upload.setVersion(uploadH.getVersion());
+                        upload.setStoredName(uploadH.getStoredName());
+                        upload.setUser(user.getUsername());
+                        upload.setModified(Calendar.getInstance());
+                        em.merge(upload);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
      * @see WcmService#create(org.gatein.lwwcm.domain.Template, org.gatein.lwwcm.domain.UserWcm)
      */
     @Override
@@ -1156,6 +1309,13 @@ public class WcmServiceImpl implements WcmService {
             for (Category c : template.getCategories()) {
                 c.getTemplates().remove(template);
             }
+            Long nVersion = (Long)em.createNamedQuery("maxTemplateVersion")
+                    .setParameter("templateid", template.getId())
+                    .getResultList()
+                    .get(0);
+            TemplateHistory templateVersion = createVersion(template, nVersion == null ? 0 : nVersion + 1);
+            templateVersion.setDeleted(Calendar.getInstance());
+            em.persist(templateVersion);
             em.remove(template);
         } catch (Exception e) {
             throw new WcmException(e);
@@ -1208,12 +1368,102 @@ public class WcmServiceImpl implements WcmService {
             throws WcmAuthorizationException, WcmException {
         if (template == null || user == null || template.getId() == null) return;
         try {
+            Long nVersion = (Long)em.createNamedQuery("maxTemplateVersion")
+                    .setParameter("templateid", template.getId())
+                    .getResultList()
+                    .get(0);
+            if (nVersion == null || nVersion < template.getVersion()) {
+                Template templateOrig = em.find(Template.class, template.getId());
+                TemplateHistory templateVersion = createVersion(templateOrig, templateOrig.getVersion());
+                em.persist(templateVersion);
+            }
+
+            Long nextVersion = Math.max((nVersion == null ? 0 : nVersion) + 1, template.getVersion() + 1);
+            template.setVersion(nextVersion);
+            template.setUser(user.getUsername());
             template.setModified(Calendar.getInstance());
             em.merge(template);
         } catch (Exception e) {
             throw new WcmException(e);
         }
     }
+
+    private TemplateHistory createVersion(Template template, Long nVersion) {
+        if (template == null) return null;
+        TemplateHistory version = new TemplateHistory();
+        version.setName(template.getName());
+        version.setCreated(template.getCreated());
+        version.setModified(template.getModified());
+        version.setUser(template.getUser());
+        version.setVersion(nVersion);
+        version.setContent(template.getContent());
+        version.setLocale(template.getLocale());
+        version.setId(template.getId());
+        return version;
+    }
+
+
+    /**
+     * @see WcmService#versionsTemplate(Long, UserWcm)
+     */
+    @Override
+    public List<Long> versionsTemplate(Long templateId, UserWcm user) throws WcmException {
+        if (templateId == null) return null;
+        try {
+            List<Long> result = null;
+            Template template = findTemplate(templateId, user);
+            if (template != null) {
+                result = em.createNamedQuery("versionsTemplate")
+                        .setParameter("templateid", templateId)
+                        .getResultList();
+                if (!result.contains(template.getVersion())) {
+                    result.add(0, template.getVersion());
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#changeVersionTemplate(Long, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void changeVersionTemplate(Long templateId, Long version, UserWcm user) throws WcmException {
+        if (templateId == null || version == null || user == null) return;
+        try {
+            Template template = findTemplate(templateId, user);
+            if (template != null) {
+                if (!template.getVersion().equals(version)) {
+                    List<Long> versions = em.createNamedQuery("versionsTemplate")
+                            .setParameter("templateid", templateId)
+                            .getResultList();
+                    if (versions != null && !versions.contains(template.getVersion())) {
+                        TemplateHistory templateHistoryCurrent = createVersion(template, template.getVersion());
+                        em.persist(templateHistoryCurrent);
+                    }
+                    TemplateHistoryPK key = new TemplateHistoryPK();
+                    key.setId(templateId);
+                    key.setVersion(version);
+                    TemplateHistory templateH = em.find(TemplateHistory.class, key);
+                    if (templateH != null) {
+                        template.setName(templateH.getName());
+                        template.setLocale(templateH.getLocale());
+                        template.setContent(templateH.getContent());
+                        template.setVersion(templateH.getVersion());
+                        template.setCreated(templateH.getCreated());
+                        template.setModified(Calendar.getInstance());
+                        em.merge(template);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+
 
     /*
         Aux functions to extract path for categories

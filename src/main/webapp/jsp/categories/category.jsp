@@ -35,8 +35,10 @@
 
     <form id="${n}newCategoryForm" method="post" action="${newCategoryAction}">
         <div class="lwwcm-newcategory">
+                <span class="glyphicon glyphicon-font margin-right margin-top"></span>
                 <label for="${n}newCategoryName">Category name: </label>
-                <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input" /></div>
+                <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input margin-left-cat" /></div>
+                <span class="glyphicon glyphicon-tag margin-right margin-top"></span>
                 <label for="${n}newCategoryType">Category type: </label>
                 <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input">
                     <option value="Category">Category</option>
@@ -46,6 +48,7 @@
                 <a href="javascript:saveNewCategory('${n}');" class="button" title="Save Category">Save Category</a>
         </div>
         <div class="lwwcm-newcategory-parent" id="${n}editCategoryParentContainer">
+            <span class="glyphicon glyphicon-folder-open margin-right margin-top"></span>
             <label for="${n}newCategoryParent">Category parent: </label>
             <div class="lwwcm-newcategory-type">
                 <select id="${n}newCategoryParent" name="newCategoryParent" class="lwwcm-input">

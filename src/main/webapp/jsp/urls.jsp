@@ -103,6 +103,9 @@
 <portlet:actionURL var="addCategoryPostAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.ADD_CATEGORY_POST %>" />
 </portlet:actionURL>
+<portlet:actionURL var="changeVersionPostAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.CHANGE_VERSION_POST %>" />
+</portlet:actionURL>
 <portlet:actionURL var="newCategoryAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_CATEGORY %>" />
 </portlet:actionURL>
@@ -145,6 +148,9 @@
 <portlet:actionURL var="removeCategoryUploadAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.REMOVE_CATEGORY_UPLOAD %>" />
 </portlet:actionURL>
+<portlet:actionURL var="changeVersionUploadAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.CHANGE_VERSION_UPLOAD %>" />
+</portlet:actionURL>
 <portlet:actionURL var="newTemplateAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.NEW_TEMPLATE %>" />
 </portlet:actionURL>
@@ -177,6 +183,9 @@
 </portlet:actionURL>
 <portlet:actionURL var="deleteTemplateAction">
     <portlet:param name="action" value="<%= Wcm.ACTIONS.DELETE_TEMPLATE %>" />
+</portlet:actionURL>
+<portlet:actionURL var="changeVersionTemplateAction">
+    <portlet:param name="action" value="<%= Wcm.ACTIONS.CHANGE_VERSION_TEMPLATE %>" />
 </portlet:actionURL>
 <% // Event URL %>
 <portlet:resourceURL var="showCategoriesChildrenEvent">

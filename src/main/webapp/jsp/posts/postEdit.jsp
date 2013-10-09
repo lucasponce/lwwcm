@@ -75,24 +75,53 @@
         if (p != null) {
             boolean canWrite = userWcm.canWrite(p);
     %>
-    <% if (canWrite) { %><form id="${n}editPostForm" method="post" action="${editPostAction}"><input type="hidden" id="${n}postEditId" name="postEditId" value="<%= p.getId() %>" /><% } %>
+    <% if (canWrite) { %>
+    <form id="${n}changeVersionPostForm" method="post" action="${changeVersionPostAction}">
+        <input type="hidden" id="${n}postVersionId" name="postVersionId" value="<%= p.getId() %>" />
+        <input type="hidden" id="${n}postVersion" name="postVersion" value="-1" />
+    </form>
+    <form id="${n}editPostForm" method="post" action="${editPostAction}"><input type="hidden" id="${n}postEditId" name="postEditId" value="<%= p.getId() %>" />
+    <% } %>
     <div class="lwwcm-newpost-title"><input id="${n}postTitle" name="postTitle" class="lwwcm-input" value="<%= p.getTitle() %>" <% if (canWrite) { %>onfocus="if (this.value == 'Post Title') this.value=''" onblur="if (this.value == '') this.value='Post Title'" <% } else { %>disabled<% } %> /></div>
     <div class="lwwcm-newpost-title"><textarea id="${n}postExcerpt" name="postExcerpt" class="lwwcm-input" <% if (canWrite) { %>onfocus="if (this.value == 'Summary / Excerpt') this.value=''" onblur="if (this.value == '') this.value='Summary / Excerpt'"  <% } else { %>disabled<% } %> ><%= p.getExcerpt() %></textarea></div>
     <div class="lwwcm-newtemplate">
+        <span class="glyphicon glyphicon-globe margin-right margin-top"></span>
         Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}postLocale" name="postLocale" class="lwwcm-input" value="<%= p.getLocale() %>" <% if (!canWrite) { %>disabled<% } %> /></div>
-        Comments: <div class="lwwcm-newtemplate-type">
+        <span class="glyphicon glyphicon-comment margin-right margin-top"></span>
+        Comments: <div class="lwwcm-newpost-comments">
                     <select id="${n}postCommentsStatus" name="postCommentsStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %>>
                         <option value="<%= Wcm.COMMENTS.ANONYMOUS%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.ANONYMOUS)) { %> selected <% } %>>Anonymous</option>
                         <option value="<%= Wcm.COMMENTS.LOGGED%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.LOGGED)) { %> selected <% } %>>Logged</option>
                         <option value="<%= Wcm.COMMENTS.NO_COMMENTS%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.NO_COMMENTS)) { %> selected <% } %>>No Comments</option>
                     </select>
                   </div>
-        Status:  <div class="lwwcm-newtemplate-type">
+        <span class="glyphicon glyphicon-share margin-right margin-top"></span>
+        Status:  <div class="lwwcm-newpost-status">
                     <select id="${n}postStatus" name="postStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %> >
                         <option value="<%= Wcm.POSTS.DRAFT %>" <% if (p.getPostStatus().equals(Wcm.POSTS.DRAFT)) { %> selected <% } %>>Draft</option>
                         <option value="<%= Wcm.POSTS.PUBLISHED %>" <% if (p.getPostStatus().equals(Wcm.POSTS.PUBLISHED)) { %> selected <% } %>>Published</option>
                     </select>
                  </div>
+        <span class="glyphicon glyphicon-sort margin-right margin-top"></span>
+        Version: <div class="lwwcm-newpost-versions">
+                    <select id="${n}postVersions" name="postVersions" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %> onchange="changeVersionPost('${n}');">
+                        <%
+                            List<Long> versions = (List<Long>)request.getAttribute("versions");
+                            if (versions != null) {
+                                if (!versions.contains(p.getVersion())) {
+                         %>
+                        <option value="<%= p.getVersion()%>" selected><%= p.getVersion()%></option>
+                         <%
+                                }
+                                for (Long version: versions) {
+                         %>
+                        <option value="<%= version %>" <% if (p.getVersion().equals(version)) { %> selected <% } %>><%= version %></option>
+                        <%
+                                }
+                            }
+                        %>
+                    </select>
+                  </div>
         <% if (canWrite) { %><a href="javascript:saveUpdatePost('${n}');" class="button" title="Save Post">Save Post</a><% } %>
     </div>
     <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/ckeditor/ckeditor.js") %>"></script>

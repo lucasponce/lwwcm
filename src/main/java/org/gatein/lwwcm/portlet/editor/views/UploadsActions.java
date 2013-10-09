@@ -147,6 +147,21 @@ public class UploadsActions {
         return Wcm.VIEWS.UPLOADS;
     }
 
+    public String actionChangeVersionUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String uploadVersionId = request.getParameter("uploadVersionId");
+        String uploadVersion = request.getParameter("uploadVersion");
+        try {
+            wcm.changeVersionUpload(new Long(uploadVersionId), new Long(uploadVersion), userWcm);
+            response.setRenderParameter("editid", uploadVersionId);
+            return Wcm.VIEWS.EDIT_UPLOAD;
+        } catch (Exception e) {
+            log.warning("Error changing upload version");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error changing upload version " + e.toString());
+        }
+        return Wcm.VIEWS.UPLOADS;
+    }
+
     public String actionAddCategoryUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String categoryId = request.getParameter("categoryId");
         String uploadId = request.getParameter("uploadId");
@@ -379,6 +394,9 @@ public class UploadsActions {
         try {
             Upload upload = wcm.findUpload(new Long(editId), userWcm);
             request.setAttribute("edit", upload);
+            // Uploads's versions
+            List<Long> versions = wcm.versionsUpload(new Long(editId), userWcm);
+            request.setAttribute("versions", versions);
         } catch (WcmException e) {
             log.warning("Error accessing uploads.");
             e.printStackTrace();

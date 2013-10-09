@@ -48,9 +48,7 @@
         <li>
             <%
                 String statusClass = "";
-                if (c.getStatus().equals(Wcm.COMMENT.DELETED)) {
-                    statusClass = "lwwcm-red";
-                } else if (c.getStatus().equals(Wcm.COMMENT.REJECTED)) {
+                if (c.getStatus().equals(Wcm.COMMENT.REJECTED)) {
                     statusClass = "lwwcm-orange";
                 }
             %>
@@ -71,19 +69,13 @@
                         }
                     %>
                     <%
-                        if (c.getStatus().equals(Wcm.COMMENT.REJECTED) || c.getStatus().equals(Wcm.COMMENT.DELETED)) {
+                        if (c.getStatus().equals(Wcm.COMMENT.REJECTED)) {
                     %>
                     <span class="glyphicon glyphicon-eye-open margin-top"></span> <a href="javascript:;" onclick="changeStatusComment('<%= n %>', '<%= changeStatusCommentPostEvent%>', '<%= p.getId() %>', '<%= c.getId()%>', '<%= Wcm.COMMENT.PUBLIC %>');">Public</a>
                     <%
                         }
                     %>
-                    <%
-                        if (!c.getStatus().equals(Wcm.COMMENT.DELETED)) {
-                    %>
                     <span class="glyphicon glyphicon-remove margin-top"></span> <a href="javascript:;" onclick="changeStatusComment('<%= n %>', '<%= changeStatusCommentPostEvent%>', '<%= p.getId() %>', '<%= c.getId()%>', '<%= Wcm.COMMENT.DELETED %>');">Delete</a>
-                    <%
-                        }
-                    %>
                 </div>
                 <%
                     }

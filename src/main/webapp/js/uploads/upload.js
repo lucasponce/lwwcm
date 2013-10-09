@@ -59,3 +59,13 @@ function saveUpdateUpload(namespace) {
     });
 }
 
+function changeVersionUpload(namespace) {
+    require(["SHARED/jquery"], function($) {
+        var formId = "#" + namespace + "changeVersionUploadForm";
+        var versionId = "#" + namespace + "uploadVersion";
+        var versionSelectId = "#" + namespace + "uploadVersions";
+        $(versionId).val( $(versionSelectId).val() );
+        $(formId).submit();
+    });
+}
+

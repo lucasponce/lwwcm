@@ -61,7 +61,7 @@ final public class Upload implements Serializable {
 	public Upload() {
 		this.created = Calendar.getInstance();
         this.modified = (Calendar)this.created.clone();
-		this.version = 1l;
+		this.version = 0l;
 	}
 	
 	@Id @GeneratedValue

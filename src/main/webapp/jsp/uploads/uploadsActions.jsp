@@ -78,7 +78,7 @@
             String filterName = "Filter By Name";
             if (metadata != null && metadata.isFilterName()) filterName = metadata.getName();
         %>
-        <input id="${n}inputFilterName" class="lwwcm-input" value="<%= filterName %>" onfocus="if (this.value == 'Filter By Name') this.value=''" onblur="if (this.value == '') this.value='Filter By Name'" onkeypress="showFilterNameUploads(event, '${n}')" />
+        <input id="${n}inputFilterName" class="lwwcm-input margin-left-cat" value="<%= filterName %>" onfocus="if (this.value == 'Filter By Name') this.value=''" onblur="if (this.value == '') this.value='Filter By Name'" onkeypress="showFilterNameUploads(event, '${n}')" />
     </div>
     <%
         if (metadata != null && ((metadata.getToIndex() + 1) < metadata.getTotalIndex())) {

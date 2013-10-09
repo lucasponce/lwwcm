@@ -62,14 +62,12 @@ public class TemplatesActions {
         String templateName = request.getParameter("templateName");
         String templateLocale = request.getParameter("templateLocale");
         String templateContent = request.getParameter("templateContent");
-        String templateType = request.getParameter("templateType");
         try {
             Template newTemplate = new Template();
             newTemplate.setUser(userWcm.getUsername());
             newTemplate.setName(templateName);
             newTemplate.setLocale(templateLocale);
             newTemplate.setContent(templateContent);
-            newTemplate.setType(templateType.charAt(0));
             wcm.create(newTemplate, userWcm);
             return Wcm.VIEWS.TEMPLATES;
         } catch(Exception e) {
@@ -99,13 +97,11 @@ public class TemplatesActions {
         String templateName = request.getParameter("templateName");
         String templateLocale = request.getParameter("templateLocale");
         String templateContent = request.getParameter("templateContent");
-        String templateType = request.getParameter("templateType");
         try {
             Template updateTemplate = wcm.findTemplate(new Long(templateEditId), userWcm);
             updateTemplate.setName(templateName);
             updateTemplate.setLocale(templateLocale);
             updateTemplate.setContent(templateContent);
-            updateTemplate.setType(templateType.charAt(0));
             wcm.update(updateTemplate, userWcm);
             return Wcm.VIEWS.TEMPLATES;
         } catch(Exception e) {
@@ -114,6 +110,21 @@ public class TemplatesActions {
             response.setRenderParameter("errorWcm", "Error uploading template " + e.toString());
         }
         return Wcm.VIEWS.TEMPLATES;
+    }
+
+    public String actionChangeVersionTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String templateVersionId = request.getParameter("templateVersionId");
+        String templateVersion = request.getParameter("templateVersion");
+        try {
+            wcm.changeVersionTemplate(new Long(templateVersionId), new Long(templateVersion), userWcm);
+            response.setRenderParameter("editid", templateVersionId);
+            return Wcm.VIEWS.EDIT_TEMPLATE;
+        } catch (Exception e) {
+            log.warning("Error changing template version");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error changing template version " + e.toString());
+        }
+        return Wcm.VIEWS.POSTS;
     }
 
     public String actionAddCategoryTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
@@ -352,6 +363,10 @@ public class TemplatesActions {
 
             Template template = wcm.findTemplate(new Long(editId), userWcm);
             request.setAttribute("edit", template);
+
+            // Template's versions
+            List<Long> versions = wcm.versionsTemplate(new Long(editId), userWcm);
+            request.setAttribute("versions", versions);
         } catch (WcmException e) {
             log.warning("Error accessing templates.");
             e.printStackTrace();

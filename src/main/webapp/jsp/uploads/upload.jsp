@@ -32,14 +32,16 @@
 
     <form id="${n}newUploadForm" method="post" enctype="multipart/form-data" action="${newUploadAction}">
         <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-paperclip margin-right margin-top"></span>
             <a href="javascript:showUploadFile('${n}');" class="button" title="Upload file">Upload file</a>
             <input type="file" id="${n}uploadFile" name="uploadFile" class="lwwcm-newupload-file" />
             <div class="lwwcm-newupload-name" id="${n}uploadFileName"></div>
             <a href="javascript:saveNewUpload('${n}');" class="button" title="Save Upload">Save Upload</a>
         </div>
         <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-font margin-right margin-top"></span>
             <label for="${n}uploadFileDescription">Description: </label>
-            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input" /></div>
+            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input margin-left-cat" /></div>
         </div>
     </form>
 </div>

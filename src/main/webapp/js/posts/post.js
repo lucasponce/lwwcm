@@ -47,6 +47,16 @@ function saveUpdatePost(namespace) {
     });
 }
 
+function changeVersionPost(namespace) {
+    require(["SHARED/jquery"], function($) {
+        var formId = "#" + namespace + "changeVersionPostForm";
+        var versionId = "#" + namespace + "postVersion";
+        var versionSelectId = "#" + namespace + "postVersions";
+        $(versionId).val( $(versionSelectId).val() );
+        $(formId).submit();
+    });
+}
+
 function showSelectUploadsPost(namespace, editor) {
     require(["SHARED/jquery"], function($) {
         // Show popup

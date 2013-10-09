@@ -31,19 +31,19 @@ import java.util.Set;
 import javax.persistence.*;
 
 /**
- * Template is a representation of the html fragment that wcm will use to render content.
- * A WCM org.gatein.lwwcm.portlet will combine a template with posts to render a response.
+ * TemplateHistory will store versioning of wcm templates.
  *
  * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
 @Entity
-@Table(name = "lwwcm_templates")
+@Table(name = "lwwcm_templates_history")
+@IdClass(TemplateHistoryPK.class)
 @Cacheable
 @NamedQueries({
-        @NamedQuery(name = "listTemplatesName", query = "from Template t where upper(t.name) like :name order by t.modified desc"),
-        @NamedQuery(name = "listAllTemplates", query = "from Template t order by t.modified desc")
+        @NamedQuery(name = "maxTemplateVersion", query = "select max(th.version) from TemplateHistory th where th.id = :templateid"),
+        @NamedQuery(name = "versionsTemplate", query = "select th.version from TemplateHistory th where th.id = :templateid order by th.version desc")
 })
-final public class Template implements Serializable {
+final public class TemplateHistory implements Serializable {
 
 	private Long id;
     private Long version;
@@ -52,16 +52,15 @@ final public class Template implements Serializable {
 	private String locale;
     private Calendar created;
     private Calendar modified;
+    private Calendar deleted;
     private String user;
-    private Set<Category> categories = new HashSet<Category>();
 
-    public Template() {
+    public TemplateHistory() {
         this.created = Calendar.getInstance();
         this.modified = (Calendar)this.created.clone();
-        this.version = 0l;
     }
 
-    @Id @GeneratedValue
+    @Id
 	@Column(name = "template_id")	
 	public Long getId() {
 		return id;
@@ -70,6 +69,7 @@ final public class Template implements Serializable {
 		this.id = id;
 	}
 
+    @Id
     @Column(name = "template_version")
     public Long getVersion() {
         return version;
@@ -121,6 +121,15 @@ final public class Template implements Serializable {
         this.modified = modified;
     }
 
+    @Column(name = "template_deleted")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar getDeleted() {
+        return deleted;
+    }
+    public void setDeleted(Calendar deleted) {
+        this.deleted = deleted;
+    }
+
     @Column(name = "template_user")
     public String getUser() {
         return user;
@@ -129,17 +138,9 @@ final public class Template implements Serializable {
         this.user = user;
     }
 
-    @ManyToMany(mappedBy = "templates", cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
-    public Set<Category> getCategories() {
-        return categories;
-    }
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
-    }
-
     @Override
 	public String toString() {
-		return "Template [id=" + id + ", name=" + name
+		return "TemplateHistory [id=" + id + ", name=" + name
 				+ ", content=" + content + ", locale=" + locale + "]";
 	}
 	
@@ -162,7 +163,7 @@ final public class Template implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Template other = (Template) obj;
+		TemplateHistory other = (TemplateHistory) obj;
 		if (content == null) {
 			if (other.content != null)
 				return false;

@@ -38,6 +38,10 @@ import javax.persistence.*;
 @Table(name = "lwwcm_posts_history")
 @IdClass(PostHistoryPK.class)
 @Cacheable
+@NamedQueries({
+        @NamedQuery(name = "maxPostVersion", query = "select max(ph.version) from PostHistory ph where ph.id = :postid"),
+        @NamedQuery(name = "versionsPost", query = "select ph.version from PostHistory ph where ph.id = :postid order by ph.version desc")
+})
 final public class PostHistory implements Serializable {
 
 	private Long id;	

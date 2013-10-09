@@ -73,17 +73,36 @@
         Template t = (Template) request.getAttribute("edit");
         if (t != null) {
     %>
+    <form id="${n}changeVersionTemplateForm" method="post" action="${changeVersionTemplateAction}">
+        <input type="hidden" id="${n}templateVersionId" name="templateVersionId" value="<%= t.getId() %>" />
+        <input type="hidden" id="${n}templateVersion" name="templateVersion" value="-1" />
+    </form>
     <form id="${n}editTemplateForm" method="post" action="${editTemplateAction}">
     <input type="hidden" id="${n}templateEditId" name="templateEditId" value="<%= t.getId() %>" />
     <div class="lwwcm-newpost-title"><input id="${n}templateName" name="templateName" class="lwwcm-input" value="<%= t.getName() %>" onfocus="if (this.value == 'Template Name') this.value=''" onblur="if (this.value == '') this.value='Template Name'"/></div>
     <div class="lwwcm-newtemplate">
+        <span class="glyphicon glyphicon-globe margin-right margin-top"></span>
         Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}templateLocale" name="templateLocale" class="lwwcm-input" value="<%= t.getLocale() %>"/></div>
-        Template type: <div class="lwwcm-newtemplate-type">
-                            <select id="${n}templateType" name="templateType" class="lwwcm-input">
-                                <option value="S" <% if (t.getType().equals(Wcm.TEMPLATES.SINGLE)) {%> selected <% } %>>Single Content</option>
-                                <option value="L" <% if (t.getType().equals(Wcm.TEMPLATES.LIST)) {%> selected <% } %>>List Content</option>
-                            </select>
-                        </div>
+        <span class="glyphicon glyphicon-sort margin-right margin-top"></span>
+        Version: <div class="lwwcm-newtemplate-versions">
+        <select id="${n}templateVersions" name="templateVersions" class="lwwcm-input" onchange="changeVersionTemplate('${n}');">
+            <%
+                List<Long> versions = (List<Long>)request.getAttribute("versions");
+                if (versions != null) {
+                    if (!versions.contains(t.getVersion())) {
+            %>
+            <option value="<%= t.getVersion()%>" selected><%= t.getVersion()%></option>
+            <%
+                }
+                for (Long version: versions) {
+            %>
+            <option value="<%= version %>" <% if (t.getVersion().equals(version)) { %> selected <% } %>><%= version %></option>
+            <%
+                    }
+                }
+            %>
+        </select>
+    </div>
         <a href="javascript:saveUpdateTemplate('${n}');" class="button" title="Save Template">Save Template</a>
     </div>
     <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/ckeditor/ckeditor.js") %>"></script>

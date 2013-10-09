@@ -43,7 +43,7 @@ import org.gatein.lwwcm.Wcm;
 @Cacheable
 @NamedQueries({
 		@NamedQuery(name = "listPostsName", query = "from Post p where upper(p.title) like :title order by p.modified desc"),
-        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.modified desc"),
+        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.modified desc")
 })
 final public class Post implements Serializable {
 
@@ -63,7 +63,7 @@ final public class Post implements Serializable {
 	private Set<Acl> acls = new HashSet<Acl>();
 	
 	public Post() {
-		this.version = 1l;
+		this.version = 0l;
 		this.created = Calendar.getInstance();
         this.modified = (Calendar)this.created.clone();
 		this.postStatus = Wcm.POSTS.DRAFT;

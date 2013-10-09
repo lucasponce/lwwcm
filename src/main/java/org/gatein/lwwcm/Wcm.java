@@ -150,7 +150,6 @@ public interface Wcm {
 		static final Character REJECTED = 'R';
         /**
          * Comment is deleted.
-         * @deprecated This tag is not used, but it's maintain for future uses.
          */
 		static final Character DELETED = 'D';
 	}
@@ -196,16 +195,6 @@ public interface Wcm {
             static final int MAX_AGE = (System.getProperty("lwwcm.uploads.cache.max-age") == null ? 300 : new Integer(System.getProperty("lwwcm.uploads.cache.max-age")));
         }
 	}
-
-    /**
-     * Defines Template's type
-     *
-     * @deprecated This type is not used in the current status of the software. We hold this type for future uses.
-     */
-    interface TEMPLATES {
-        static final Character SINGLE = 'S';
-        static final Character LIST = 'L';
-    }
 
     /**
      * Defines constants used in MVC portlet pattern for EditorPortlet.
@@ -271,6 +260,9 @@ public interface Wcm {
         static final String REMOVE_CATEGORY_POST = "removecategorypost";
         static final String PUBLISH_POST = "publishpost";
         static final String PUBLISH_POSTS = "draftpost";
+        static final String CHANGE_VERSION_POST = "changeversionpost";
+        static final String CHANGE_VERSION_UPLOAD = "changeversionupload";
+        static final String CHANGE_VERSION_TEMPLATE = "changeversiontemplate";
     }
 
     /**

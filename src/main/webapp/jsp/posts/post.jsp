@@ -72,15 +72,18 @@
     <div class="lwwcm-newpost-title"><input id="${n}postTitle" name="postTitle" class="lwwcm-input" value="Post Title" onfocus="if (this.value == 'Post Title') this.value=''" onblur="if (this.value == '') this.value='Post Title'"/></div>
     <div class="lwwcm-newpost-title"><textarea id="${n}postExcerpt" name="postExcerpt" class="lwwcm-input" onfocus="if (this.value == 'Summary / Excerpt') this.value=''" onblur="if (this.value == '') this.value='Summary / Excerpt'">Summary / Excerpt</textarea></div>
     <div class="lwwcm-newtemplate">
+        <span class="glyphicon glyphicon-globe margin-right margin-top"></span>
         Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}postLocale" name="postLocale" class="lwwcm-input" value="<%= renderRequest.getLocale().getLanguage() %>"/></div>
-        Comments: <div class="lwwcm-newtemplate-type">
+        <span class="glyphicon glyphicon-comment margin-right margin-top"></span>
+        Comments: <div class="lwwcm-newpost-comments">
                     <select id="${n}postCommentsStatus" name="postCommentsStatus" class="lwwcm-input">
                         <option value="<%= Wcm.COMMENTS.ANONYMOUS%>">Anonymous</option>
                         <option value="<%= Wcm.COMMENTS.LOGGED%>">Logged</option>
                         <option value="<%= Wcm.COMMENTS.NO_COMMENTS%>">No Comments</option>
                     </select>
                   </div>
-        Status:  <div class="lwwcm-newtemplate-type">
+        <span class="glyphicon glyphicon-share margin-right margin-top"></span>
+        Status:  <div class="lwwcm-newpost-status">
                     <select id="${n}postStatus" name="postStatus" class="lwwcm-input">
                         <option value="<%= Wcm.POSTS.DRAFT %>">Draft</option>
                         <option value="<%= Wcm.POSTS.PUBLISHED %>">Published</option>

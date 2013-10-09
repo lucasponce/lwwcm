@@ -120,6 +120,21 @@ public class PostsActions {
         return Wcm.VIEWS.POSTS;
     }
 
+    public String actionChangeVersionPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String postVersionId = request.getParameter("postVersionId");
+        String postVersion = request.getParameter("postVersion");
+        try {
+            wcm.changeVersionPost(new Long(postVersionId), new Long(postVersion), userWcm);
+            response.setRenderParameter("editid", postVersionId);
+            return Wcm.VIEWS.EDIT_POST;
+        } catch (Exception e) {
+            log.warning("Error changing post version");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error changing post version " + e.toString());
+        }
+        return Wcm.VIEWS.POSTS;
+    }
+
     public String actionAddCategoryPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String categoryId = request.getParameter("categoryId");
         String postId = request.getParameter("postId");
@@ -388,6 +403,10 @@ public class PostsActions {
             // Categories
             List<Category> categories = wcm.findCategories(userWcm);
             request.setAttribute("categories", categories);
+
+            // Post's versions
+            List<Long> versions = wcm.versionsPost(new Long(editId), userWcm);
+            request.setAttribute("versions", versions);
 
             Post post = wcm.findPost(new Long(editId), userWcm);
             request.setAttribute("edit", post);

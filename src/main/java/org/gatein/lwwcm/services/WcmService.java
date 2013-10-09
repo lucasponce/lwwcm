@@ -273,6 +273,25 @@ public interface WcmService {
      */
     List<Post> findPosts(String filterName, UserWcm user) throws WcmException;
 
+    /**
+     *
+     * @param postId Post's id
+     * @param user UserWcm who performs operation
+     * @return List of versions numbers for Post defined by postId
+     * @throws WcmException
+     */
+    List<Long> versionsPost(Long postId, UserWcm user) throws WcmException;
+
+    /**
+     * Changes version of Post entry.
+     *
+     * @param postId Post's id
+     * @param version Version to change
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     */
+    void changeVersionPost(Long postId, Long version, UserWcm user) throws WcmException;
+
     /*
      * Acl API
      */
@@ -419,6 +438,25 @@ public interface WcmService {
      */
     List<Upload> findUploads(String filterName, UserWcm user) throws WcmException;
 
+    /**
+     *
+     * @param uploadId Post's id
+     * @param user UserWcm who performs operation
+     * @return List of versions numbers for Upload defined by uploadId
+     * @throws WcmException
+     */
+    List<Long> versionsUpload(Long uploadId, UserWcm user) throws WcmException;
+
+    /**
+     * Changes version of Upload entry.
+     *
+     * @param uploadId Upload's id
+     * @param version
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     */
+    void changeVersionUpload(Long uploadId, Long version, UserWcm user) throws WcmException;
+
     /*
      * Template API
      */
@@ -516,5 +554,23 @@ public interface WcmService {
      * @throws WcmException
      */
     List<Template> findTemplates(String filterName, UserWcm user) throws WcmException;
+
+    /**
+     * @param templateId Post's id
+     * @param user UserWcm who performs operation
+     * @return List of versions numbers for Post defined by postId
+     * @throws WcmException
+     */
+    List<Long> versionsTemplate(Long templateId, UserWcm user) throws WcmException;
+
+    /**
+     * Changes Template's entry.
+     *
+     * @param templateId
+     * @param version
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     */
+    void changeVersionTemplate(Long templateId, Long version, UserWcm user) throws WcmException;
 
 }

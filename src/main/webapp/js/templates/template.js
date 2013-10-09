@@ -44,6 +44,16 @@ function saveUpdateTemplate(namespace) {
     });
 }
 
+function changeVersionTemplate(namespace) {
+    require(["SHARED/jquery"], function($) {
+        var formId = "#" + namespace + "changeVersionTemplateForm";
+        var versionId = "#" + namespace + "templateVersion";
+        var versionSelectId = "#" + namespace + "templateVersions";
+        $(versionId).val( $(versionSelectId).val() );
+        $(formId).submit();
+    });
+}
+
 function showSelectUploadsPost(namespace, editor) {
     require(["SHARED/jquery"], function($) {
         // Show popup

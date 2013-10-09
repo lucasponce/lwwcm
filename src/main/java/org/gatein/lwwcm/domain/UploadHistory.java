@@ -37,6 +37,10 @@ import javax.persistence.*;
 @Table(name = "lwwcm_uploads_history")
 @IdClass(UploadHistoryPK.class)
 @Cacheable
+@NamedQueries({
+        @NamedQuery(name = "maxUploadVersion", query = "select max(uh.version) from UploadHistory uh where uh.id = :uploadid"),
+        @NamedQuery(name = "versionsUpload", query = "select uh.version from UploadHistory uh where uh.id = :uploadid order by uh.version desc")
+})
 final public class UploadHistory implements Serializable {
 
 	private Long id;

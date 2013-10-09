@@ -41,8 +41,10 @@
     <form id="${n}editCategoryForm" method="post" action="${editCategoryAction}">
         <input type="hidden" id="${n}editCategoryId" name="editCategoryId" value="<%= c.getId() %>"/>
         <div class="lwwcm-newcategory">
+                <span class="glyphicon glyphicon-font margin-right margin-top"></span>
                 <label for="${n}newCategoryName">Category name: </label>
-                <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input" value="<%= c.getName() %>"/></div>
+                <div class="lwwcm-newcategory-name"><input id="${n}newCategoryName" name="newCategoryName" class="lwwcm-input margin-left-cat" value="<%= c.getName() %>"/></div>
+                <span class="glyphicon glyphicon-tag margin-right margin-top"></span>
                 <label for="${n}newCategoryType">Category type: </label>
                 <div class="lwwcm-newcategory-type"><select id="${n}newCategoryType" name="newCategoryType" class="lwwcm-input">
                     <option value="Category" <% if (c.getType() == Wcm.CATEGORIES.CATEGORY) { %> selected <% } %>>Category</option>
@@ -57,6 +59,7 @@
             }
         %>
         <div class="<%= cssClass %>" id="${n}editCategoryParentContainer">
+            <span class="glyphicon glyphicon-folder-open margin-right margin-top"></span>
             <label for="${n}newCategoryParent">Category parent: </label>
             <div class="lwwcm-newcategory-type">
                 <select id="${n}newCategoryParent" name="newCategoryParent" class="lwwcm-input">

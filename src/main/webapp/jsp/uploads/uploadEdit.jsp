@@ -23,6 +23,7 @@
      */
 %>
 <%@ page import="org.gatein.lwwcm.domain.Upload" %>
+<%@ page import="java.util.List" %>
 <%@include file="../imports.jsp"%>
 <%@include file="../urls.jsp"%>
 
@@ -40,22 +41,52 @@
         <portlet:param name="uploadid" value="<%= u.getId().toString() %>" />
     </portlet:resourceURL>
 
+    <form id="${n}changeVersionUploadForm" method="post" action="${changeVersionUploadAction}">
+        <input type="hidden" id="${n}uploadVersionId" name="uploadVersionId" value="<%= u.getId() %>" />
+        <input type="hidden" id="${n}uploadVersion" name="uploadVersion" value="-1" />
+    </form>
     <form id="${n}editUploadForm" method="post" enctype="multipart/form-data" action="${editUploadAction}">
         <input type="hidden" id="${n}editUploadId" name="editUploadId" value="<%= u.getId() %>"/>
         <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-pushpin margin-right margin-top"></span>
             <label>Filename: </label>
             <div class="lwwcm-editupload-name"><%= u.getFileName() %></div>
             <a href="${downloadUploadEvent}" target="_blank" class="button" title="Download">&nbsp;&nbsp;Download&nbsp;&nbsp;</a>
         </div>
         <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-paperclip margin-right margin-top"></span>
             <a href="javascript:showUploadFile('${n}');" class="button" title="Upload file">Upload file</a>
             <input type="file" id="${n}uploadFile" name="uploadFile" class="lwwcm-newupload-file" />
             <div class="lwwcm-newupload-name" id="${n}uploadFileName"></div>
             <a href="javascript:saveUpdateUpload('${n}');" class="button" title="Save Upload">Save Upload</a>
         </div>
         <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-font margin-right margin-top"></span>
             <label for="${n}uploadFileDescription">Description: </label>
-            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input"  value="<%= u.getDescription() %>"/></div>
+            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input margin-left-cat"  value="<%= u.getDescription() %>"/></div>
+        </div>
+        <div class="lwwcm-newupload">
+            <span class="glyphicon glyphicon-sort margin-right margin-top"></span>
+            <label for="${n}uploadVersions">Version: </label>
+            <div class="lwwcm-newupload-versions">
+                <select id="${n}uploadVersions" name="uploadVersions" class="lwwcm-input" onchange="changeVersionUpload('${n}');">
+                    <%
+                        List<Long> versions = (List<Long>)request.getAttribute("versions");
+                        if (versions != null) {
+                            if (!versions.contains(u.getVersion())) {
+                    %>
+                    <option value="<%= u.getVersion()%>" selected><%= u.getVersion()%></option>
+                    <%
+                        }
+                        for (Long version: versions) {
+                    %>
+                    <option value="<%= version %>" <% if (u.getVersion().equals(version)) { %> selected <% } %>><%= version %></option>
+                    <%
+                            }
+                        }
+                    %>
+                </select>
+            </div>
         </div>
     </form>
     <%

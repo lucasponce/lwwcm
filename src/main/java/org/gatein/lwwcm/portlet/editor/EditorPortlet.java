@@ -35,7 +35,6 @@ import org.gatein.lwwcm.services.PortalService;
 import javax.inject.Inject;
 import javax.portlet.*;
 import java.io.*;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -230,6 +229,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.REMOVE_CATEGORY_UPLOAD))  {
                 // Remove category upload action
                 view = uploads.actionRemoveCategoryUpload(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.CHANGE_VERSION_UPLOAD)) {
+                // Change version upload action
+                view = uploads.actionChangeVersionUpload(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.NEW_TEMPLATE)) {
                 // New template action
                 view = templates.actionNewTemplate(request, response, userWcm);
@@ -242,6 +244,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.EDIT_TEMPLATE)) {
                 // Edit template action
                 view = templates.actionEditTemplate(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.CHANGE_VERSION_TEMPLATE)) {
+                // Change version template action
+                view = templates.actionChangeVersionTemplate(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.ADD_CATEGORY_TEMPLATE)) {
                 // Add category template action
                 view = templates.actionAddCategoryTemplate(request, response, userWcm);
@@ -275,6 +280,9 @@ public class EditorPortlet extends GenericPortlet {
             } else if (action.equals(Wcm.ACTIONS.EDIT_POST)) {
                 // Edit post action
                 view = posts.actionEditPost(request, response, userWcm);
+            } else if (action.equals(Wcm.ACTIONS.CHANGE_VERSION_POST)) {
+                // Change version post action
+                view = posts.actionChangeVersionPost(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.ADD_CATEGORY_POST)) {
                 // Add category post action
                 view = posts.actionAddCategoryPost(request, response, userWcm);
