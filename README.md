@@ -128,6 +128,8 @@ Once downloaded you can import into your GateIn Portal / JBoss Portal with the f
 
 [5] Start browsing into TicketMonster's Magazine site !!
 
+![alt tag](https://raw.github.com/lucasponce/lwwcm/master/lwwcm-preview.png)
+
 Documentation
 -------------
 
