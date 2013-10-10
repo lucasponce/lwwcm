@@ -136,6 +136,8 @@ Documentation
 Project is in a early stage and we haven't written a proper documentation yet.
 This is on our priorities, meanwhile you can always browse into the source code.
 
+[Intro to GateIn lightweight WCM](http://www.slideshare.net/ponceballesteros/gatein-lightweight-web-content-management)
+
 Feedback
 --------
 
