@@ -427,4 +427,142 @@ function changeCommentsPost(namespace, href, postId) {
     });
 }
 
+function showRelationshipsPost(namespace, link, href, postId, hrefClose) {
+    require(["SHARED/jquery"], function($) {
+        // Show popup
+        var id = "#" + namespace + "posts-relationships";
+        var linkid = "#" + link; // namespace included
+        var relationshipsId = "#" + namespace + "post-relationships-list";
+        var selecfilterid = "#" + namespace + "selectFilterCategoryRelationships";
+        var inputfilterid = "#" + namespace + "inputFilterNameRelationships";
+
+        // Open comments in the center
+        var w = (($(window).width() - 980)/2);
+        if (w < 0) w = 100;
+        else w = w + 100;
+        $(id).css('top',  200 - $(document).scrollTop());    // Fixed at the beginning of
+        $(id).css('left', w - $(document).scrollLeft());
+        $(id).fadeIn(100);
+
+        $(inputfilterid).val('Filter By Name');
+        $(selecfilterid)[0].selectedIndex = 0;
+
+        // Events
+        $(selecfilterid).change(function () {
+            $.ajax({
+                type: "POST",
+                url: href + "&postid=" + postId + "&namespace=" + namespace + "&filterCategoryId=" + $(selecfilterid).val(),
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Write Comment data
+                    $(relationshipsId).html(data);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing showRelationshipsPost()");
+                }
+            });
+        });
+        $(inputfilterid).keypress(function(event) {
+            if (event.which == 13) {
+                $.ajax({
+                    type: "POST",
+                    url: href + "&postid=" + postId + "&namespace=" + namespace + "&filterName=" + $(inputfilterid).val(),
+                    cache: false,
+                    dataType: "text",
+                    success: function(data)
+                    {
+                        // Write Comment data
+                        $(relationshipsId).html(data);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown)
+                    {
+                        alert("Problem accessing showRelationshipsPost()");
+                    }
+                });
+            }
+        });
+
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postId + "&namespace=" + namespace,
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write Comment data
+                $(relationshipsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing showRelationshipsPost()");
+            }
+        });
+
+
+        var closeid = "#" + namespace + "close-posts-relationships";
+        $(closeid).click(function (e) {
+            e.preventDefault();
+            $(id).hide();
+            window.location.assign(hrefClose);
+        });
+    });
+}
+
+function addRelationshipPost(namespace, href, postid, targetid) {
+    require(["SHARED/jquery"], function($) {
+        var relationshipsId = "#" + namespace + "post-relationships-list";
+        var key = $("#" + namespace + "inputNewKey" + targetid).val();
+        var selecfilterid = "#" + namespace + "selectFilterCategoryRelationships";
+        var inputfilterid = "#" + namespace + "inputFilterNameRelationships";
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postid + "&namespace=" + namespace + "&filterCategoryId=" + $(selecfilterid).val() + "&filterName=" + $(inputfilterid).val(),
+            data: {
+                key: key,
+                targetid: targetid
+            },
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write Comment data
+                $(relationshipsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing addRelationshipPost()");
+            }
+        });
+    });
+}
+
+function removeRelationshipPost(namespace, href, postid, key) {
+    require(["SHARED/jquery"], function($) {
+        var relationshipsId = "#" + namespace + "post-relationships-list";
+        var selecfilterid = "#" + namespace + "selectFilterCategoryRelationships";
+        var inputfilterid = "#" + namespace + "inputFilterNameRelationships";
+        $.ajax({
+            type: "POST",
+            url: href + "&postid=" + postid + "&namespace=" + namespace + "&filterCategoryId=" + $(selecfilterid).val() + "&filterName=" + $(inputfilterid).val(),
+            data: {
+                key: key
+            },
+            cache: false,
+            dataType: "text",
+            success: function(data)
+            {
+                // Write Comment data
+                $(relationshipsId).html(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert("Problem accessing removeRelationshipPost()");
+            }
+        });
+    });
+}
+
 

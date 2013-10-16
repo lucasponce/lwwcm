@@ -28,7 +28,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * It represents a relationship between Posts or Uploads.
+ * It represents a relationship between Posts, Uploads or Templates.
  * A relation is defined by a key.
  * For example:
  *  Post1 + key("en") = Post2
@@ -39,96 +39,86 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "lwwcm_relationships")
+@IdClass(RelationshipPK.class)
 @Cacheable
+@NamedQueries({
+        @NamedQuery(name = "listRelationships", query = "select r from Relationship r where r.originId = :originId and r.type = :type order by r.originId, r.key"),
+        @NamedQuery(name = "listPostsRelationships", query = "select p from Relationship r, Post p where p.id = r.aliasId and r.originId = :originId and r.type = :type order by r.originId, r.key"),
+        @NamedQuery(name = "listTemplatesRelationships", query = "select t from Relationship r, Template t where t.id = r.aliasId and r.originId = :originId and r.type = :type order by r.originId, r.key")
+})
 final public class Relationship implements Serializable {
 	
-	private Long id;
-	private Post origin;
+	private Long originId;
 	private String key;
-	private Post alias;
+    private Character type;
+	private Long aliasId;
 
-	@Id
-	@Column(name = "relationship_id")	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Id
+    @Column(name = "relationship_origin_id")
+    public Long getOriginId() {
+        return originId;
+    }
+    public void setOriginId(Long originId) {
+        this.originId = originId;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "relationship_origin_id")		
-	public Post getOrigin() {
-		return origin;
-	}
-	public void setOrigin(Post origin) {
-		this.origin = origin;
-	}
-	
-	@Column(name = "relationship_key")
-	public String getKey() {
-		return key;
-	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	
-	@ManyToOne
-	@JoinColumn(name = "relationship_alias_id")			
-	public Post getAlias() {
-		return alias;
-	}
-	public void setAlias(Post alias) {
-		this.alias = alias;
-	}
-	
-	@Override
-	public String toString() {
-		return "Relationship [id=" + id + ", origin=" + origin + ", key=" + key
-				+ ", alias=" + alias + "]";
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((key == null) ? 0 : key.hashCode());
-		result = prime * result + ((origin == null) ? 0 : origin.hashCode());
-		return result;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Relationship other = (Relationship) obj;
-		if (alias == null) {
-			if (other.alias != null)
-				return false;
-		} else if (!alias.equals(other.alias))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (key == null) {
-			if (other.key != null)
-				return false;
-		} else if (!key.equals(other.key))
-			return false;
-		if (origin == null) {
-			if (other.origin != null)
-				return false;
-		} else if (!origin.equals(other.origin))
-			return false;
-		return true;
-	}
-	
+    @Id
+    @Column(name = "relationship_key")
+    public String getKey() {
+        return key;
+    }
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Id
+    @Column(name = "relationship_type")
+    public Character getType() {
+        return type;
+    }
+    public void setType(Character type) {
+        this.type = type;
+    }
+
+    @Column(name = "relationship_alias_id")
+    public Long getAliasId() {
+        return aliasId;
+    }
+    public void setAliasId(Long aliasId) {
+        this.aliasId = aliasId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Relationship that = (Relationship) o;
+
+        if (!aliasId.equals(that.aliasId)) return false;
+        if (!key.equals(that.key)) return false;
+        if (!originId.equals(that.originId)) return false;
+        if (!type.equals(that.type)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = originId.hashCode();
+        result = 31 * result + key.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + aliasId.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Relationship{" +
+                "originId=" + originId +
+                ", key='" + key + '\'' +
+                ", type=" + type +
+                ", aliasId=" + aliasId +
+                '}';
+    }
 }

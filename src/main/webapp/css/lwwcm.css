@@ -50,6 +50,9 @@
 .margin-left                                {
     margin-left: 10px !important;
 }
+.margin-left-locale {
+    margin-left: 25px !important;
+}
 .margin-center                              {
     margin-left: 100px !important;
     display: inline-block;
@@ -63,6 +66,11 @@
 .right                                      {
     float: right;
     margin-left: 5px !important;
+}
+.right-menu {
+    float: right;
+    position: relative;
+    top: -4px;
 }
 .left                                       {
     float: left;
@@ -465,6 +473,78 @@ a.lwwcm-delete-category:hover {
     width: 181px !important;;
 }
 
+/* Relationships
+================ */
+.lwwcm-relationships {
+    width: 760px;
+    height: 200px;
+    overflow-y: auto;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+.lwwcm-relationships-selected {
+    width: 760px;
+    height: 200px;
+    overflow-y: auto;
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    border-top: 1px solid #d3d3d3;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+.lwwcm-relationships ul {
+    margin: 0;
+    padding: 0;
+}
+.lwwcm-relationships li {
+    list-style-type: none;
+    margin: 0 0 4px 0;
+    padding: 0;
+    position: relative;
+}
+.lwwcm-relationships-selected ul {
+    margin: 4px 0 0 0;
+    padding: 0;
+}
+.lwwcm-relationships-selected li {
+    list-style-type: none;
+    margin: 0 0 4px 0;
+    padding: 0;
+    position: relative;
+}
+.lwwcm-relationship-newtitle {
+    width: 600px;
+    display: inline-block;
+    font: inherit;
+}
+.lwwcm-relationship-input {
+    font: inherit;
+    border: 1px solid #ccc;
+    width: 75px;
+    overflow: hidden;
+    display: inline-block;
+    -moz-border-radius: 2px !important;
+    -webkit-border-radius: 2px !important;
+}
+
+.lwwcm-relationship-input input {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    width: 100%;
+    padding-left: 5px;
+}
+.lwwcm-relationship-newkey {
+    font: inherit;
+    display: inline-block;
+}
+.lwwcm-relationship-origin {
+    width: 705px;
+    display: inline-block;
+    font: inherit;
+}
+.lwwcm-relationship-key {
+    font: inherit;
+    display: inline-block;
+    width: 85px;
+}
 
 /* New Post
 =========== */
@@ -1104,3 +1184,63 @@ input[type="button"]:active                 {
 p.lwwcm-content-edit {
     display: inline !important;
 }
+
+/* Manager actions
+================== */
+.lwwcm-manager-actions {
+    margin: 20px 14px 20px;
+    padding: 0px;
+    list-style: none outside;
+    font-family: Tahoma,Verdana,Arial,Helvetica,sans-serif;
+    font-size: 12px;
+}
+.lwwcm-manager-locks {
+    font-size: 1.3em;
+}
+.lwwcm-manager-locks a:hover {
+    text-decoration: underline;
+}
+.lwwcm-manager-body-locks {
+    width: 760px;
+    height: 200px;
+    overflow-y: auto;
+}
+.lwwcm-manager-body-locks ul {
+    margin: 0;
+    padding: 0;
+}
+.lwwcm-manager-body-locks li {
+    list-style-type: none;
+    margin: 0 0 4px 0;
+    padding: 0;
+    position: relative;
+}
+.lwwcm-lock-post,
+.lwwcm-lock-user,
+.lwwcm-lock-created,
+.lwwcm-lock-action {
+    font: 16px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    margin-right: 20px;
+}
+.lwwcm-lock-action a {
+    text-decoration: underline;
+}
+.lwwcm-lock-action a:hover {
+    text-decoration: none;
+}
+.lwwcm-lock-post {
+    width: 350px;
+}
+.lwwcm-lock-user {
+    width: 100px;
+}
+.lwwcm-lock-created {
+    width: 150px;
+}
+.lwwcm-lock-action {
+    width: 75px;
+}
+
+
+
+

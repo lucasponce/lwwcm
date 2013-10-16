@@ -25,6 +25,7 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.services.PortalService;
@@ -111,6 +112,7 @@ public class PostsActions {
             updatePost.setContent(postContent);
             updatePost.setAuthor(userWcm.getUsername());
             wcm.update(updatePost, userWcm);
+            wcm.unlock(new Long(postEditId), Wcm.LOCK.POST, userWcm);
             return Wcm.VIEWS.POSTS;
         } catch(Exception e) {
             log.warning("Error uploading post");
@@ -141,8 +143,12 @@ public class PostsActions {
         try {
             Category cat = wcm.findCategory(new Long(categoryId), userWcm);
             Post post = wcm.findPost(new Long(postId), userWcm);
+            wcm.lock(new Long(postId), Wcm.LOCK.POST, userWcm);
             wcm.add(post, cat, userWcm);
+            wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
             return Wcm.VIEWS.POSTS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error adding category to post.");
             e.printStackTrace();
@@ -218,8 +224,12 @@ public class PostsActions {
         String deletePostId = request.getParameter("deletePostId");
         Long postId = new Long(deletePostId);
         try {
+            wcm.lock(new Long(postId), Wcm.LOCK.POST, userWcm);
             wcm.deletePost(postId, userWcm);
+            wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
             return Wcm.VIEWS.POSTS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting post.");
             e.printStackTrace();
@@ -233,9 +243,13 @@ public class PostsActions {
         try {
             String[] postsIds = deleteSelectedListId.split(",");
             for (String postId : postsIds) {
+                wcm.lock(new Long(postId), Wcm.LOCK.POST, userWcm);
                 wcm.deletePost(new Long(postId), userWcm);
+                wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
             }
             return Wcm.VIEWS.POSTS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting post.");
             e.printStackTrace();
@@ -252,9 +266,13 @@ public class PostsActions {
             String[] postsIds = addSelectedCategoryPostListId.split(",");
             for (String postId : postsIds) {
                 Post post = wcm.findPost(new Long(postId), userWcm);
+                wcm.lock(new Long(postId), Wcm.LOCK.POST, userWcm);
                 wcm.add(post, cat, userWcm);
+                wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
             }
             return Wcm.VIEWS.POSTS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error adding category to post.");
             e.printStackTrace();
@@ -289,6 +307,24 @@ public class PostsActions {
             log.warning("Error publishing post.");
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error publishing post " + e.toString());
+        }
+        return Wcm.VIEWS.POSTS;
+    }
+
+    public String actionLockPost(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String editId = request.getParameter("editid");
+        try {
+            Post post = wcm.findPost(new Long(editId), userWcm);
+            if (userWcm.canWrite(post)) {
+                wcm.lock(new Long(editId), Wcm.LOCK.POST, userWcm);
+            }
+            return Wcm.VIEWS.EDIT_POST;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
+        }  catch (Exception e) {
+            log.warning("Error locking post.");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error locking post " + e.toString());
         }
         return Wcm.VIEWS.POSTS;
     }
@@ -650,6 +686,131 @@ public class PostsActions {
             e.printStackTrace();
         }
         return "/jsp/posts/postsComments.jsp";
+    }
+
+    public String eventShowPostRelationships(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        try {
+            // List of select posts
+            List<Post> posts = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                posts = wcm.findPosts(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName)) {
+                posts = wcm.findPosts(filterName, userWcm);
+            } else {
+                posts = wcm.findPosts(userWcm);
+            }
+            request.setAttribute("posts", posts);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsPost(new Long(postId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Post> postsRelations = wcm.findPostsRelationshipPost(new Long(postId), userWcm);
+            request.setAttribute("postsRelations", postsRelations);
+
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsRelationships.jsp";
+    }
+
+    public String eventAddPostRelationship(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        String key = request.getParameter("key");
+        String targetId = request.getParameter("targetid");
+        try {
+            // List of select posts
+            List<Post> posts = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                posts = wcm.findPosts(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName) && !"Filter By Name".equals(filterName)) {
+                posts = wcm.findPosts(filterName, userWcm);
+            } else {
+                posts = wcm.findPosts(userWcm);
+            }
+            request.setAttribute("posts", posts);
+
+            // Add relationShip
+            wcm.createRelationshipPost(new Long(postId), key, new Long(targetId), userWcm);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsPost(new Long(postId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Post> postsRelations = wcm.findPostsRelationshipPost(new Long(postId), userWcm);
+            request.setAttribute("postsRelations", postsRelations);
+
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsRelationships.jsp";
+    }
+
+    public String eventRemovePostRelationship(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String postId = request.getParameter("postid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        String key = request.getParameter("key");
+        String targetId = request.getParameter("targetid");
+        try {
+            // List of select posts
+            List<Post> posts = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                posts = wcm.findPosts(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName) && !"Filter By Name".equals(filterName)) {
+                posts = wcm.findPosts(filterName, userWcm);
+            } else {
+                posts = wcm.findPosts(userWcm);
+            }
+            request.setAttribute("posts", posts);
+
+            // Add relationShip
+            wcm.removeRelationshipPost(new Long(postId), key, userWcm);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsPost(new Long(postId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Post> postsRelations = wcm.findPostsRelationshipPost(new Long(postId), userWcm);
+            request.setAttribute("postsRelations", postsRelations);
+
+            Post post = wcm.findPost(new Long(postId), userWcm);
+            request.setAttribute("post", post);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Post's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/posts/postsRelationships.jsp";
+    }
+
+    public void eventUnlockPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String postId = request.getParameter("postid");
+        try {
+            wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
+        } catch (WcmLockException e) {
+            log.warning("Error unlocking Post. This case can be caused by concurrent hazard");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error unlocking Post");
+            e.printStackTrace();
+        }
     }
 
     private int countAcl(Set<Acl> acl, Character type) {

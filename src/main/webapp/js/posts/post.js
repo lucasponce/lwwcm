@@ -42,6 +42,8 @@ function saveNewPost(namespace) {
 
 function saveUpdatePost(namespace) {
     require(["SHARED/jquery"], function($) {
+        $(window).unbind("beforeunload");
+        $(window).unbind("unload");
         var formId = "#" + namespace + "editPostForm";
         $(formId).submit();
     });
@@ -246,5 +248,38 @@ function hidePreview(namespace, link, uploadId) {
         // Show popup
         var id = "#" + namespace + "uploads-preview";
         $(id).fadeOut(100);
+    });
+}
+
+var postModified = false;
+
+function setPostModified() {
+    postModified = true;
+}
+
+function checkExit(namespace, editor, postid, href) {
+    require(["SHARED/jquery"], function($) {
+        $(window).bind("beforeunload", function() {
+            if (editor.checkDirty() || postModified) {
+                return "There are pending modifications in Post."
+            }
+        });
+        $(window).bind("unload", function() {
+            $.ajax({
+                type: "POST",
+                async: false, // This is specific for this AJAX call due is performed in the 'unload' event
+                url: href + "&namespace=" + namespace + "&postid=" + postid,
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Nothing to show in the UI
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing checkExit()");
+                }
+            });
+        });
     });
 }

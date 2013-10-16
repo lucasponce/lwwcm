@@ -25,6 +25,7 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.PortalService;
 import org.gatein.lwwcm.services.WcmService;
@@ -98,8 +99,12 @@ public class CategoriesActions {
     public String actionDeleteCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
         String catId = request.getParameter("deletedCategoryId");
         try {
+            wcm.lock(new Long(catId), Wcm.LOCK.CATEGORY, userWcm);
             wcm.deleteCategory(new Long(catId), userWcm);
+            wcm.unlock(new Long(catId), Wcm.LOCK.CATEGORY, userWcm);
             return Wcm.VIEWS.CATEGORIES;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch (Exception e) {
             log.warning("Error deleting category");
             e.printStackTrace();
@@ -146,11 +151,30 @@ public class CategoriesActions {
                 updateCategory.setParent(null);
             }
             wcm.update(updateCategory, userWcm);
+            wcm.unlock(new Long(catId), Wcm.LOCK.CATEGORY, userWcm);
             return Wcm.VIEWS.CATEGORIES;
         } catch (Exception e) {
             log.warning("Error updating category");
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error updating category " + e.toString());
+        }
+        return Wcm.VIEWS.CATEGORIES;
+    }
+
+    public String actionLockCategory(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String editId = request.getParameter("editid");
+        try {
+            Category cat = wcm.findCategory(new Long(editId), userWcm);
+            if (userWcm.canWrite(cat)) {
+                wcm.lock(new Long(editId), Wcm.LOCK.CATEGORY, userWcm);
+            }
+            return Wcm.VIEWS.EDIT_CATEGORY;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
+        }  catch (Exception e) {
+            log.warning("Error locking category.");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error locking category " + e.toString());
         }
         return Wcm.VIEWS.CATEGORIES;
     }
@@ -310,7 +334,6 @@ public class CategoriesActions {
         }
     }
 
-
     public String eventRemoveAclCategory(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
         String aclCategoryId = request.getParameter("aclcategoryid");
         String aclId = request.getParameter("aclid");
@@ -342,6 +365,19 @@ public class CategoriesActions {
             e.printStackTrace();
         }
         return "/jsp/categories/categoriesAcls.jsp";
+    }
+
+    public void eventUnlockCategory(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String catId = request.getParameter("catid");
+        try {
+            wcm.unlock(new Long(catId), Wcm.LOCK.CATEGORY, userWcm);
+        } catch (WcmLockException e) {
+            log.warning("Error unlocking Category. This case can be caused by concurrent hazard");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error unlocking Category");
+            e.printStackTrace();
+        }
     }
 
     /*

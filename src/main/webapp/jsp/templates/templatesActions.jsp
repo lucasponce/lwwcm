@@ -123,3 +123,34 @@
         <div class="clear"></div>
     </div>
 </div>
+
+<div id="${n}templates-relationships" class="lwwcm-popup-categories lwwcm-dialog">
+    <div id="${n}templates-relationships-title" class="lwwcm-dialog-title">Relationships</div>
+    <a href="#" id="${n}close-templates-relationships" class="lwwcm-dialog-close"><span> </span></a>
+    <div class="lwwcm-dialog-body lwwcm-relationships-select">
+        <div class="lwwcm-select left margin-right">
+            <select id="${n}selectFilterCategoryRelationships" class="lwwcm-input">
+                <option value="-1">All categories</option>
+                <%
+                    if (listCategories != null) {
+                        for (Category c : listCategories) {
+                %>
+                <option value="<%= c.getId()%>"><%= ViewMetadata.categoryTitle(c) %> </option>
+                <%
+                        }
+                    }
+                %>
+            </select>
+        </div>
+        <div class="lwwcm-post-filtername left">
+            <%
+                filterName = "Filter By Name";
+            %>
+            <input id="${n}inputFilterNameRelationships" class="lwwcm-input margin-left-cat" value="<%= filterName %>" onfocus="if (this.value == 'Filter By Name') this.value=''" onblur="if (this.value == '') this.value='Filter By Name'" />
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="lwwcm-dialog-body" id="${n}template-relationships-list">
+
+    </div>
+</div>

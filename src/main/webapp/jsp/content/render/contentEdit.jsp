@@ -30,6 +30,9 @@
 <portlet:resourceURL var="addCommentPost">
     <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_COMMENT_POST %>" />
 </portlet:resourceURL>
+<portlet:resourceURL var="unlockPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UNLOCK_POST %>" />
+</portlet:resourceURL>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/content/render/content.js") %>"></script>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/content/render/contentEditor.js") %>"></script>
 <script type="text/javascript" src="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/js/ckeditor/ckeditor.js") %>"></script>
@@ -85,6 +88,7 @@
             editor.config.removePlugins = 'stylescombo';
         });
     });
+    checkExit('<%= n %>', '<%= request.getAttribute("editid") %>', '<%= unlockPostEvent %>&event=<%= Wcm.EVENTS.UNLOCK_POST %>');
 </script>
 <portlet:resourceURL var="showPostUploadsEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_UPLOADS %>" />

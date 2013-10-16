@@ -52,6 +52,8 @@ function saveNewCategory(namespace) {
 
 function saveUpdateCategory(namespace) {
     require(["SHARED/jquery"], function($) {
+        $(window).unbind("beforeunload");
+        $(window).unbind("unload");
         var formId = "#" + namespace + "editCategoryForm";
         var nameId = "#" + namespace + "newCategoryName";
         // null validation
@@ -60,5 +62,38 @@ function saveUpdateCategory(namespace) {
         } else {
             $(formId).submit();
         }
+    });
+}
+
+var categoryModified = false;
+
+function setCategoryModified() {
+    categoryModified = true;
+}
+
+function checkExit(namespace, catid, href) {
+    require(["SHARED/jquery"], function($) {
+        $(window).bind("beforeunload", function() {
+            if (categoryModified) {
+                return "There are pending modifications in Category."
+            }
+        });
+        $(window).bind("unload", function() {
+            $.ajax({
+                type: "POST",
+                async: false, // This is specific for this AJAX call due is performed in the 'unload' event
+                url: href + "&namespace=" + namespace + "&catid=" + catid,
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Nothing to show in the UI
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing checkExit()");
+                }
+            });
+        });
     });
 }

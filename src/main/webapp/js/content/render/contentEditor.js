@@ -261,3 +261,25 @@ function postSave(namespace, editor) {
 
     });
 }
+
+function checkExit(namespace, postid, href) {
+    require(["SHARED/jquery"], function($) {
+        $(window).bind("unload", function() {
+            $.ajax({
+                type: "POST",
+                async: false, // This is specific for this AJAX call due is performed in the 'unload' event
+                url: href + "&namespace=" + namespace + "&postid=" + postid,
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Nothing to show in the UI
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing checkExit()");
+                }
+            });
+        });
+    });
+}

@@ -38,6 +38,7 @@
             if (isManager) {
         %>
         <li <% if (view.equals(Wcm.VIEWS.TEMPLATES) || view.equals(Wcm.VIEWS.NEW_TEMPLATE) || view.equals(Wcm.VIEWS.EDIT_TEMPLATE)) { %>class="selected" <% } %>><a href="${templatesView}">Templates</a></li>
+        <li <% if (view.equals(Wcm.VIEWS.MANAGER)) { %>class="selected right-menu" <% } else { %> class="right-menu" <% } %>><a href="${managerView}">Manager</a></li>
         <%
             }
         %>

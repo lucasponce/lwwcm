@@ -43,7 +43,8 @@ import org.gatein.lwwcm.Wcm;
 @Cacheable
 @NamedQueries({
 		@NamedQuery(name = "listPostsName", query = "from Post p where upper(p.title) like :title order by p.modified desc"),
-        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.modified desc")
+        @NamedQuery(name = "listAllPosts", query = "from Post p order by p.modified desc"),
+        @NamedQuery(name = "listPostsCategory", query = "from Post p order by p.modified desc"),
 })
 final public class Post implements Serializable {
 

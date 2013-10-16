@@ -82,3 +82,13 @@
     <div id="${n}msg-dialog-body" class="lwwcm-dialog-body"></div>
 </div>
 <div id="${n}msg-mask" class="lwwcm-modal-mask"></div>
+<%
+    String errorWcm = request.getParameter("errorWcm");
+    if (request.getParameter("errorWcm") != null) {
+%>
+<script>
+    showMsg('${n}', '<%= errorWcm %>', 'Warning');
+</script>
+<%
+    }
+%>

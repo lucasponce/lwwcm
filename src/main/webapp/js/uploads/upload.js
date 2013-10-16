@@ -52,6 +52,8 @@ function saveNewUpload(namespace) {
 
 function saveUpdateUpload(namespace) {
     require(["SHARED/jquery"], function($) {
+        $(window).unbind("beforeunload");
+        $(window).unbind("unload");
         var formId = "#" + namespace + "editUploadForm";
         var uploadId = "#" + namespace + "uploadFile";
 
@@ -69,3 +71,35 @@ function changeVersionUpload(namespace) {
     });
 }
 
+var uploadModified = false;
+
+function setUploadModified() {
+    uploadModified = true;
+}
+
+function checkExit(namespace, uploadid, href) {
+    require(["SHARED/jquery"], function($) {
+        $(window).bind("beforeunload", function() {
+            if (uploadModified) {
+                return "There are pending modifications in Upload."
+            }
+        });
+        $(window).bind("unload", function() {
+            $.ajax({
+                type: "POST",
+                async: false, // This is specific for this AJAX call due is performed in the 'unload' event
+                url: href + "&namespace=" + namespace + "&uploadid=" + uploadid,
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Nothing to show in the UI
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing checkExit()");
+                }
+            });
+        });
+    });
+}

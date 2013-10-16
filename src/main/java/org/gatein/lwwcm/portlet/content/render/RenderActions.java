@@ -26,6 +26,7 @@ package org.gatein.lwwcm.portlet.content.render;
 import org.gatein.api.PortalRequest;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.services.WcmService;
 
@@ -85,6 +86,7 @@ public class RenderActions {
         }
 
         if (postParameter != null) {
+
             // Can write postParameter
             boolean canWrite = false;
             boolean activeEditor = false;
@@ -104,10 +106,12 @@ public class RenderActions {
                 request.setAttribute("categories", categories);
                 // Reset inline editor
                 request.getPortletSession().setAttribute("activeEditor", null);
+                request.setAttribute("editid", postParameter.getId());
             }
             // Editor disabled but "Can Write" icon
             if (!"anonymous".equals(userWcm.toString()) && userWcm.canWrite(postParameter) && !activeEditor) {
                 profile = "write";
+                request.setAttribute("editid", postParameter.getId());
             }
             // Template
             template = getTemplate(postTemplateId, userWcm);
@@ -115,28 +119,51 @@ public class RenderActions {
             contentAttached = getContentAttached(listContentAttached, userWcm);
             // Processing template with content
             processedTemplate = processTemplate(canWrite, template, postParameter, null, contentAttached, userWcm);
+
         } else if (catParameter != null) {
+
             // Template
             template = getTemplate(categoryTemplateId, userWcm);
             // Content used: content attached in portlet configuration + content defined in parameter
             contentAttached = getContentAttached(listContentAttached, userWcm);
             // Processing template with content
             processedTemplate = processTemplate(false, template, null, catParameter, contentAttached, userWcm);
+
         } else {
+
             // Processing main template
             if (mainTemplateId != null && !"".equals(mainTemplateId) && !"-1".equals(mainTemplateId)) {
                 // Template
                 template = getTemplate(mainTemplateId, userWcm);
+
                 // Content used: content attached in portlet configuration + content defined in parameter
                 contentAttached = getContentAttached(listContentAttached, userWcm);
+
                 // Processing template with content
                 processedTemplate = processTemplate(false, template, null, null, contentAttached, userWcm);
             }
+
         }
 
         request.setAttribute("processedTemplate", processedTemplate);
 
         return profile;
+    }
+
+    /*
+        Check Lock for inline edition.
+        Returns null and lock Post or return a lock message.
+     */
+    public String checkLock(Long postId, UserWcm userWcm) {
+        try {
+            wcm.lock(postId, Wcm.LOCK.POST, userWcm);
+        } catch (WcmLockException e) {
+            return e.getMessage();
+        } catch (Exception e) {
+            log.warning("Error locking Post");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /*
@@ -241,7 +268,6 @@ public class RenderActions {
                         }
                     }
                     String path = properties.containsKey("path") ? properties.get("path") : null;
-
                     // Get Posts attached
                     List<Post> listPosts = null;
                     if (path != null) {
@@ -470,7 +496,6 @@ public class RenderActions {
         return categories;
     }
 
-
     /*
         Reserved words for page names:
         Wcm.SUFFIX.*
@@ -651,6 +676,19 @@ public class RenderActions {
             wcm.add(post, c);
         } catch (Exception e) {
             log.warning("Error querying Post's Comments");
+            e.printStackTrace();
+        }
+    }
+
+    public void eventUnlockPost(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String postId = request.getParameter("postid");
+        try {
+            wcm.unlock(new Long(postId), Wcm.LOCK.POST, userWcm);
+        } catch (WcmLockException e) {
+            log.warning("Error unlocking Post. This case can be caused by concurrent hazard");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error unlocking Post");
             e.printStackTrace();
         }
     }

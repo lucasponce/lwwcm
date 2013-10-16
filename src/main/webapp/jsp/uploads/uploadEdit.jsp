@@ -36,6 +36,9 @@
         Upload u = (Upload) renderRequest.getAttribute("edit");
         if (u != null) {
     %>
+    <script>
+        checkExit('${n}', '<%= u.getId() %>', '<%= unlockUploadEvent %>&event=<%= Wcm.EVENTS.UNLOCK_UPLOAD %>');
+    </script>
     <portlet:resourceURL var="downloadUploadEvent">
         <portlet:param name="event" value="<%= Wcm.EVENTS.DOWNLOAD_UPLOAD %>" />
         <portlet:param name="uploadid" value="<%= u.getId().toString() %>" />
@@ -56,14 +59,14 @@
         <div class="lwwcm-newupload">
             <span class="glyphicon glyphicon-paperclip margin-right margin-top"></span>
             <a href="javascript:showUploadFile('${n}');" class="button" title="Upload file">Upload file</a>
-            <input type="file" id="${n}uploadFile" name="uploadFile" class="lwwcm-newupload-file" />
+            <input type="file" id="${n}uploadFile" name="uploadFile" class="lwwcm-newupload-file" onchange="setUploadModified()" />
             <div class="lwwcm-newupload-name" id="${n}uploadFileName"></div>
             <a href="javascript:saveUpdateUpload('${n}');" class="button" title="Save Upload">Save Upload</a>
         </div>
         <div class="lwwcm-newupload">
             <span class="glyphicon glyphicon-font margin-right margin-top"></span>
             <label for="${n}uploadFileDescription">Description: </label>
-            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input margin-left-cat"  value="<%= u.getDescription() %>"/></div>
+            <div class="lwwcm-newupload-description"><input id="${n}uploadFileDescription" name="uploadFileDescription" class="lwwcm-input margin-left-cat"  value="<%= u.getDescription() %>" onchange="setUploadModified()" /></div>
         </div>
         <div class="lwwcm-newupload">
             <span class="glyphicon glyphicon-sort margin-right margin-top"></span>

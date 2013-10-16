@@ -25,7 +25,10 @@ package org.gatein.lwwcm.portlet.editor.views;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.Category;
+import org.gatein.lwwcm.domain.Post;
+import org.gatein.lwwcm.domain.Relationship;
 import org.gatein.lwwcm.domain.Template;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
@@ -37,6 +40,9 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -103,6 +109,7 @@ public class TemplatesActions {
             updateTemplate.setLocale(templateLocale);
             updateTemplate.setContent(templateContent);
             wcm.update(updateTemplate, userWcm);
+            wcm.unlock(new Long(templateEditId), Wcm.LOCK.POST, userWcm);
             return Wcm.VIEWS.TEMPLATES;
         } catch(Exception e) {
             log.warning("Error uploading template");
@@ -210,8 +217,12 @@ public class TemplatesActions {
         String deleteTemplateId = request.getParameter("deleteTemplateId");
         Long templateId = new Long(deleteTemplateId);
         try {
+            wcm.lock(new Long(templateId), Wcm.LOCK.TEMPLATE, userWcm);
             wcm.deleteTemplate(templateId, userWcm);
+            wcm.unlock(new Long(templateId), Wcm.LOCK.TEMPLATE, userWcm);
             return Wcm.VIEWS.TEMPLATES;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting template.");
             e.printStackTrace();
@@ -225,9 +236,13 @@ public class TemplatesActions {
         try {
             String[] templatesIds = deleteSelectedListId.split(",");
             for (String templateId : templatesIds) {
+                wcm.lock(new Long(templateId), Wcm.LOCK.TEMPLATE, userWcm);
                 wcm.deleteTemplate(new Long(templateId), userWcm);
+                wcm.unlock(new Long(templateId), Wcm.LOCK.TEMPLATE, userWcm);
             }
             return Wcm.VIEWS.TEMPLATES;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting template.");
             e.printStackTrace();
@@ -265,6 +280,24 @@ public class TemplatesActions {
             log.warning("Error adding category to template.");
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to template " + e.toString());
+        }
+        return Wcm.VIEWS.TEMPLATES;
+    }
+
+    public String actionLockTemplate(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String editId = request.getParameter("editid");
+        try {
+            Template template = wcm.findTemplate(new Long(editId), userWcm);
+            if (userWcm.isManager()) {
+                wcm.lock(new Long(editId), Wcm.LOCK.TEMPLATE, userWcm);
+            }
+            return Wcm.VIEWS.EDIT_TEMPLATE;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
+        }  catch (Exception e) {
+            log.warning("Error locking template.");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error locking template " + e.toString());
         }
         return Wcm.VIEWS.TEMPLATES;
     }
@@ -385,4 +418,130 @@ public class TemplatesActions {
             request.setAttribute("errorWcm", "Error accessing templates: " + e.toString());
         }
     }
+
+    public String eventShowTemplateRelationships(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String templateId = request.getParameter("templateid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        try {
+            // List of select templates
+            List<Template> templates = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                templates = wcm.findTemplates(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName)) {
+                templates = wcm.findTemplates(filterName, userWcm);
+            } else {
+                templates = wcm.findTemplates(userWcm);
+            }
+            request.setAttribute("templates", templates);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsTemplate(new Long(templateId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Template> templatesRelations = wcm.findTemplatesRelationshipTemplate(new Long(templateId), userWcm);
+            request.setAttribute("templatesRelations", templatesRelations);
+
+            Template template = wcm.findTemplate(new Long(templateId), userWcm);
+            request.setAttribute("template", template);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Template's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/templates/templatesRelationships.jsp";
+    }
+
+    public String eventAddTemplateRelationship(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String templateId = request.getParameter("templateid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        String key = request.getParameter("key");
+        String targetId = request.getParameter("targetid");
+        try {
+            // List of select templates
+            List<Template> templates = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                templates = wcm.findTemplates(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName) && !"Filter By Name".equals(filterName)) {
+                templates = wcm.findTemplates(filterName, userWcm);
+            } else {
+                templates = wcm.findTemplates(userWcm);
+            }
+            request.setAttribute("templates", templates);
+
+            // Add relationShip
+            wcm.createRelationshipTemplate(new Long(templateId), key, new Long(targetId), userWcm);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsTemplate(new Long(templateId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Template> templatesRelations = wcm.findTemplatesRelationshipTemplate(new Long(templateId), userWcm);
+            request.setAttribute("templatesRelations", templatesRelations);
+
+            Template template = wcm.findTemplate(new Long(templateId), userWcm);
+            request.setAttribute("template", template);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Template's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/templates/templatesRelationships.jsp";
+    }
+
+    public String eventRemoveTemplateRelationship(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String namespace = request.getParameter("namespace");
+        String templateId = request.getParameter("templateid");
+        String filterCategoryId = request.getParameter("filterCategoryId");
+        String filterName = request.getParameter("filterName");
+        String key = request.getParameter("key");
+        String targetId = request.getParameter("targetid");
+        try {
+            // List of select templates
+            List<Template> templates = null;
+            if (filterCategoryId != null && !"-1".equals(filterCategoryId)) {
+                templates = wcm.findTemplates(new Long(filterCategoryId), userWcm);
+            } else if (filterName != null && !"".equals(filterName) && !"Filter By Name".equals(filterName)) {
+                templates = wcm.findTemplates(filterName, userWcm);
+            } else {
+                templates = wcm.findTemplates(userWcm);
+            }
+            request.setAttribute("templates", templates);
+
+            // Add relationShip
+            wcm.removeRelationshipTemplate(new Long(templateId), key, userWcm);
+
+            // List of relationships
+            List<Relationship> relations = wcm.findRelationshipsTemplate(new Long(templateId), userWcm);
+            request.setAttribute("relations", relations);
+
+            List<Template> templatesRelations = wcm.findTemplatesRelationshipTemplate(new Long(templateId), userWcm);
+            request.setAttribute("templatesRelations", templatesRelations);
+
+            Template template = wcm.findTemplate(new Long(templateId), userWcm);
+            request.setAttribute("template", template);
+            request.setAttribute("namespace", namespace);
+        } catch (Exception e) {
+            log.warning("Error querying Template's Relationships");
+            e.printStackTrace();
+        }
+        return "/jsp/templates/templatesRelationships.jsp";
+    }
+
+    public void eventUnlockTemplate(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String templateId = request.getParameter("templateid");
+        try {
+            wcm.unlock(new Long(templateId), Wcm.LOCK.TEMPLATE, userWcm);
+        } catch (WcmLockException e) {
+            log.warning("Error unlocking Template. This case can be caused by concurrent hazard");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error unlocking Template");
+            e.printStackTrace();
+        }
+    }
+
 }

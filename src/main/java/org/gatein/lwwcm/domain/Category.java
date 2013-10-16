@@ -29,6 +29,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * Categories group content (Posts, Uploads or Templates).
  * Categories have a tree structure with Category's parent reference.

@@ -48,17 +48,24 @@
 <portlet:actionURL var="newTemplateView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.NEW_TEMPLATE %>" />
 </portlet:actionURL>
+<portlet:actionURL var="managerView">
+    <portlet:param name="view" value="<%= Wcm.VIEWS.MANAGER %>" />
+</portlet:actionURL>
 <portlet:actionURL var="editCategoryView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_CATEGORY %>" />
+    <portlet:param name="action" value="lock" />
 </portlet:actionURL>
 <portlet:actionURL var="editUploadView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_UPLOAD %>" />
+    <portlet:param name="action" value="lock" />
 </portlet:actionURL>
 <portlet:actionURL var="editTemplateView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_TEMPLATE %>" />
+    <portlet:param name="action" value="lock" />
 </portlet:actionURL>
 <portlet:actionURL var="editPostView">
     <portlet:param name="view" value="<%= Wcm.VIEWS.EDIT_POST %>" />
+    <portlet:param name="action" value="lock" />
 </portlet:actionURL>
 <% // Actions URLs %>
 <portlet:actionURL var="postsAction">
@@ -224,6 +231,36 @@
 <portlet:resourceURL var="changeStatusCommentPostEvent">
     <portlet:param name="event" value="<%= Wcm.EVENTS.UPDATE_STATUS_COMMENT_POST %>" />
 </portlet:resourceURL>
+<portlet:resourceURL var="showPostRelationshipsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_POST_RELATIONSHIPS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="showTemplateRelationshipsEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_TEMPLATE_RELATIONSHIPS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="unlockPostEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UNLOCK_POST %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="unlockCategoryEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UNLOCK_CATEGORY %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="unlockUploadEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UNLOCK_UPLOAD %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="unlockTemplateEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.UNLOCK_TEMPLATE %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="showLocksEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.SHOW_LOCKS %>" />
+</portlet:resourceURL>
+<portlet:resourceURL var="removeLockEvent">
+    <portlet:param name="event" value="<%= Wcm.EVENTS.REMOVE_LOCK %>" />
+</portlet:resourceURL>
+
+
+
+
+
+
 
 
 

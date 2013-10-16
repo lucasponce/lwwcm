@@ -29,15 +29,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Logger;
 
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmAuthorizationException;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
+import org.gatein.lwwcm.portlet.util.ParseDates;
 import org.gatein.lwwcm.services.WcmService;
 
 /**
@@ -48,6 +53,8 @@ import org.gatein.lwwcm.services.WcmService;
  */
 @Stateless
 public class WcmServiceImpl implements WcmService {
+
+    private static final Logger log = Logger.getLogger(WcmServiceImpl.class.getName());
 
     @PersistenceContext
     EntityManager em;
@@ -536,6 +543,7 @@ public class WcmServiceImpl implements WcmService {
      */
     @Override
     public List<Post> findPosts(Long categoryId, UserWcm user) throws WcmException {
+
         if (user == null) return null;
         if (categoryId == null) return null;
         try {
@@ -615,7 +623,7 @@ public class WcmServiceImpl implements WcmService {
         if (postId == null || version == null || user == null) return;
         try {
             Post post = findPost(postId, user);
-            if (post != null) {
+            if (post != null && user.canWrite(post)) {
                 if (!post.getVersion().equals(version)) {
                     List<Long> versions = em.createNamedQuery("versionsPost")
                             .setParameter("postid", postId)
@@ -1155,7 +1163,7 @@ public class WcmServiceImpl implements WcmService {
         if (uploadId == null || version == null || user == null) return;
         try {
             Upload upload = findUpload(uploadId, user);
-            if (upload != null) {
+            if (upload != null && user.canWrite(upload)) {
                 if (!upload.getVersion().equals(version)) {
                     List<Long> versions = em.createNamedQuery("versionsUpload")
                             .setParameter("uploadid", uploadId)
@@ -1192,6 +1200,9 @@ public class WcmServiceImpl implements WcmService {
     public void create(Template temp, UserWcm user)
             throws WcmAuthorizationException, WcmException {
         if (temp == null || user == null) return;
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("User: " + user + " has not ADMIN rights to WRITE Template ");
+        }
         try {
             em.persist(temp);
         } catch (Exception e) {
@@ -1302,7 +1313,9 @@ public class WcmServiceImpl implements WcmService {
     @Override
     public void deleteTemplate(Long id, UserWcm user) throws WcmAuthorizationException, WcmException {
         if (id == null || user == null) return;
-        // In this version we don't have ACL on Template entities
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("User: " + user + " has not ADMIN rights to WRITE Template ");
+        }
         try {
             Template template = em.getReference(Template.class, id);
             // Template object has not versioning functionality
@@ -1367,6 +1380,9 @@ public class WcmServiceImpl implements WcmService {
     public void update(Template template, UserWcm user)
             throws WcmAuthorizationException, WcmException {
         if (template == null || user == null || template.getId() == null) return;
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("User: " + user + " has not ADMIN rights to WRITE Template ");
+        }
         try {
             Long nVersion = (Long)em.createNamedQuery("maxTemplateVersion")
                     .setParameter("templateid", template.getId())
@@ -1463,10 +1479,344 @@ public class WcmServiceImpl implements WcmService {
         }
     }
 
+    /**
+     * @see WcmService#createRelationshipPost(Long, String, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void createRelationshipPost(Long originId, String key, Long targetId, UserWcm user) throws WcmException {
+        if (originId == null || key == null || targetId == null || user == null) return;
+        Post post = findPost(originId, user);
+        try {
+            if (post != null && user.canWrite(post)) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(originId);
+                pk.setKey(key);
+                Relationship existing = em.find(Relationship.class, pk);
+                if (existing == null) {
+                    Relationship newRelationship = new Relationship();
+                    newRelationship.setOriginId(originId);
+                    newRelationship.setKey(key);
+                    newRelationship.setAliasId(targetId);
+                    newRelationship.setType(Wcm.RELATIONSHIP.POST);
+                    em.persist(newRelationship);
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
 
+    /**
+     * @see WcmService#removeRelationshipPost(Long, String, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void removeRelationshipPost(Long originId, String key, UserWcm user) throws WcmException {
+        if (originId == null || key == null || user == null) return;
+        Post post = findPost(originId, user);
+        try {
+            if (post != null && user.canWrite(post)) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(originId);
+                pk.setKey(key);
+                pk.setType(Wcm.RELATIONSHIP.POST);
+                Relationship existing = em.find(Relationship.class, pk);
+                if (existing != null) {
+                    em.remove(existing);
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findRelationshipsPost(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Relationship> findRelationshipsPost(Long postId, UserWcm user) throws WcmException {
+        if (postId == null || user == null) return null;
+        Post post = findPost(postId, user);
+        if (post != null) {
+            List<Relationship> relations = em.createNamedQuery("listRelationships")
+                    .setParameter("originId", postId)
+                    .setParameter("type", Wcm.RELATIONSHIP.POST)
+                    .getResultList();
+            return relations;
+        }
+        return null;
+    }
+
+    /**
+     * @see WcmService#findPostsRelationshipPost(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Post> findPostsRelationshipPost(Long postId, UserWcm user) throws WcmException {
+        if (postId == null || user == null) return null;
+        Post post = findPost(postId, user);
+        if (post != null) {
+            List<Post> postsRelations = em.createNamedQuery("listPostsRelationships")
+                    .setParameter("originId", postId)
+                    .setParameter("type", Wcm.RELATIONSHIP.POST)
+                    .getResultList();
+            return postsRelations;
+        }
+        return null;
+    }
+
+    /**
+     * @see WcmService#createRelationshipTemplate(Long, String, Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void createRelationshipTemplate(Long originId, String key, Long targetId, UserWcm user) throws WcmException {
+        if (originId == null || key == null || targetId == null || user == null) return;
+        Template template = findTemplate(originId, user);
+        try {
+            if (template != null && user.isManager()) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(originId);
+                pk.setKey(key);
+                pk.setType(Wcm.RELATIONSHIP.TEMPLATE);
+                Relationship existing = em.find(Relationship.class, pk);
+                if (existing == null) {
+                    Relationship newRelationship = new Relationship();
+                    newRelationship.setOriginId(originId);
+                    newRelationship.setKey(key);
+                    newRelationship.setAliasId(targetId);
+                    newRelationship.setType(Wcm.RELATIONSHIP.TEMPLATE);
+                    em.persist(newRelationship);
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#removeRelationshipTemplate(Long, String, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void removeRelationshipTemplate(Long originId, String key, UserWcm user) throws WcmException {
+        if (originId == null || key == null || user == null) return;
+        Template template = findTemplate(originId, user);
+        try {
+            if (template != null && user.isManager()) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(originId);
+                pk.setKey(key);
+                pk.setType(Wcm.RELATIONSHIP.TEMPLATE);
+                Relationship existing = em.find(Relationship.class, pk);
+                if (existing != null) {
+                    em.remove(existing);
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findRelationshipsTemplate(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Relationship> findRelationshipsTemplate(Long templateId, UserWcm user) throws WcmException {
+        if (templateId == null || user == null) return null;
+        Template template = findTemplate(templateId, user);
+        if (template != null) {
+            List<Relationship> relations = em.createNamedQuery("listRelationships")
+                    .setParameter("originId", templateId)
+                    .setParameter("type", Wcm.RELATIONSHIP.TEMPLATE)
+                    .getResultList();
+            return relations;
+        }
+        return null;
+    }
+
+    /**
+     * @see WcmService#findTemplatesRelationshipTemplate(Long, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Template> findTemplatesRelationshipTemplate(Long templateId, UserWcm user) throws WcmException {
+        if (templateId == null || user == null) return null;
+        Template template = findTemplate(templateId, user);
+        if (template != null) {
+            List<Template> templatesRelations = em.createNamedQuery("listTemplatesRelationships")
+                    .setParameter("originId", templateId)
+                    .setParameter("type", Wcm.RELATIONSHIP.TEMPLATE)
+                    .getResultList();
+            return templatesRelations;
+        }
+        return null;
+    }
+
+    /**
+     * @see WcmService#lock(Long, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void lock(Long originId, Character type, UserWcm user) throws WcmLockException, WcmException {
+        if (originId == null || type == null|| user == null) {
+            throw new WcmException("Illegal lock() invocation");
+        }
+        try {
+            LockPK pk = new LockPK();
+            pk.setOriginId(originId);
+            pk.setType(type);
+            Lock lock = em.find(Lock.class, pk);
+            if (lock != null && !lock.getUsername().equals(user.getUsername())) {
+                String msg = "Lock for ";
+                if (type.equals(Wcm.LOCK.POST)) {
+                    msg += " Post ID " + originId;
+                } else if (type.equals(Wcm.LOCK.CATEGORY)) {
+                    msg += " Category ID " + originId;
+                } else if (type.equals(Wcm.LOCK.UPLOAD)) {
+                    msg += " Upload ID " + originId;
+                } else if (type.equals(Wcm.LOCK.TEMPLATE)) {
+                    msg += " Template ID " + originId;
+                }
+                msg += " by user: " + lock.getUsername() + " at " + ParseDates.parse(lock.getCreated());
+                throw new WcmLockException(msg);
+            }
+            if (lock == null) {
+                lock = new Lock();
+                lock.setOriginId(originId);
+                lock.setType(type);
+                lock.setUsername(user.getUsername());
+                lock.setCreated(Calendar.getInstance());
+                em.persist(lock);
+            }
+        } catch (WcmLockException e) {
+            throw new WcmLockException(e.getMessage());
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#unlock(Long, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void unlock(Long originId, Character type, UserWcm user) throws WcmLockException, WcmException {
+        if (originId == null || type == null|| user == null) {
+            throw new WcmException("Illegal unlock() invocation");
+        }
+        try {
+            LockPK pk = new LockPK();
+            pk.setOriginId(originId);
+            pk.setType(type);
+            Lock lock = em.find(Lock.class, pk);
+            if (lock != null) {
+                if (lock.getUsername().equals(user.getUsername())) {
+                    em.remove(lock);
+                } else {
+                    // This exception can be raised if an admin or scheduler deletes a lock and user tries to unlock a different one
+                    throw new WcmLockException("Lock only can be unlocked by admin or user: " + lock.getUsername());
+                }
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#removeLock(Long, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public void removeLock(Long originId, Character type, UserWcm user) throws WcmAuthorizationException, WcmException {
+        if (originId == null || type == null|| user == null) {
+            throw new WcmException("Illegal unlock() invocation");
+        }
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("RemoveLock() is an operation for managers.");
+        }
+        try {
+            LockPK pk = new LockPK();
+            pk.setOriginId(originId);
+            pk.setType(type);
+            Lock lock = em.find(Lock.class, pk);
+            if (lock != null) {
+                em.remove(lock);
+            }
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findLocks(org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Lock> findLocks(UserWcm user) throws WcmAuthorizationException, WcmException {
+        if (user == null) {
+            throw new WcmException("Illegal findLocks() invocation");
+        }
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("findLocks() is an operation for managers.");
+        }
+        try {
+            List<Lock> result = em.createNamedQuery("listLocks")
+                    .getResultList();
+            return result;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findLocksObjects(java.util.List, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public Map<Long, Object> findLocksObjects(List<Lock> locks, UserWcm user) throws WcmAuthorizationException, WcmException {
+        if (user == null) {
+            throw new WcmException("Illegal findLocks() invocation");
+        }
+        if (!user.isManager()) {
+            throw new WcmAuthorizationException("findLocksObjects() is an operation for managers.");
+        }
+        if (locks == null) return null;
+        try {
+            Map<Long, Object> result = new HashMap<Long, Object>();
+            for (Lock l : locks) {
+                if (l.getType().equals(Wcm.LOCK.POST)) {
+                    Post post = em.find(Post.class, l.getOriginId());
+                    result.put(l.getOriginId(), post);
+                } else if (l.getType().equals(Wcm.LOCK.CATEGORY)) {
+                    Category cat = em.find(Category.class, l.getOriginId());
+                    result.put(l.getOriginId(), cat);
+                } else if (l.getType().equals(Wcm.LOCK.UPLOAD)) {
+                    Upload upload = em.find(Upload.class, l.getOriginId());
+                    result.put(l.getOriginId(), upload);
+                } else if (l.getType().equals(Wcm.LOCK.TEMPLATE)) {
+                    Template template = em.find(Template.class, l.getOriginId());
+                    result.put(l.getOriginId(), template);
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    @Schedule(hour="*", minute = "*/" + Wcm.TIMEOUTS.TIMER)
+    void checkUnlocks() {
+        try {
+            List<Lock> lockList = em.createNamedQuery("listLocks")
+                    .getResultList();
+            for (Lock l : lockList) {
+                Calendar created = (Calendar)l.getCreated().clone();
+                created.add(Calendar.MINUTE, Wcm.TIMEOUTS.LOCKS);
+                Calendar now = Calendar.getInstance();
+                if (now.after(created)) {
+                    log.info("Timeout for lock: " + l);
+                    em.remove(l);
+                }
+            }
+        } catch (Exception e) {
+            log.warning("Error querying/deleting locks");
+            e.printStackTrace();
+        }
+    }
 
     /*
-        Aux functions to extract path for categories
+     *  Aux functions to extract path for categories
      */
     private String child(String path) {
         if (path == null || "".equals(path)) return path;

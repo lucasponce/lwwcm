@@ -30,9 +30,13 @@
 <portlet:resourceURL var="addCommentPost">
     <portlet:param name="event" value="<%= Wcm.EVENTS.ADD_COMMENT_POST %>" />
 </portlet:resourceURL>
+<%
+    Long editid = (Long)request.getAttribute("editid");
+%>
 <portlet:actionURL var="editorView">
     <portlet:param name="action" value="<%= Wcm.CONTENT.ACTIONS.INLINE_EDITOR%>" />
     <portlet:param name="activeEditor" value="true" />
+    <portlet:param name="editid" value="<%= editid.toString() %>" />
 </portlet:actionURL>
 <link rel="stylesheet" href="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/css/lwwcm-content.css") %>" />
 <link rel="stylesheet" href="<%=renderResponse.encodeURL(renderRequest.getContextPath() + "/css/bootstrap-glyphicons.css") %>" />
@@ -44,7 +48,15 @@
     if (processedTemplate != null) {
 %>
 <div class="lwwcm-write">
-    <div class="lwwcm-inline-editor"><a href="<%= editorView %>"><span class="glyphicon glyphicon-pencil"></span></a></div>
+    <%
+        boolean locked = (renderRequest.getPortletSession().getAttribute("lockMsg") != null);
+        String icon = "pencil";
+        if (locked) {
+            renderRequest.getPortletSession().setAttribute("lockMsg", null);
+            icon = "lock";
+        }
+    %>
+    <div class="lwwcm-inline-editor"><a href="<%= editorView %>"><span class="glyphicon glyphicon-<%= icon %>"></span></a></div>
     <%= processedTemplate %>
 </div>
 <%

@@ -27,6 +27,7 @@ import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.editor.views.CategoriesActions;
+import org.gatein.lwwcm.portlet.editor.views.ManagerActions;
 import org.gatein.lwwcm.portlet.editor.views.PostsActions;
 import org.gatein.lwwcm.portlet.editor.views.TemplatesActions;
 import org.gatein.lwwcm.portlet.editor.views.UploadsActions;
@@ -63,6 +64,9 @@ public class EditorPortlet extends GenericPortlet {
 
     @Inject
     private PostsActions posts;
+
+    @Inject
+    private ManagerActions manager;
 
     @Override
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
@@ -144,6 +148,8 @@ public class EditorPortlet extends GenericPortlet {
                     // Query edit post
                     posts.viewEditPost(request, response, userWcm);
                     url = "/jsp/posts/postEdit.jsp";
+                } else if (view.equals(Wcm.VIEWS.MANAGER)) {
+                    url = "/jsp/manager/manager.jsp";
                 } else {
                    // View parameter wrong. Default view.
                     url = "/jsp/posts/posts.jsp";
@@ -179,6 +185,21 @@ public class EditorPortlet extends GenericPortlet {
                 view.equals(Wcm.VIEWS.EDIT_UPLOAD) ||
                 view.equals(Wcm.VIEWS.EDIT_TEMPLATE) ||
                 view.equals(Wcm.VIEWS.EDIT_POST)) {
+
+                // Locks
+                if (view.equals(Wcm.VIEWS.EDIT_POST) && action.equals("lock")) {
+                    view = posts.actionLockPost(request, response, userWcm);
+                }
+                if (view.equals(Wcm.VIEWS.EDIT_CATEGORY) && action.equals("lock")) {
+                    view = categories.actionLockCategory(request, response, userWcm);
+                }
+                if (view.equals(Wcm.VIEWS.EDIT_UPLOAD) && action.equals("lock")) {
+                    view = uploads.actionLockUpload(request, response, userWcm);
+                }
+                if (view.equals(Wcm.VIEWS.EDIT_TEMPLATE) && action.equals("lock")) {
+                    view = templates.actionLockTemplate(request, response, userWcm);
+                }
+
                 response.setRenderParameter("editid", request.getParameter("editid"));
             }
             if (request.getParameter("errorWcm") != null)
@@ -308,7 +329,7 @@ public class EditorPortlet extends GenericPortlet {
                 // Publish post action
                 view = posts.actionPublishPost(request, response, userWcm);
             } else if (action.equals(Wcm.ACTIONS.PUBLISH_POSTS))  {
-                // Publish post action
+                // Publish posts action
                 view = posts.actionPublishPosts(request, response, userWcm);
             } else {
                 // View parameter doesn't modified by actions
@@ -385,6 +406,42 @@ public class EditorPortlet extends GenericPortlet {
             } else if (event.equals(Wcm.EVENTS.UPDATE_STATUS_COMMENT_POST)) {
                 // Update Comment's status inside Post
                 url = posts.eventUpdateCommentStatusPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_POST_RELATIONSHIPS)) {
+                // Show relationships post
+                url = posts.eventShowPostRelationships(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_RELATIONSHIP_POST)) {
+                // Add relationship post
+                url = posts.eventAddPostRelationship(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_RELATIONSHIP_POST)) {
+                // Add relationship post
+                url = posts.eventRemovePostRelationship(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_TEMPLATE_RELATIONSHIPS)) {
+                // Show relationships template
+                url = templates.eventShowTemplateRelationships(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.ADD_RELATIONSHIP_TEMPLATE)) {
+                // Add relationship template
+                url = templates.eventAddTemplateRelationship(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_RELATIONSHIP_TEMPLATE)) {
+                // Add relationship template
+                url = templates.eventRemoveTemplateRelationship(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UNLOCK_POST)) {
+                // Unlock post when user leaves page
+                posts.eventUnlockPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UNLOCK_CATEGORY)) {
+                // Unlock category when user leaves page
+                categories.eventUnlockCategory(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UNLOCK_UPLOAD)) {
+                // Unlock upload when user leaves page
+                uploads.eventUnlockUpload(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UNLOCK_TEMPLATE)) {
+                // Unlock template when user leaves page
+                templates.eventUnlockTemplate(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.SHOW_LOCKS)) {
+                // Show list of locks
+                url = manager.eventShowLocks(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.REMOVE_LOCK)) {
+                // Remove lock
+                url = manager.eventRemoveLock(request, response, userWcm);
             } else {
                 // No default view.
             }

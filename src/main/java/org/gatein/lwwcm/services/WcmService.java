@@ -25,11 +25,13 @@ package org.gatein.lwwcm.services;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Local;
 
 import org.gatein.lwwcm.WcmAuthorizationException;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
 
 /**
@@ -573,4 +575,165 @@ public interface WcmService {
      */
     void changeVersionTemplate(Long templateId, Long version, UserWcm user) throws WcmException;
 
+    /*
+     * Relationships API
+     */
+
+    /**
+     * Creates a soft relationship between Posts objects
+     *
+     * @param originId Post's id for origin object
+     * @param key defines the relationship in the logic Post(originId) + key = Post(targetId)
+     * @param targetId defining the target Post will be linked with Post defined by originId
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     * @see Relationship
+     * @see org.gatein.lwwcm.Wcm.RELATIONSHIP
+     */
+    void createRelationshipPost(Long originId, String key, Long targetId, UserWcm user) throws WcmException;
+
+    /**
+     * Removes a soft relationshp between Posts objects
+     *
+     * @param originId Post's id for origin object
+     * @param key defines the relationship in the logic Post(originId) + key = Post(targetId)
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     * @see Relationship
+     * @see org.gatein.lwwcm.Wcm.RELATIONSHIP
+     */
+    void removeRelationshipPost(Long originId, String key, UserWcm user) throws WcmException;
+
+    /**
+     * Returns list of Relationship attached with Post
+     *
+     * @param postId Post's id
+     * @param user UserWcm who performs operation
+     * @return list of Relationship linked with Post
+     * @throws WcmException
+     * @see Relationship
+     */
+    List<Relationship> findRelationshipsPost(Long postId, UserWcm user) throws WcmException;
+
+    /**
+     * Returns list of Posts linked with Post with Relationship object.
+     * Relationship object is a soft relation, so we manage it explicitly.
+     *
+     * @param postId Post's id
+     * @param user UserWcm who performs operation
+     * @return list of Posts linked with Post via Relationships
+     * @throws WcmException
+     */
+    List<Post> findPostsRelationshipPost(Long postId, UserWcm user) throws WcmException;
+
+    /**
+     * Creates a soft relationship between Templates objects
+     *
+     * @param originId Template's id for origin object
+     * @param key defines the relationship in the logic Template(originId) + key = Template(targetId)
+     * @param targetId defining the target Template will be linked with Post defined by originId
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     * @see Relationship
+     * @see org.gatein.lwwcm.Wcm.RELATIONSHIP
+     */
+    void createRelationshipTemplate(Long originId, String key, Long targetId, UserWcm user) throws WcmException;
+
+    /**
+     * Removes a soft relationshp between Template objects
+     *
+     * @param originId Template's id for origin object
+     * @param key defines the relationship in the logic Template(originId) + key = Template(targetId)
+     * @param user UserWcm who performs operation
+     * @throws WcmException
+     * @see Relationship
+     * @see org.gatein.lwwcm.Wcm.RELATIONSHIP
+     */
+    void removeRelationshipTemplate(Long originId, String key, UserWcm user) throws WcmException;
+
+    /**
+     * Returns list of Relationship attached with Template
+     *
+     * @param templateId Template's id
+     * @param user UserWcm who performs operation
+     * @return list of Relationship linked with Template
+     * @throws WcmException
+     * @see Relationship
+     */
+    List<Relationship> findRelationshipsTemplate(Long templateId, UserWcm user) throws WcmException;
+
+    /**
+     * Returns list of Templates linked with Post with Relationship object.
+     * Relationship object is a soft relation, so we manage it explicitly.
+     *
+     * @param templateId Template's id
+     * @param user UserWcm who performs operation
+     * @return list of Templates linked with Post via Relationships
+     * @throws WcmException
+     */
+    List<Template> findTemplatesRelationshipTemplate(Long templateId, UserWcm user) throws WcmException;
+
+    /*
+     * Locks API
+     */
+
+    /**
+     * Locks and item to prevent concurrency issues in a multi user authoring scenario.
+     *
+     * @param originId Item's id to lock
+     * @param type Type of item to lock
+     * @param user UserWcm who performs operation
+     * @throws WcmLockException if item has been locked previously
+     * @throws WcmException
+     * @see org.gatein.lwwcm.Wcm.LOCK
+     * @see Lock
+     */
+    void lock(Long originId, Character type, UserWcm user) throws WcmLockException, WcmException;
+
+    /**
+     * Unlocks and item to prevent concurrency issues in a multi user authoring scenario.
+     * Only user who locked the item has right to unlock it.
+     *
+     * @param originId Item's id to unlock
+     * @param type Type of item to unlock
+     * @param user UserWcm who performs operation
+     * @throws WcmLockException if item has been locked previously by a different user
+     * @throws WcmException
+     * @see org.gatein.lwwcm.Wcm.LOCK
+     * @see Lock
+     */
+    void unlock(Long originId, Character type, UserWcm user) throws WcmLockException, WcmException;
+
+    /**
+     * Removes a lock defined by a different user.
+     * Only admin users can remove locks.
+     *
+     * @param originId Item's id to unlock
+     * @param type Type of item to unlock
+     * @param user UserWcm who performs operation
+     * @throws WcmLockException if item has been locked previously by a different user
+     * @throws WcmException
+     * @see org.gatein.lwwcm.Wcm.LOCK
+     * @see Lock
+     */
+    void removeLock(Long originId, Character type, UserWcm user) throws WcmAuthorizationException, WcmException;
+
+    /**
+     * Returns list of Locks defined.
+     * Only admin users can retrieve locks list.
+     *
+     * @param user UserWcm who performs operation
+     * @return list of locks defined.
+     * @throws WcmException
+     */
+    List<Lock> findLocks(UserWcm user) throws WcmAuthorizationException, WcmException;
+
+    /**
+     * @param locks list of Locks
+     * @param user UserWcm who performs operation
+     * @return list of Objects attached to Locks
+     * @throws WcmAuthorizationException
+     * @throws WcmException
+     */
+    Map<Long, Object> findLocksObjects(List<Lock> locks, UserWcm user) throws WcmAuthorizationException, WcmException;
 }

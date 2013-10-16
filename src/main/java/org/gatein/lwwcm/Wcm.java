@@ -214,6 +214,7 @@ public interface Wcm {
         static final String EDIT_UPLOAD = "editupload";
         static final String EDIT_TEMPLATE = "edittemplate";
         static final String EDIT_POST = "editpost";
+        static final String MANAGER = "manager";
     }
 
     /**
@@ -288,8 +289,23 @@ public interface Wcm {
         static final String ADD_COMMENT_POST = "addcommentpost";
         static final String UPDATE_COMMENTS_POST = "updatecommentspost";
         static final String UPDATE_STATUS_COMMENT_POST = "updatestatuscommentpost";
+        static final String SHOW_POST_RELATIONSHIPS = "showpostrelationships";
+        static final String ADD_RELATIONSHIP_POST = "addrelationshippost";
+        static final String REMOVE_RELATIONSHIP_POST = "removerelationshippost";
+        static final String SHOW_TEMPLATE_RELATIONSHIPS = "showtemplaterelationships";
+        static final String ADD_RELATIONSHIP_TEMPLATE = "addrelationshiptemplate";
+        static final String REMOVE_RELATIONSHIP_TEMPLATE = "removerelationshiptemplate";
+        static final String UNLOCK_POST = "unlockpost";
+        static final String UNLOCK_CATEGORY = "unlockcategory";
+        static final String UNLOCK_UPLOAD = "unlockupload";
+        static final String UNLOCK_TEMPLATE = "unlocktemplate";
+        static final String SHOW_LOCKS = "showlocks";
+        static final String REMOVE_LOCK = "removelock";
     }
 
+    /**
+     * Defines constants in ContentPortlet for configuration use cases.
+     */
     interface CONFIG {
         interface ACTIONS {
             static final String SAVE_CONFIGURATION = "changetemplate";
@@ -305,16 +321,59 @@ public interface Wcm {
         }
     }
 
+    /**
+     * Defines constants in ContentPortlet for render use cases
+     */
     interface CONTENT {
         interface ACTIONS {
             static final String INLINE_EDITOR = "inlineeditor";
         }
     }
 
+    /**
+     * Defines constants to define suffix variables for content navigation inside ContentPortlet.
+     */
     interface SUFFIX {
         static final String POST = (System.getProperty("lwwcm.parameters.post") == null ? "post" : System.getProperty("lwwcm.parameters.post"));
         static final String CATEGORY = (System.getProperty("lwwcm.parameters.category") == null ? "cat" : System.getProperty("lwwcm.parameters.category"));
         static final String ID = (System.getProperty("lwwcm.parameters.id") == null ? "id" : System.getProperty("lwwcm.parameters.id"));
         static final String NAME = (System.getProperty("lwwcm.parameters.name") == null ? "name" : System.getProperty("lwwcm.parameters.name"));
     }
+
+    /**
+     * Defines constants for type of Relationship objects
+     */
+    interface RELATIONSHIP {
+        static final Character POST = 'P';
+        static final Character TEMPLATE = 'T';
+    }
+
+    /**
+     * Defines constants for type of Locks
+     */
+    interface LOCK {
+        static final Character POST = 'P';
+        static final Character CATEGORY = 'C';
+        static final Character UPLOAD = 'U';
+        static final Character TEMPLATE = 'T';
+    }
+
+    /**
+     * Defines configuration for automatic tasks inside LWWCM
+     */
+    interface TIMEOUTS {
+        /**
+         * Defines scheduler in minutes for Timer service
+         */
+        static final int TIMER = 5;
+        /**
+         * Defines max minutes a lock is valid
+         */
+        static final int LOCKS = (System.getProperty("lwwcm.timeout.locks") == null ? 20 : new Integer(System.getProperty("lwwcm.timeout.locks")));
+    }
+
+    /**
+     * Defines constant for debug mode
+     */
+    static final boolean DEBUG = (System.getProperty("lwwcm.debug") == null || "false".equals(System.getProperty("lwwcm.debug"))? false : true);
 }

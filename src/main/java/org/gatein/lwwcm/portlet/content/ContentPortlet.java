@@ -25,6 +25,7 @@ package org.gatein.lwwcm.portlet.content;
 
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.UserWcm;
 import org.gatein.lwwcm.portlet.content.config.ConfigActions;
 import org.gatein.lwwcm.portlet.content.render.RenderActions;
@@ -122,8 +123,12 @@ public class ContentPortlet extends GenericPortlet {
                 config.actionSaveConfig(request, response, userWcm);
             } else if (action.equals(Wcm.CONTENT.ACTIONS.INLINE_EDITOR)) {
               String activeEditor = request.getParameter("activeEditor");
-                if (activeEditor != null)
-                    request.getPortletSession().setAttribute("activeEditor", activeEditor);
+              String editId = request.getParameter("editid");
+              String lockMsg = render.checkLock(new Long(editId), userWcm);
+              if (activeEditor != null && lockMsg == null) {
+                request.getPortletSession().setAttribute("activeEditor", activeEditor);
+              }
+              request.getPortletSession().setAttribute("lockMsg", lockMsg);
             } else {
                 // No default action
             }
@@ -162,6 +167,9 @@ public class ContentPortlet extends GenericPortlet {
             } if (event.equals(Wcm.EVENTS.ADD_COMMENT_POST)) {
               // Updating comment post
                 render.eventAddCommentPost(request, response, userWcm);
+            } else if (event.equals(Wcm.EVENTS.UNLOCK_POST)) {
+                // Unlock post when user leaves page
+                render.eventUnlockPost(request, response, userWcm);
             } else {
                 // No default event
             }

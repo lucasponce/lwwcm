@@ -79,10 +79,10 @@
     </form>
     <form id="${n}editTemplateForm" method="post" action="${editTemplateAction}">
     <input type="hidden" id="${n}templateEditId" name="templateEditId" value="<%= t.getId() %>" />
-    <div class="lwwcm-newpost-title"><input id="${n}templateName" name="templateName" class="lwwcm-input" value="<%= t.getName() %>" onfocus="if (this.value == 'Template Name') this.value=''" onblur="if (this.value == '') this.value='Template Name'"/></div>
+    <div class="lwwcm-newpost-title"><input id="${n}templateName" name="templateName" class="lwwcm-input" value="<%= t.getName() %>" onfocus="if (this.value == 'Template Name') this.value=''" onblur="if (this.value == '') this.value='Template Name'" onchange="setTemplateModified()"/></div>
     <div class="lwwcm-newtemplate">
         <span class="glyphicon glyphicon-globe margin-right margin-top"></span>
-        Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}templateLocale" name="templateLocale" class="lwwcm-input" value="<%= t.getLocale() %>"/></div>
+        Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}templateLocale" name="templateLocale" class="lwwcm-input" value="<%= t.getLocale() %>" onchange="setTemplateModified()"/></div>
         <span class="glyphicon glyphicon-sort margin-right margin-top"></span>
         Version: <div class="lwwcm-newtemplate-versions">
         <select id="${n}templateVersions" name="templateVersions" class="lwwcm-input" onchange="changeVersionTemplate('${n}');">
@@ -112,6 +112,7 @@
             var editor = event.editor;
             editor.portalnamespace='${n}';
             editor.config.enterMode = CKEDITOR.ENTER_BR;
+            checkExit('${n}', editor, '<%= t.getId() %>', '<%= unlockTemplateEvent %>&event=<%= Wcm.EVENTS.UNLOCK_TEMPLATE %>');
         });
     </script>
     <textarea class="ckeditor" id="${n}templateContent" name="templateContent"><%= t.getContent() %></textarea>

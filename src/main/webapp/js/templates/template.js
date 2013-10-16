@@ -39,6 +39,8 @@ function saveNewTemplate(namespace) {
 
 function saveUpdateTemplate(namespace) {
     require(["SHARED/jquery"], function($) {
+        $(window).unbind("beforeunload");
+        $(window).unbind("unload");
         var formId = "#" + namespace + "editTemplateForm";
         $(formId).submit();
     });
@@ -243,6 +245,39 @@ function hidePreview(namespace, link, uploadId) {
         // Show popup
         var id = "#" + namespace + "uploads-preview";
         $(id).fadeOut(100);
+    });
+}
+
+var templateModified = false;
+
+function setTemplateModified() {
+    templateModified = true;
+}
+
+function checkExit(namespace, editor, templateid, href) {
+    require(["SHARED/jquery"], function($) {
+        $(window).bind("beforeunload", function() {
+            if (editor.checkDirty() || templateModified) {
+                return "There are pending modifications in Template."
+            }
+        });
+        $(window).bind("unload", function() {
+            $.ajax({
+                type: "POST",
+                async: false, // This is specific for this AJAX call due is performed in the 'unload' event
+                url: href + "&namespace=" + namespace + "&templateid=" + templateid,
+                cache: false,
+                dataType: "text",
+                success: function(data)
+                {
+                    // Nothing to show in the UI
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    alert("Problem accessing checkExit()");
+                }
+            });
+        });
     });
 }
 

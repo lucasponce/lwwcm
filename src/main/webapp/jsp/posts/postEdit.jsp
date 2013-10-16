@@ -82,14 +82,14 @@
     </form>
     <form id="${n}editPostForm" method="post" action="${editPostAction}"><input type="hidden" id="${n}postEditId" name="postEditId" value="<%= p.getId() %>" />
     <% } %>
-    <div class="lwwcm-newpost-title"><input id="${n}postTitle" name="postTitle" class="lwwcm-input" value="<%= p.getTitle() %>" <% if (canWrite) { %>onfocus="if (this.value == 'Post Title') this.value=''" onblur="if (this.value == '') this.value='Post Title'" <% } else { %>disabled<% } %> /></div>
-    <div class="lwwcm-newpost-title"><textarea id="${n}postExcerpt" name="postExcerpt" class="lwwcm-input" <% if (canWrite) { %>onfocus="if (this.value == 'Summary / Excerpt') this.value=''" onblur="if (this.value == '') this.value='Summary / Excerpt'"  <% } else { %>disabled<% } %> ><%= p.getExcerpt() %></textarea></div>
+    <div class="lwwcm-newpost-title"><input id="${n}postTitle" name="postTitle" class="lwwcm-input" value="<%= p.getTitle() %>" <% if (canWrite) { %>onfocus="if (this.value == 'Post Title') this.value=''" onblur="if (this.value == '') this.value='Post Title'" <% } else { %>disabled<% } %> onchange="setPostModified()" /></div>
+    <div class="lwwcm-newpost-title"><textarea id="${n}postExcerpt" name="postExcerpt" class="lwwcm-input" <% if (canWrite) { %>onfocus="if (this.value == 'Summary / Excerpt') this.value=''" onblur="if (this.value == '') this.value='Summary / Excerpt'"  <% } else { %>disabled<% } %> onchange="setPostModified()" ><%= p.getExcerpt() %></textarea></div>
     <div class="lwwcm-newtemplate">
         <span class="glyphicon glyphicon-globe margin-right margin-top"></span>
-        Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}postLocale" name="postLocale" class="lwwcm-input" value="<%= p.getLocale() %>" <% if (!canWrite) { %>disabled<% } %> /></div>
+        Locale: <div class="lwwcm-newtemplate-locale"><input id="${n}postLocale" name="postLocale" class="lwwcm-input" value="<%= p.getLocale() %>" <% if (!canWrite) { %>disabled<% } %> onchange="setPostModified()" /></div>
         <span class="glyphicon glyphicon-comment margin-right margin-top"></span>
         Comments: <div class="lwwcm-newpost-comments">
-                    <select id="${n}postCommentsStatus" name="postCommentsStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %>>
+                    <select id="${n}postCommentsStatus" name="postCommentsStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %> onchange="setPostModified()">
                         <option value="<%= Wcm.COMMENTS.ANONYMOUS%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.ANONYMOUS)) { %> selected <% } %>>Anonymous</option>
                         <option value="<%= Wcm.COMMENTS.LOGGED%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.LOGGED)) { %> selected <% } %>>Logged</option>
                         <option value="<%= Wcm.COMMENTS.NO_COMMENTS%>" <% if (p.getCommentsStatus().equals(Wcm.COMMENTS.NO_COMMENTS)) { %> selected <% } %>>No Comments</option>
@@ -97,7 +97,7 @@
                   </div>
         <span class="glyphicon glyphicon-share margin-right margin-top"></span>
         Status:  <div class="lwwcm-newpost-status">
-                    <select id="${n}postStatus" name="postStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %> >
+                    <select id="${n}postStatus" name="postStatus" class="lwwcm-input" <% if (!canWrite) { %>disabled<% } %> onchange="setPostModified()">
                         <option value="<%= Wcm.POSTS.DRAFT %>" <% if (p.getPostStatus().equals(Wcm.POSTS.DRAFT)) { %> selected <% } %>>Draft</option>
                         <option value="<%= Wcm.POSTS.PUBLISHED %>" <% if (p.getPostStatus().equals(Wcm.POSTS.PUBLISHED)) { %> selected <% } %>>Published</option>
                     </select>
@@ -134,6 +134,7 @@
             editor.on( 'configLoaded', function() {
                editor.config.removePlugins = 'stylescombo';
             });
+            checkExit('${n}', editor, '<%= p.getId() %>', '<%= unlockPostEvent %>&event=<%= Wcm.EVENTS.UNLOCK_POST %>');
         });
         <% if (!canWrite) { %>
         CKEDITOR.on( 'currentInstance', function() {

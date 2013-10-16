@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.gatein.lwwcm.Wcm;
 import org.gatein.lwwcm.WcmException;
+import org.gatein.lwwcm.WcmLockException;
 import org.gatein.lwwcm.domain.*;
 import org.gatein.lwwcm.portlet.util.ViewMetadata;
 import org.gatein.lwwcm.services.PortalService;
@@ -130,10 +131,12 @@ public class UploadsActions {
                     updateUpload.setFileName(file.getName());
                     updateUpload.setMimeType(file.getContentType());
                     updateUpload.setDescription(description);
+                    wcm.unlock(new Long(editUploadId), Wcm.LOCK.UPLOAD, userWcm);
                     wcm.update(updateUpload, file.getInputStream(), userWcm);
                 } else {
                     if (description != null) {
                         updateUpload.setDescription(description);
+                        wcm.unlock(new Long(editUploadId), Wcm.LOCK.UPLOAD, userWcm);
                         wcm.update(updateUpload, userWcm);
                     }
                 }
@@ -245,8 +248,12 @@ public class UploadsActions {
         String deleteUploadId = request.getParameter("deleteUploadId");
         Long uploadId = new Long(deleteUploadId);
         try {
+            wcm.lock(new Long(uploadId), Wcm.LOCK.UPLOAD, userWcm);
             wcm.deleteUpload(uploadId, userWcm);
+            wcm.unlock(new Long(uploadId), Wcm.LOCK.UPLOAD, userWcm);
             return Wcm.VIEWS.UPLOADS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting upload.");
             e.printStackTrace();
@@ -260,9 +267,13 @@ public class UploadsActions {
         try {
             String[] uploadIds = deleteSelectedListId.split(",");
             for (String uploadId : uploadIds) {
+                wcm.lock(new Long(uploadId), Wcm.LOCK.UPLOAD, userWcm);
                 wcm.deleteUpload(new Long(uploadId), userWcm);
+                wcm.unlock(new Long(uploadId), Wcm.LOCK.UPLOAD, userWcm);
             }
             return Wcm.VIEWS.UPLOADS;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
         } catch(Exception e) {
             log.warning("Error deleting upload.");
             e.printStackTrace();
@@ -300,6 +311,24 @@ public class UploadsActions {
             log.warning("Error adding category to upload.");
             e.printStackTrace();
             response.setRenderParameter("errorWcm", "Error adding category to upload " + e.toString());
+        }
+        return Wcm.VIEWS.UPLOADS;
+    }
+
+    public String actionLockUpload(ActionRequest request, ActionResponse response, UserWcm userWcm) {
+        String editId = request.getParameter("editid");
+        try {
+            Upload upload = wcm.findUpload(new Long(editId), userWcm);
+            if (userWcm.canWrite(upload)) {
+                wcm.lock(new Long(editId), Wcm.LOCK.UPLOAD, userWcm);
+            }
+            return Wcm.VIEWS.EDIT_UPLOAD;
+        } catch (WcmLockException e) {
+            response.setRenderParameter("errorWcm", e.getMessage());
+        }  catch (Exception e) {
+            log.warning("Error locking upload.");
+            e.printStackTrace();
+            response.setRenderParameter("errorWcm", "Error locking upload " + e.toString());
         }
         return Wcm.VIEWS.UPLOADS;
     }
@@ -552,6 +581,19 @@ public class UploadsActions {
             e.printStackTrace();
         }
         return "/jsp/uploads/uploadsAcls.jsp";
+    }
+
+    public void eventUnlockUpload(ResourceRequest request, ResourceResponse response, UserWcm userWcm) {
+        String uploadId = request.getParameter("uploadid");
+        try {
+            wcm.unlock(new Long(uploadId), Wcm.LOCK.UPLOAD, userWcm);
+        } catch (WcmLockException e) {
+            log.warning("Error unlocking Upload. This case can be caused by concurrent hazard");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.warning("Error unlocking Upload");
+            e.printStackTrace();
+        }
     }
 
     private int countAcl(Set <Acl> acl, Character type) {
