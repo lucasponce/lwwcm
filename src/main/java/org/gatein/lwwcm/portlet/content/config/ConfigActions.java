@@ -70,6 +70,13 @@ public class ConfigActions {
         }
         request.setAttribute("categoryTemplateId", categoryTemplateId);
 
+        String localeRelationships = request.getParameter("localeRelationships");
+        if (localeRelationships == null) {
+            localeRelationships = request.getPreferences().getValue("localeRelationships", null);
+            localeRelationships = (localeRelationships == null ? "false" : localeRelationships);
+        }
+        request.setAttribute("localeRelationships", localeRelationships);
+
         // Get templates list
         try {
             List<Template> templates = wcm.findTemplates(userWcm);
@@ -130,6 +137,7 @@ public class ConfigActions {
         String mainTemplateId = request.getParameter("mainTemplateId");
         String postTemplateId = request.getParameter("postTemplateId");
         String categoryTemplateId = request.getParameter("categoryTemplateId");
+        String localeRelationships = request.getParameter("localeRelationships");
 
         if (mainTemplateId != null && !mainTemplateId.equals("")) {
             request.getPreferences().setValue("mainTemplateId", mainTemplateId);
@@ -140,7 +148,9 @@ public class ConfigActions {
         if (categoryTemplateId != null && !categoryTemplateId.equals("")) {
             request.getPreferences().setValue("categoryTemplateId", categoryTemplateId);
         }
-
+        if (localeRelationships != null && !localeRelationships.equals("")) {
+            request.getPreferences().setValue("localeRelationships", localeRelationships);
+        }
         String listContentAttached = (String)request.getPortletSession().getAttribute("listContentAttached");
         if (listContentAttached != null) {
             request.getPreferences().setValue("listContentAttached", listContentAttached);
@@ -150,6 +160,7 @@ public class ConfigActions {
         response.setRenderParameter("mainTemplateId", mainTemplateId);
         response.setRenderParameter("postTemplateId", postTemplateId);
         response.setRenderParameter("categoryTemplateId", categoryTemplateId);
+        response.setRenderParameter("localeRelationships", localeRelationships);
     }
 
     public String eventNewContentAttached(ResourceRequest request, ResourceResponse response, UserWcm userWcm) throws PortletException, IOException {

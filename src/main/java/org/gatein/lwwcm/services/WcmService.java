@@ -244,6 +244,15 @@ public interface WcmService {
     Post findPost(Long id, UserWcm user) throws WcmException;
 
     /**
+     * @param id Post's id
+     * @param locale Locale used as a key for a Relationship
+     * @param user UserWcm who performs operation
+     * @return Post defined by id if user has rights to read or null otherwise
+     * @throws WcmException
+     */
+    Post findPost(Long id, String locale, UserWcm user) throws WcmException;
+
+    /**
      * @param categoryId Category's id
      * @param user UserWcm who performs operation
      * @return List of Posts linked with Category defined by categoryId that user can read
@@ -266,6 +275,17 @@ public interface WcmService {
      * @throws WcmException
      */
     List<Post> findPosts(Long categoryId, Character status, UserWcm user) throws WcmException;
+
+    /**
+     * @param categoryId Category's id
+     * @param locale Locale used as a key for a Relationship
+     * @param status Post's status
+     * @param user UserWcm who performs operation
+     * @return List of Posts linked by Category defined by categoryId that user can read filtered by Post's status
+     * @throws WcmException
+     */
+    List<Post> findPosts(Long categoryId, String locale, Character status, UserWcm user) throws WcmException;
+
 
     /**
      * @param filterName Filter for Post's title/name
@@ -533,6 +553,16 @@ public interface WcmService {
      * @throws WcmException
      */
     Template findTemplate(Long id, UserWcm user) throws WcmException;
+
+    /**
+     * @param id Template's id
+     * @param locale Locale used as a key for a Relationship
+     * @param user UserWcm who performs operation
+     * @return existing Template defined by id
+     * @throws WcmException
+     */
+    Template findTemplate(Long id, String locale, UserWcm user) throws WcmException;
+
 
     /**
      * @param categoryId Category's id

@@ -52,12 +52,17 @@ public class RenderActions {
 
     private Map<String, String> urlParams;
 
+    private String localeRequest;
+    private boolean localeRelationships;
+
     /*
         Main render method
      */
     public String renderTemplate(RenderRequest request, RenderResponse response, UserWcm userWcm) throws PortletException, IOException {
 
         this.urlParams = parseUrl();
+
+        this.localeRequest = request.getLocale().getLanguage();
 
         tags.setNamespace(response.getNamespace());
 
@@ -70,6 +75,7 @@ public class RenderActions {
         String mainTemplateId = request.getPreferences().getValue("mainTemplateId", null);
         String postTemplateId = request.getPreferences().getValue("postTemplateId", null);
         String categoryTemplateId = request.getPreferences().getValue("categoryTemplateId", null);
+        this.localeRelationships = !request.getPreferences().getValue("localeRelationships", "false").equals("false");
 
         Template template = null;
         List<Object> contentAttached = null;
@@ -173,7 +179,11 @@ public class RenderActions {
         Template template = null;
         if (contentTemplateId != null) {
             try {
-                template = wcm.findTemplate(new Long(contentTemplateId), userWcm);
+                if (this.localeRelationships) {
+                    template = wcm.findTemplate(new Long(contentTemplateId), this.localeRequest, userWcm);
+                } else {
+                    template = wcm.findTemplate(new Long(contentTemplateId), userWcm);
+                }
             } catch(WcmException e) {
                 log.warning("Error query template id " + contentTemplateId);
                 e.printStackTrace();
@@ -199,7 +209,12 @@ public class RenderActions {
                         Category c = wcm.findCategory(new Long(id), userWcm);
                         contentAttached.add(c);
                     } else {
-                        Post p = wcm.findPost(new Long(id), userWcm);
+                        Post p = null;
+                        if (this.localeRelationships) {
+                            p = wcm.findPost(new Long(id), this.localeRequest, userWcm);
+                        } else {
+                            p = wcm.findPost(new Long(id), userWcm);
+                        }
                         contentAttached.add(p);
                     }
                 }
@@ -215,6 +230,9 @@ public class RenderActions {
         Post postParameter = null;
         try {
             postParameter = wcm.findPost(new Long(params.get("id")), userWcm);
+            if (this.localeRelationships && !postParameter.getLocale().equals(this.localeRequest)) {
+                postParameter = wcm.findPost(new Long(params.get("id")), this.localeRequest, userWcm);
+            }
             if (postParameter != null && postParameter.getPostStatus() != null && !postParameter.getPostStatus().equals(Wcm.POSTS.PUBLISHED)) {
                 // Only show published posts
                 postParameter = null;
@@ -377,7 +395,11 @@ public class RenderActions {
         }
         if (c != null) {
             try {
-                listPosts = wcm.findPosts(c.getId(), Wcm.POSTS.PUBLISHED, userWcm);
+                if (this.localeRelationships) {
+                    listPosts = wcm.findPosts(c.getId(), this.localeRequest, Wcm.POSTS.PUBLISHED, userWcm);
+                } else {
+                    listPosts = wcm.findPosts(c.getId(), Wcm.POSTS.PUBLISHED, userWcm);
+                }
             } catch (WcmException e) {
                 log.warning("Error query posts list");
                 e.printStackTrace();
@@ -412,7 +434,11 @@ public class RenderActions {
         List<Post> listPosts = null;
         if (c != null) {
             try {
-                listPosts = wcm.findPosts(c.getId(), Wcm.POSTS.PUBLISHED, userWcm);
+                if (this.localeRelationships) {
+                    listPosts = wcm.findPosts(c.getId(), this.localeRequest, Wcm.POSTS.PUBLISHED, userWcm);
+                } else {
+                    listPosts = wcm.findPosts(c.getId(), Wcm.POSTS.PUBLISHED, userWcm);
+                }
             } catch (WcmException e) {
                 log.warning("Error query posts list");
                 e.printStackTrace();
@@ -426,8 +452,14 @@ public class RenderActions {
         if (path != null && userWcm != null) {
             try {
                 Category c = wcm.findCategory(path, userWcm);
-                if (c != null)
-                    listPosts = wcm.findPosts(c.getId(), userWcm);
+                if (c != null) {
+                    if (this.localeRelationships) {
+                        listPosts = wcm.findPosts(c.getId(), Wcm.POSTS.PUBLISHED, userWcm);
+                    } else {
+                        listPosts = wcm.findPosts(c.getId(), this.localeRequest, Wcm.POSTS.PUBLISHED, userWcm);
+                    }
+
+                }
             } catch (WcmException e) {
                 log.warning("Error query posts list");
                 e.printStackTrace();

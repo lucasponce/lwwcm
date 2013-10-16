@@ -1334,6 +1334,7 @@ public class WcmTags {
         if (html == null || "".equals(html)) return html;
         if (index > html.length()) return html;
         int i = html.indexOf(" ", index);
+        if (i == -1) i = index - 1;
         return html.substring(0, i);
     }
 

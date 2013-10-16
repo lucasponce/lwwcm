@@ -199,6 +199,34 @@ public class WcmServiceImpl implements WcmService {
         return filtered;
     }
 
+    private List<Post> localeFilter(List<Post> list, String locale) throws Exception {
+        if (list == null) return list;
+        if (locale == null || "".equals(locale)) return list;
+        List<Post> filtered = new ArrayList<Post>();
+        for (Post p : list) {
+            if (p.getLocale() == null || p.getLocale().equals(locale)) {
+                filtered.add(p);
+            } else {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(p.getId());
+                pk.setKey(locale);
+                pk.setType(Wcm.RELATIONSHIP.POST);
+                Relationship relationship = em.find(Relationship.class, pk);
+                if (relationship != null) {
+                    Post pr = em.find(Post.class, relationship.getAliasId());
+                    if (pr != null) {
+                        filtered.add(pr);
+                    } else {
+                        filtered.add(p);
+                    }
+                } else {
+                    filtered.add(p);
+                }
+            }
+        }
+        return filtered;
+    }
+
     /**
      * @see WcmService#findChildren(org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
      */
@@ -506,7 +534,7 @@ public class WcmServiceImpl implements WcmService {
     }
 
     /**
-     * @see WcmService#add(org.gatein.lwwcm.domain.Post, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)
+     * @see WcmService#findPost(Long, org.gatein.lwwcm.domain.UserWcm)
      */
     @Override
     public Post findPost(Long id, UserWcm user) throws WcmException {
@@ -514,6 +542,37 @@ public class WcmServiceImpl implements WcmService {
         if (id == null) return null;
         try {
             Post p = em.find(Post.class, id);
+            if (p != null && user.canRead(p))
+                return p;
+            else
+                return null;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findPost(Long, String, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public Post findPost(Long id, String locale, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (id == null) return null;
+        try {
+            Post p = em.find(Post.class, id);
+            if (p.getLocale() != null && !p.getLocale().equals(locale)) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(id);
+                pk.setKey(locale);
+                pk.setType(Wcm.RELATIONSHIP.POST);
+                Relationship relationship = em.find(Relationship.class, pk);
+                if (relationship != null) {
+                    Post pr = em.find(Post.class, relationship.getAliasId());
+                    if (pr != null) {
+                        p = pr;
+                    }
+                }
+            }
             if (p != null && user.canRead(p))
                 return p;
             else
@@ -569,6 +628,26 @@ public class WcmServiceImpl implements WcmService {
             if (cat == null) return null;
             List<Post> result = new ArrayList<Post>(cat.getPosts());
             result = statusFilter(result, status);
+            return aclFilter(result, user);
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
+    /**
+     * @see WcmService#findPosts(Long, String, Character, org.gatein.lwwcm.domain.UserWcm)
+     */
+    @Override
+    public List<Post> findPosts(Long categoryId, String locale, Character status, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (categoryId == null) return null;
+        if (status == null) return null;
+        try {
+            Category cat = em.find(Category.class, categoryId);
+            if (cat == null) return null;
+            List<Post> result = new ArrayList<Post>(cat.getPosts());
+            result = statusFilter(result, status);
+            result = localeFilter(result, locale);
             return aclFilter(result, user);
         } catch (Exception e) {
             throw new WcmException(e);
@@ -1275,6 +1354,35 @@ public class WcmServiceImpl implements WcmService {
             throw new WcmException(e);
         }
     }
+
+    /**
+     * @see WcmService#findTemplate(Long, String, org.gatein.lwwcm.domain.UserWcm)
+     */
+    public Template findTemplate(Long id, String locale, UserWcm user) throws WcmException {
+        if (user == null) return null;
+        if (id == null) return null;
+        try {
+            Template t = em.find(Template.class, id);
+            if (t.getLocale() != null && !t.getLocale().equals(locale)) {
+                RelationshipPK pk = new RelationshipPK();
+                pk.setOriginId(id);
+                pk.setKey(locale);
+                pk.setType(Wcm.RELATIONSHIP.TEMPLATE);
+                Relationship relationship = em.find(Relationship.class, pk);
+                if (relationship != null) {
+                    Template tr = em.find(Template.class, relationship.getAliasId());
+                    if (tr != null) {
+                        t = tr;
+                    }
+                }
+            }
+            // In this version we don't have ACL on Template entities
+            return t;
+        } catch (Exception e) {
+            throw new WcmException(e);
+        }
+    }
+
 
     /**
      * @see WcmService#add(org.gatein.lwwcm.domain.Template, org.gatein.lwwcm.domain.Category, org.gatein.lwwcm.domain.UserWcm)

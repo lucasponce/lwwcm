@@ -110,7 +110,14 @@
             var postTemplateIdSave = "#${n}postTemplateIdSave";
             var categoryTemplateId = "#${n}categoryTemplateId";
             var categoryTemplateIdSave = "#${n}categoryTemplateIdSave";
+            var localeRelationships = "#${n}localeRelationships";
+            var localeRelationshipsSave = "#${n}localeRelationshipsSave";
 
+            if ($(localeRelationships).is(":checked")) {
+                $(localeRelationshipsSave).val("true");
+            } else {
+                $(localeRelationshipsSave).val("false");
+            }
             $(mainTemplateIdSave).val( $(mainTemplateId).val() );
             $(postTemplateIdSave).val( $(postTemplateId).val() );
             $(categoryTemplateIdSave).val( $(categoryTemplateId).val() );
@@ -131,11 +138,12 @@
     <input type="hidden" id="${n}mainTemplateIdSave" name="mainTemplateId" />
     <input type="hidden" id="${n}postTemplateIdSave" name="postTemplateId" />
     <input type="hidden" id="${n}categoryTemplateIdSave" name="categoryTemplateId" />
+    <input type="hidden" id="${n}localeRelationshipsSave" name="localeRelationships" />
 </form>
 <div class="lwwcm-config">
     <div class="lwwcm-config-inner">
         <div class="lwwwcm-column-left">
-            <span class="glyphicon glyphicon-th margin-right"></span> Main Template:
+            <span class="glyphicon glyphicon-th margin-right margin-top"></span> Main Template:
         </div>
         <%
             List<Template> templates = (List<Template>)renderRequest.getAttribute("templates");
@@ -156,7 +164,7 @@
     </div>
     <div class="lwwcm-config-inner">
         <div class="lwwwcm-column-left">
-            <span class="glyphicon glyphicon-th margin-right"></span> Post Template:
+            <span class="glyphicon glyphicon-th margin-right margin-top"></span> Post Template:
         </div>
         <%
             templates = (List<Template>)renderRequest.getAttribute("templates");
@@ -177,7 +185,7 @@
     </div>
     <div class="lwwcm-config-inner">
         <div class="lwwwcm-column-left">
-            <span class="glyphicon glyphicon-th margin-right"></span> Category Template:
+            <span class="glyphicon glyphicon-th margin-right margin-top"></span> Category Template:
         </div>
         <%
             templates = (List<Template>)renderRequest.getAttribute("templates");
@@ -196,9 +204,21 @@
             %>
         </select></div>
     </div>
+    <div class="lwwcm-config-inner">
+        <div class="lwwwcm-column-left">
+            <span class="glyphicon glyphicon-random margin-right margin-top"></span> Locale Relationships:
+        </div>
+        <div class="lwwcm-checkbox margin-left-rel">
+            <%
+                String localeRelationships = (String)renderRequest.getAttribute("localeRelationships");
+            %>
+            <input type="checkbox" value="y" id="${n}localeRelationships" onchange="saveConfig${n}()" <% if (localeRelationships != null && localeRelationships.equals("true")) { %> checked="checked" <% } %> />
+            <label for="${n}localeRelationships"></label>
+        </div>
+    </div>
 </div>
 <div class="lwwcm-config">
-    <span class="glyphicon glyphicon-file margin-right"></span> Content attached:
+    <span class="glyphicon glyphicon-file margin-right margin-top"></span> Content attached:
 
     <div class="lwwcm-config-new">
         New:
