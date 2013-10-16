@@ -971,7 +971,7 @@ public class WcmServiceImpl implements WcmService {
                     .setParameter("uploadid", upload.getId())
                     .getResultList()
                     .get(0);
-            UploadHistory version = createVersion(upload, nVersion == null ? 0 : nVersion);
+            UploadHistory version = createVersion(upload, nVersion == null ? 0 : nVersion + 1);
 			version.setDeleted(Calendar.getInstance());
 			em.persist(version);
             for (Category c : upload.getCategories()) {
