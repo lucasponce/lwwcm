@@ -3,9 +3,11 @@ target
 *.iml
 *.ipr
 *.iws
+*.kate-swp
 .project
 .classpath
 .settings
 .metadata
 .directory
-examples/images
+examples/templates-example/images
+ 
