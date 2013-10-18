@@ -133,9 +133,6 @@ Once downloaded you can import into your GateIn Portal / JBoss Portal with the f
 Documentation
 -------------
 
-Project is in a early stage and we haven't written a proper documentation yet.
-This is on our priorities, meanwhile you can always browse into the source code.
-
 [Intro to GateIn WCM](http://www.slideshare.net/ponceballesteros/gatein-lightweight-web-content-management)
 
 Feedback
