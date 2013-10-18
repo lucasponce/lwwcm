@@ -1,7 +1,7 @@
-Simple and lightweight WCM for GateIn (GateIn WCM)
-==================================================
+Simple WCM for GateIn (GateIn WCM)
+==================================
 
-This project is a lightweight Web Content Management extension for GateIn Portal.
+This project is a simple and lightweight Web Content Management extension for GateIn Portal.
 
 Requeriments
 ------------
