@@ -50,7 +50,7 @@ import org.gatein.wcm.Wcm;
 
 
 /**
- * Post represents a content publication in the GateIn LW Wcm system.
+ * Post represents a content publication in the GateIn WCM system.
  *
  * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */

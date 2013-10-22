@@ -1163,7 +1163,7 @@ public class WcmTags {
         if (properties.containsKey("class")) {
             inputClass = " class=\"" + properties.get("class") + "\"";
         }
-        String output = "<a id=\"" + this.namespace + "-addComment\" " + inputClass + " href=\"javascript:;\" onclick=\"lwwcmAddComment('" + this.namespace + "', '" + post.getId() + "');\">" + inside + "</a>";
+        String output = "<a id=\"" + this.namespace + "-addComment\" " + inputClass + " href=\"javascript:;\" onclick=\"wcmAddComment('" + this.namespace + "', '" + post.getId() + "');\">" + inside + "</a>";
         return template.replace(tag, output);
     }
 
@@ -1271,15 +1271,15 @@ public class WcmTags {
         if (target == null || oldData == null || newData == null) return null;
 
         if (oldData.indexOf("class=\"wcm-skip\"") != -1) {
-            oldData = oldData.replaceAll("class=\"lwwcm-skip\"", "");
+            oldData = oldData.replaceAll("class=\"wcm-skip\"", "");
         } else if (newData.indexOf("wcm-skip") != -1) {
-            oldData = oldData.replaceAll("lwwcm-skip", "");
+            oldData = oldData.replaceAll("wcm-skip", "");
         }
 
         if (newData.indexOf("class=\"wcm-skip\"") != -1) {
-            newData = newData.replaceAll("class=\"lwwcm-skip\"", "");
+            newData = newData.replaceAll("class=\"wcm-skip\"", "");
         } else if (newData.indexOf("wcm-skip") != -1) {
-            newData = newData.replaceAll("lwwcm-skip", "");
+            newData = newData.replaceAll("wcm-skip", "");
         }
 
         // Specific treatment for images
@@ -1302,9 +1302,9 @@ public class WcmTags {
         if (newData == null) return null;
 
         if (newData.indexOf("class=\"wcm-skip\"") != -1) {
-            newData = newData.replaceAll("class=\"lwwcm-skip\"", "");
+            newData = newData.replaceAll("class=\"wcm-skip\"", "");
         } else if (newData.indexOf("wcm-skip") != -1) {
-            newData = newData.replaceAll("lwwcm-skip", "");
+            newData = newData.replaceAll("wcm-skip", "");
         }
         return newData;
     }

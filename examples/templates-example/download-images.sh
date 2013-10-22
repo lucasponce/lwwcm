@@ -1,6 +1,6 @@
 # Script to download example images
 IMG_URL="https://raw.github.com/jboss-jdf/ticket-monster/master/demo/src/main/resources/import.sql"
-TMP_DIR="/tmp/lwwcm"
+TMP_DIR="/tmp/wcm"
 IMG_DIR="./images"
 
 # Create TEMP dir and IMG dir

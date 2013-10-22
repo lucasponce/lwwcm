@@ -49,7 +49,7 @@
   <modules>
     <module>wcm-api</module>
     <module>wcm</module>
-    <module>examples/example-api</module>
+    <module>examples/api-example</module>
   </modules>
   
 </project>

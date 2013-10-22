@@ -359,7 +359,7 @@ public interface Wcm {
     }
 
     /**
-     * Defines configuration for automatic tasks inside LWWCM
+     * Defines configuration for automatic tasks inside WCM
      */
     interface TIMEOUTS {
         /**

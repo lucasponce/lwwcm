@@ -29,6 +29,10 @@ import org.gatein.wcm.WcmException;
 import org.gatein.wcm.domain.UserWcm;
 import org.gatein.wcm.services.PortalService;
 
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,12 +50,16 @@ import org.exoplatform.services.organization.Group;
  *
  * @author <a href="mailto:lponce@redhat.com">Lucas Ponce</a>
  */
-@RequestScoped
+@Stateless
 public class PortalServiceImpl implements PortalService {
 
     private static final Logger log = Logger.getLogger(PortalServiceImpl.class.getName());
 
+    /*
+        Read operation, no need to enlist this transaction in the wcm transaction context
+     */
     @Override
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public UserWcm getPortalUser(String user) throws WcmException {
         if (user == null) return null;
         OrganizationService os = (OrganizationService)PortalContainer
@@ -79,10 +87,10 @@ public class PortalServiceImpl implements PortalService {
                     }
                 }
             }
-            // If user has not valid group we asign a default group
+            // If user has not valid group we assign a default group
             if (userWcm.getWriteGroups().isEmpty()) {
                 userWcm.add(Wcm.GROUPS.LOST);
-                log.warning("User: " + userWcm + " has not a valid writable group. Asigning to default group: " + Wcm.GROUPS.LOST);
+                log.warning("User: " + userWcm + " has not a valid writable group. Assigning to default group: " + Wcm.GROUPS.LOST);
             }
         } catch (Exception e) {
             throw new WcmException(e);
@@ -91,6 +99,7 @@ public class PortalServiceImpl implements PortalService {
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Set<String> getWcmGroups() throws WcmException {
         Set<String> groups = new HashSet<String>();
         try {

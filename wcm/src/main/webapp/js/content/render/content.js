@@ -21,7 +21,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-function lwwcmAddComment(namespace, postid) {
+function wcmAddComment(namespace, postid) {
     require(["SHARED/jquery"], function($) {
         var href = $("#" + namespace + "-addCommentPost").val();
         var content = "";
@@ -57,7 +57,7 @@ function lwwcmAddComment(namespace, postid) {
             },
             error: function(XMLHttpRequest, textStatus, errorThrown)
             {
-                alert("Problem accessing lwwcmAddComment()");
+                alert("Problem accessing wcmAddComment()");
             }
         });
     });

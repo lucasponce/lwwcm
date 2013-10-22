@@ -10,7 +10,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.gatein.wcm</groupId>
-  <artifactId>example-api</artifactId>
+  <artifactId>api-example</artifactId>
   <version>1.0.0</version>
   <packaging>war</packaging>
 
@@ -30,7 +30,7 @@
   </dependencies>
 
   <build>
-    <finalName>example-api</finalName>
+    <finalName>api-example</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -148,7 +148,6 @@ public interface WcmService {
      */
     List<Category> findChildren(String path, Character type, UserWcm user) throws WcmException;
 
-
 	/*
 	 * Post API.
 	 */

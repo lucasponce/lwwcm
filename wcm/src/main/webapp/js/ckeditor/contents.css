@@ -112,7 +112,7 @@ wcm-list {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-list.png) no-repeat top left;
+    background: url(wcm/wcm-list.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 
@@ -121,7 +121,7 @@ wcm-param-list {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-param-list.png) no-repeat top left;
+    background: url(wcm/wcm-param-list.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
     position: relative;
 }
@@ -130,7 +130,7 @@ wcm-single {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-single.png) no-repeat top left;
+    background: url(wcm/wcm-single.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-param-single {
@@ -138,7 +138,7 @@ wcm-param-single {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-param-single.png) no-repeat top left;
+    background: url(wcm/wcm-param-single.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-file-list {
@@ -146,7 +146,7 @@ wcm-file-list {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-file-list.png) no-repeat top left;
+    background: url(wcm/wcm-file-list.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-content {
@@ -154,7 +154,7 @@ wcm-content {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-content.png) no-repeat top left;
+    background: url(wcm/wcm-content.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-cat-list {
@@ -162,7 +162,7 @@ wcm-cat-list {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-cat-list.png) no-repeat top left;
+    background: url(wcm/wcm-cat-list.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-categories {
@@ -170,7 +170,7 @@ wcm-categories {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-categories.png) no-repeat top left;
+    background: url(wcm/wcm-categories.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-comments {
@@ -178,7 +178,7 @@ wcm-comments {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-comments.png) no-repeat top left;
+    background: url(wcm/wcm-comments.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-comments {
@@ -186,7 +186,7 @@ wcm-form-comments {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-comments.png) no-repeat top left;
+    background: url(wcm/wcm-form-comments.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-content {
@@ -194,7 +194,7 @@ wcm-form-content {
     position: relative;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-content.png) no-repeat top left;
+    background: url(wcm/wcm-form-content.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 
@@ -206,7 +206,7 @@ wcm-author {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-author.png) no-repeat top left;
+    background: url(wcm/wcm-author.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-created {
@@ -215,7 +215,7 @@ wcm-created {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-created.png) no-repeat top left;
+    background: url(wcm/wcm-created.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-description {
@@ -224,7 +224,7 @@ wcm-description {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-description.png) no-repeat top left;
+    background: url(wcm/wcm-description.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-excerpt {
@@ -233,7 +233,7 @@ wcm-excerpt {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-excerpt.png) no-repeat top left;
+    background: url(wcm/wcm-excerpt.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-filename {
@@ -242,7 +242,7 @@ wcm-filename {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-filename.png) no-repeat top left;
+    background: url(wcm/wcm-filename.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-img {
@@ -251,7 +251,7 @@ wcm-img {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-img.png) no-repeat top left;
+    background: url(wcm/wcm-img.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-iter {
@@ -260,7 +260,7 @@ wcm-iter {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-iter.png) no-repeat top left;
+    background: url(wcm/wcm-iter.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-link {
@@ -269,7 +269,7 @@ wcm-link {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-link.png) no-repeat top left;
+    background: url(wcm/wcm-link.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-mimetype {
@@ -278,7 +278,7 @@ wcm-mimetype {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-mimetype.png) no-repeat top left;
+    background: url(wcm/wcm-mimetype.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-title {
@@ -287,7 +287,7 @@ wcm-title {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-title.png) no-repeat top left;
+    background: url(wcm/wcm-title.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-cat-name {
@@ -296,7 +296,7 @@ wcm-cat-name {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-cat-name.png) no-repeat top left;
+    background: url(wcm/wcm-cat-name.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-cat-type {
@@ -305,7 +305,7 @@ wcm-cat-type {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-cat-type.png) no-repeat top left;
+    background: url(wcm/wcm-cat-type.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-param-name {
@@ -314,7 +314,7 @@ wcm-param-name {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-param-name.png) no-repeat top left;
+    background: url(wcm/wcm-param-name.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-comment-content {
@@ -323,7 +323,7 @@ wcm-comment-content {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-comment-content.png) no-repeat top left;
+    background: url(wcm/wcm-comment-content.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-comment-author {
@@ -332,7 +332,7 @@ wcm-comment-author {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-comment-author.png) no-repeat top left;
+    background: url(wcm/wcm-comment-author.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-comment-created {
@@ -341,7 +341,7 @@ wcm-comment-created {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-comment-created.png) no-repeat top left;
+    background: url(wcm/wcm-comment-created.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-author {
@@ -350,7 +350,7 @@ wcm-form-author {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-author.png) no-repeat top left;
+    background: url(wcm/wcm-form-author.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-email {
@@ -359,7 +359,7 @@ wcm-form-email {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-email.png) no-repeat top left;
+    background: url(wcm/wcm-form-email.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-url {
@@ -368,7 +368,7 @@ wcm-form-url {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-url.png) no-repeat top left;
+    background: url(wcm/wcm-form-url.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 wcm-form-button {
@@ -377,7 +377,7 @@ wcm-form-button {
     display: inline-block;
     padding-left: 8px;
     padding-top: 8px;
-    background: url(lwwcm/wcm-form-button.png) no-repeat top left;
+    background: url(wcm/wcm-form-button.png) no-repeat top left;
     border: 1px dotted #b5b6b6;
 }
 

@@ -26,19 +26,19 @@ package org.example;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.gatein.wcm.api.domain.Post;
+import org.gatein.wcm.api.WcmApi;
+import org.gatein.wcm.api.domain.Category;
 import org.gatein.wcm.api.services.WcmApiService;
 
-@WebServlet(value="/wcm", loadOnStartup=1)
+@WebServlet(value="/test", loadOnStartup=1)
 public class MyWcmServlet extends HttpServlet {
 
     @Override
@@ -48,16 +48,15 @@ public class MyWcmServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println(new Date().toString());
         try {
-            Context ctx = new InitialContext();
-            WcmApiService wcm = (WcmApiService)ctx.lookup("java:global/wcm/WcmApiServiceBean!org.gatein.wcm.api.services.WcmApiService");
+            WcmApiService wcm = WcmApi.getInstance();
             out.println(wcm.toString());
-            Object o = wcm.testPost();
-            if (o instanceof Post) {
-                Post p = (Post)o;
-                out.println(p.getId());
-                out.println(p.getTitle());
-                out.println(p.getExcerpt());
-                out.println(p.getContent());
+            long t0, t1;
+            t0 = System.currentTimeMillis();
+            List<Category> listCategories = wcm.findRootCategories("root");
+            t1 = System.currentTimeMillis();
+            out.println("findRootCategories(): " + (t1 - t0) + " ms");
+            for (Category c : listCategories) {
+                out.println(c);
             }
         } catch (Exception e) {
             out.write(e.toString());
