@@ -135,6 +135,8 @@ Documentation
 
 [Intro to GateIn WCM](http://www.slideshare.net/ponceballesteros/gatein-lightweight-web-content-management)
 
+[Documentation](https://docs.jboss.org/author/display/GTNWCM)
+
 Feedback
 --------
 
