@@ -3,6 +3,13 @@ Simple WCM for GateIn (GateIn WCM)
 
 This project is a simple and lightweight Web Content Management extension for GateIn Portal.
 
+Moved !
+-------
+
+This project has been moved to:
+
+https://github.com/gatein/gatein-wcm
+
 Requeriments
 ------------
 
